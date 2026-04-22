@@ -1,0 +1,4 @@
+-r requirements.txt
+ollama
+chromadb
+sentence-transformers

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.local
+
+# Data artifacts (generated, not source)
+data/vectorstore/
+data/corpus/*.pdf
+data/corpus/*.docx
+data/corpus/*.txt
+data/corpus/*.html
+
+# Model artifacts
+*.gguf
+*.safetensors
+*.bin
+checkpoints/
+outputs/
+runs/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Langfuse / local logs
+*.log
