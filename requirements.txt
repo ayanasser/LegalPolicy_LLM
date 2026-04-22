@@ -1,0 +1,17 @@
+pydantic>=2.0
+python-dotenv
+pyyaml
+langchain
+langchain-community
+langgraph
+instructor
+langfuse
+gradio
+rich
+nltk
+rouge-score
+tqdm
+numpy
+pandas
+pypdf
+python-docx
