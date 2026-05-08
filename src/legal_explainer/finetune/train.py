@@ -15,6 +15,7 @@ from pathlib import Path
 import torch
 import yaml
 from datasets import load_dataset
+from dotenv import load_dotenv
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import (
     AutoModelForCausalLM,
@@ -25,6 +26,7 @@ from transformers import (
 from trl import SFTConfig, SFTTrainer
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
+load_dotenv(PROJECT_ROOT / ".env")
 
 
 def load_config(path: Path) -> dict:
@@ -138,7 +140,7 @@ def main():
         greater_is_better=t["greater_is_better"],
         report_to=["tensorboard"],
         logging_dir=str(output_dir / "runs"),
-        max_seq_length=t["max_seq_length"],
+        max_length=t["max_seq_length"],
         dataset_text_field="text",
         packing=t["packing"],
         seed=t["seed"],
@@ -149,7 +151,7 @@ def main():
         args=sft,
         train_dataset=ds["train"],
         eval_dataset=ds["validation"],
-        tokenizer=tokenizer,
+        processing_class=tokenizer,    # was `tokenizer=` in trl < 0.13
         callbacks=[EarlyStoppingCallback(early_stopping_patience=t["early_stopping_patience"])],
     )
 

@@ -18,13 +18,18 @@ import argparse
 import json
 import os
 import random
+import re
+import sys
 import time
 from pathlib import Path
 
 import yaml
+from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
+
+load_dotenv(PROJECT_ROOT / ".env")
 
 EN_TEMPLATES = [
     "Explain {art_label} of the Egyptian Civil Code in plain language.",
@@ -102,21 +107,87 @@ def load_synthesis_prompts(path: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-def polish_with_claude(pairs, prompts, *, model: str, cache_path: Path | None = None):
-    from anthropic import Anthropic
+def _claude_call(client, system: str, user: str, model: str) -> str:
+    resp = client.messages.create(
+        model=model, max_tokens=900, system=system,
+        messages=[{"role": "user", "content": user}],
+    )
+    return resp.content[0].text.strip()
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise RuntimeError("ANTHROPIC_API_KEY is not set; export it or pass --no-polish.")
-    client = Anthropic(api_key=api_key)
+
+def _gemini_call(client, system: str, user: str, model: str) -> str:
+    from google.genai import types
+    resp = client.models.generate_content(
+        model=model,
+        contents=user,
+        config=types.GenerateContentConfig(
+            system_instruction=system,
+            max_output_tokens=900,
+            temperature=0.3,
+        ),
+    )
+    return (resp.text or "").strip()
+
+
+def _make_client(provider: str):
+    if provider == "anthropic":
+        from anthropic import Anthropic
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise RuntimeError("ANTHROPIC_API_KEY is not set; add it to .env or pass --no-polish.")
+        return Anthropic(api_key=api_key), _claude_call
+    if provider == "google":
+        from google import genai
+        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        if not api_key:
+            raise RuntimeError("GEMINI_API_KEY is not set; add it to .env or pass --no-polish.")
+        return genai.Client(api_key=api_key), _gemini_call
+    raise ValueError(f"Unknown polish provider: {provider}")
+
+
+def _retry_delay_from_exception(e: Exception) -> float | None:
+    """Extract the server-suggested retry delay from a 429 error, in seconds."""
+    msg = str(e)
+    m = re.search(r"['\"]retryDelay['\"]\s*:\s*['\"](\d+(?:\.\d+)?)s['\"]", msg)
+    if m:
+        return float(m.group(1))
+    m = re.search(r"retry in (\d+(?:\.\d+)?)s", msg)
+    if m:
+        return float(m.group(1))
+    return None
+
+
+def _is_daily_quota_error(e: Exception) -> bool:
+    """Detect Gemini / Vertex 'requests per day' quota exhaustion (vs. per-minute)."""
+    msg = str(e)
+    return ("PerDayPerProjectPerModel" in msg
+            or "RequestsPerDay" in msg
+            or "perDay" in msg)
+
+
+class DailyQuotaExhausted(RuntimeError):
+    """Raised when the polish provider's per-day quota is exhausted.
+
+    Retrying same-day will not help. The polish loop bails so we don't waste
+    minutes retrying or, worse, fall back to raw statute text for hundreds of
+    pairs and silently poison the cache."""
+
+
+def polish_pairs(pairs, prompts, *, provider: str, model: str,
+                 cache_path: Path | None = None,
+                 throttle_seconds: float = 0.0,
+                 max_attempts: int = 5):
+    client, call = _make_client(provider)
 
     cache: dict[str, str] = {}
     if cache_path and cache_path.exists():
         cache = json.loads(cache_path.read_text(encoding="utf-8"))
         print(f"Loaded {len(cache)} cached polishes from {cache_path}")
 
+    last_call_at: float | None = None
+
     for i, p in enumerate(pairs):
-        cache_key = f"{p['article_key']}|{p['language']}|{p['instruction'][:120]}"
+        cache_key = f"{provider}|{p['article_key']}|{p['language']}|{p['instruction'][:120]}"
         if cache_key in cache:
             p["polished_response"] = cache[cache_key]
             continue
@@ -126,24 +197,42 @@ def polish_with_claude(pairs, prompts, *, model: str, cache_path: Path | None = 
             art_label=art_label_str,
             article_text=p["raw_article"],
         )
-        for attempt in range(3):
+        for attempt in range(max_attempts):
+            if throttle_seconds > 0 and last_call_at is not None:
+                wait = throttle_seconds - (time.monotonic() - last_call_at)
+                if wait > 0:
+                    time.sleep(wait)
             try:
-                resp = client.messages.create(
-                    model=model,
-                    max_tokens=900,
-                    system=prompts["system"],
-                    messages=[{"role": "user", "content": user_msg}],
-                )
-                text = resp.content[0].text.strip()
+                text = call(client, prompts["system"], user_msg, model)
+                last_call_at = time.monotonic()
                 p["polished_response"] = text
                 cache[cache_key] = text
                 break
             except Exception as e:
-                if attempt == 2:
-                    print(f"  failed pair {i}: {e}")
+                if _is_daily_quota_error(e):
+                    if cache_path:
+                        cache_path.write_text(
+                            json.dumps(cache, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+                    raise DailyQuotaExhausted(
+                        f"Daily quota exhausted on model={model!r}. "
+                        f"Cached {len(cache)} polishes so far. "
+                        f"Resume tomorrow (cache will skip done pairs) or pass "
+                        f"--polish-model with a different model. Original error: {e}"
+                    ) from e
+                if attempt == max_attempts - 1:
+                    print(f"  failed pair {i} after {max_attempts} attempts: {e}")
                     p["polished_response"] = p["raw_article"]
+                    break
+                wait = _retry_delay_from_exception(e)
+                if wait is None:
+                    wait = min(60.0, (2 ** attempt) * 2.0)
                 else:
-                    time.sleep(2 ** attempt)
+                    wait += 1.5
+                print(f"  pair {i} rate-limited; sleeping {wait:.1f}s (attempt {attempt+1}/{max_attempts})")
+                time.sleep(wait)
+                last_call_at = time.monotonic()
         if (i + 1) % 25 == 0:
             print(f"  polished {i+1}/{len(pairs)}")
             if cache_path:
@@ -181,8 +270,14 @@ def main():
     ap.add_argument("--variants-per-article", type=int, default=2)
     ap.add_argument("--val-fraction", type=float, default=0.15)
     ap.add_argument("--no-polish", action="store_true",
-                    help="Skip Claude polish; use raw article text as response.")
-    ap.add_argument("--polish-model", default="claude-sonnet-4-6")
+                    help="Skip LLM polish; use raw article text as response.")
+    ap.add_argument("--polish-provider", choices=["google", "anthropic"], default="google",
+                    help="Which LLM polishes the responses. Default: google (Gemini).")
+    ap.add_argument("--polish-model", default=None,
+                    help="Defaults to gemini-2.5-flash-lite for google, claude-sonnet-4-6 for anthropic.")
+    ap.add_argument("--throttle-seconds", type=float, default=None,
+                    help="Minimum seconds between API calls. "
+                         "Default: 4.5 for google (free-tier safe for flash-lite), 0 for anthropic.")
     ap.add_argument("--seed", type=int, default=13)
     args = ap.parse_args()
 
@@ -209,9 +304,24 @@ def main():
 
     if not args.no_polish:
         prompts = load_synthesis_prompts(CONFIGS_DIR / "synthesis_prompts.yaml")
-        template_pairs = polish_with_claude(
-            template_pairs, prompts, model=args.polish_model, cache_path=cache_path,
+        model = args.polish_model or (
+            "gemini-2.5-flash-lite" if args.polish_provider == "google" else "claude-sonnet-4-6"
         )
+        throttle = args.throttle_seconds
+        if throttle is None:
+            throttle = 4.5 if args.polish_provider == "google" else 0.0
+        print(f"Polishing via {args.polish_provider} ({model}); throttle={throttle:.1f}s/call ...")
+        try:
+            template_pairs = polish_pairs(
+                template_pairs, prompts,
+                provider=args.polish_provider, model=model,
+                cache_path=cache_path, throttle_seconds=throttle,
+            )
+        except DailyQuotaExhausted as e:
+            print(f"\nABORT: {e}")
+            print("qa_pairs.jsonl was NOT written (dataset is incomplete).")
+            print("Re-run the same command tomorrow; cached polishes will be skipped.")
+            sys.exit(1)
     else:
         for p in template_pairs:
             p["polished_response"] = p["raw_article"]

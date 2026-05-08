@@ -34,9 +34,9 @@ training:
   optim: paged_adamw_8bit
   max_seq_length: 1024
   packing: false
-  logging_steps: 10
-  eval_strategy: steps
-  eval_steps: 50
+  logging_steps: 5
+  eval_strategy: epoch          # must match save_strategy when load_best_model_at_end=true (transformers 5.x)
+  eval_steps: 50                # ignored when eval_strategy=epoch, kept for forward compat
   save_strategy: epoch
   save_total_limit: 2
   load_best_model_at_end: true

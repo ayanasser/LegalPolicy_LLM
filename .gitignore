@@ -34,5 +34,11 @@ runs/
 .idea/
 .DS_Store
 
+# Claude Code local harness state
+.claude/
+
+# Polish pipeline scratch files (cache + per-batch I/O for manual polishing)
+data/_polish_*.json
+
 # Langfuse / local logs
 *.log
