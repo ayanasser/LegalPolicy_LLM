@@ -14,7 +14,7 @@ from datetime import datetime
 # TASK 3.6 — Versioned Prompt Registry
 # ─────────────────────────────────────────────
 PROMPT_VERSION = "1.0.0"
-PROMPT_LAST_UPDATED = "2025-01-01"
+PROMPT_LAST_UPDATED = "2026-065-08"
 
 # ─────────────────────────────────────────────
 # TASK 3.1 — Core System Prompt
