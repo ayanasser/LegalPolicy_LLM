@@ -1,0 +1,54 @@
+# Stage-4 (PEFT-RAFT) QLoRA recipe for LegalPolicy_LLM — Qwen 2.5 1.5B Instruct.
+# Same QLoRA hyperparameters as the stage-1 recipe; the only changes are:
+#   - max_seq_length raised 1024 -> 1536 to fit the RAFT context block
+#     (oracle article + 1 distractor) + question + house-style answer.
+#   - separate output dir and data paths so this does not clobber stage-1.
+#
+# Build: python scripts/build_dataset_raft.py --config <this file>
+# Train: python scripts/train.py --config <this file>
+
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+adapter_name: qlora-qwen2.5-1.5b-raft
+output_dir: runs/qlora-qwen2.5-1.5b-raft
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 3.0e-5
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.06
+  bf16: true
+  gradient_checkpointing: true
+  optim: paged_adamw_8bit
+  max_seq_length: 1536
+  packing: false
+  logging_steps: 5
+  eval_strategy: epoch
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+data:
+  train_jsonl: data/qa_pairs_raft.jsonl
+  val_jsonl: data/qa_pairs_raft_val.jsonl
