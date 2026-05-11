@@ -1,0 +1,55 @@
+# Stage-1 QLoRA recipe for LegalPolicy_LLM.
+# Same hyperparameters as qlora_qwen1_5b_local.yaml, different dataset paths
+# so the Stage-1 build does not clobber the baseline data files.
+#
+# Build: python scripts/build_dataset_stage1.py --config <this file>
+# Train: python scripts/train.py --config <this file>
+
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+adapter_name: qlora-qwen2.5-1.5b-stage1
+output_dir: runs/qlora-qwen2.5-1.5b-stage1
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 3.0e-5
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.06
+  bf16: true
+  gradient_checkpointing: true
+  optim: paged_adamw_8bit
+  max_seq_length: 1024
+  packing: false
+  logging_steps: 5
+  eval_strategy: epoch
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+data:
+  # Stage-1 build OVERWRITES the baseline qa_pairs files (per user request).
+  # Baseline is preserved at data/qa_pairs.baseline.jsonl / qa_pairs_val.baseline.jsonl
+  # so the original 924/162 split can still be inspected if needed.
+  train_jsonl: data/qa_pairs.jsonl
+  val_jsonl: data/qa_pairs_val.jsonl

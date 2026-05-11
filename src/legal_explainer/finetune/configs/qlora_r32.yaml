@@ -1,0 +1,52 @@
+# Cloud QLoRA recipe for the LegalPolicy_LLM project — Qwen 2.5 3B Instruct.
+# Original Epic 4 spec (LoRA rank 32, hence the filename). Sized for a Colab T4
+# (16 GB) or better. The Colab notebook at notebooks/qlora_qwen2_5_3b_colab.ipynb
+# embeds the same hyperparameters; this YAML lets the local trainer target a
+# cloud GPU (e.g. via SSH to a rented RunPod / Lambda machine) using the same
+# code path as the local 1.5B run.
+
+base_model: Qwen/Qwen2.5-3B-Instruct
+adapter_name: qlora-qwen2.5-3b-v1
+output_dir: runs/qlora-qwen2.5-3b-v1
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.1
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 8         # effective batch = 32
+  learning_rate: 3.0e-5
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.06
+  bf16: true
+  gradient_checkpointing: true
+  optim: paged_adamw_8bit
+  max_seq_length: 2048
+  packing: false
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+data:
+  train_jsonl: data/qa_pairs.jsonl
+  val_jsonl: data/qa_pairs_val.jsonl

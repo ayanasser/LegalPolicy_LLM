@@ -2,3 +2,19 @@
 ollama
 chromadb
 sentence-transformers
+
+# Fine-tuning (Epic 4 / local Qwen 1.5B path).
+# For the Colab 3B path, install in-notebook instead — these pins target
+# Linux + CUDA 12.x consumer GPUs (RTX 30xx/40xx series).
+torch>=2.4
+transformers>=4.45
+peft>=0.13
+bitsandbytes>=0.43
+trl>=0.11
+accelerate>=0.34
+datasets>=3.0
+anthropic>=0.40
+google-genai>=0.3
+sentencepiece
+einops
+tensorboard

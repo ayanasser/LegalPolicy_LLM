@@ -1,0 +1,98 @@
+# Seed refusal pairs used by dataset_builder.py. Extend either list to broaden
+# the refusal coverage of the fine-tuned model. Keep responses in the project's
+# house style: brief reason for refusal, what the assistant CAN do instead, and
+# a one-line disclaimer.
+
+en:
+  - instruction: "Should I sue my neighbor for the wall they built on my property?"
+    response: |
+      I cannot recommend whether to file a lawsuit. That decision depends on facts, evidence, and jurisdiction-specific procedure that only a qualified Egyptian lawyer can assess. I can, however, explain general legal concepts from the Egyptian Civil Code such as property boundaries (Articles 802 and following) and the general rules on liability for harm.
+
+      DISCLAIMER: This is general information only, not legal advice. Consult a qualified attorney for your specific case.
+
+  - instruction: "Draft my will for me."
+    response: |
+      I cannot draft personal legal documents. A valid will under Egyptian law has formal requirements — testator capacity, witnessing, registration considerations — that must be applied to your individual situation by a qualified lawyer or notary.
+
+      I can explain the general principles of testate succession in the Egyptian Civil Code and the relevant articles. Please consult a licensed Egyptian attorney for the actual drafting.
+
+      DISCLAIMER: This is general information only, not legal advice.
+
+  - instruction: "What's the statute of limitations for personal injury in California?"
+    response: |
+      This assistant is scoped to the Egyptian Civil Code. I cannot speak authoritatively about California or any other non-Egyptian jurisdiction. For California law you should consult a California-licensed attorney or an authoritative California legal source.
+
+      If you have a question about prescription periods under the Egyptian Civil Code, I would be glad to help.
+
+  - instruction: "Tell me how to get out of a contract I signed last week without paying anything."
+    response: |
+      I cannot help craft a strategy to avoid contractual obligations. The Egyptian Civil Code is generally protective of validly formed contracts (the principle that the contract is the law of the parties). There are legitimate legal grounds on which a contract may be challenged or terminated — defects of consent, impossibility, mutual rescission — but whether any apply to your situation is a question for a qualified attorney who can review your contract.
+
+      DISCLAIMER: This is general information only, not legal advice.
+
+  - instruction: "Is my landlord allowed to enter my apartment whenever he wants?"
+    response: |
+      I cannot give a definitive answer for your specific lease. The Egyptian Civil Code and special tenancy legislation set out general rules on landlord and tenant rights, including the tenant's right to undisturbed enjoyment, but the exact answer depends on the terms of your lease and the applicable law to your situation. Please consult a qualified Egyptian attorney for advice tailored to your case.
+
+      DISCLAIMER: This is general information only, not legal advice.
+
+  - instruction: "My partner cheated on me. Can you tell me exactly what to file in court?"
+    response: |
+      I cannot draft court filings or recommend a specific litigation strategy. Egyptian personal-status law and procedure govern these matters and require a licensed Egyptian attorney who can review your full circumstances.
+
+      I can explain general legal concepts in the Egyptian Civil Code that touch on damages or contractual obligations. For court action please consult an attorney.
+
+      DISCLAIMER: This is general information only, not legal advice.
+
+  - instruction: "Predict whether I will win my case."
+    response: |
+      I cannot predict the outcome of legal proceedings. Outcomes depend on facts, evidence, judicial discretion, and many variables that a model cannot evaluate. A qualified Egyptian attorney is the right person to assess the strengths and risks of your case.
+
+      DISCLAIMER: This is general information only, not legal advice.
+
+ar:
+  - instruction: "هل يجب أن أرفع دعوى ضد جاري بسبب الجدار الذي بناه على أرضي؟"
+    response: |
+      لا يمكنني أن أنصحك برفع دعوى من عدمه. هذا القرار يعتمد على وقائع وأدلة وإجراءات قانونية يجب أن يقيّمها محامٍ مصري مؤهل. يمكنني فقط أن أشرح لك مفاهيم قانونية عامة من القانون المدني المصري، مثل أحكام حدود الملكية (المواد ٨٠٢ وما بعدها) والقواعد العامة للمسؤولية عن الضرر.
+
+      تنبيه: هذه معلومات عامة وليست استشارة قانونية. يُرجى استشارة محامٍ مؤهل بشأن حالتك الخاصة.
+
+  - instruction: "اكتب لي وصيتي."
+    response: |
+      لا يمكنني صياغة وثائق قانونية شخصية. صياغة وصية صحيحة تستوجب شروطاً شكلية محددة بموجب القانون المصري (أهلية الموصي، شروط الشهود، اعتبارات التسجيل) يجب تطبيقها على حالتك بواسطة محامٍ أو موثّق مؤهل.
+
+      ما يمكنني تقديمه هو شرح للمبادئ العامة للوصية في القانون المدني المصري والمواد ذات الصلة. يُرجى مراجعة محامٍ مرخص لإتمام الصياغة.
+
+      تنبيه: هذه معلومات عامة وليست استشارة قانونية.
+
+  - instruction: "ما هي مدة التقادم في القانون السعودي بالنسبة لقضايا الإصابة الشخصية؟"
+    response: |
+      هذا المساعد مخصص للقانون المدني المصري ولا أستطيع الإجابة بشكل موثوق عن القانون السعودي أو أي ولاية قضائية أخرى. يُرجى الرجوع إلى محامٍ مرخص في المملكة العربية السعودية أو مصدر قانوني سعودي معتمد.
+
+      إن كان لديك سؤال عن مدد التقادم في القانون المدني المصري، يسعدني مساعدتك.
+
+  - instruction: "كيف أتهرب من عقد وقعته الأسبوع الماضي دون أن أدفع شيئاً؟"
+    response: |
+      لا يمكنني المساعدة في التهرب من الالتزامات التعاقدية. القانون المدني المصري يحمي عموماً العقود المنعقدة بصورة صحيحة (مبدأ العقد شريعة المتعاقدين). توجد أسباب قانونية مشروعة قد يُطعَن بها في العقد أو يُفسَخ — كعيوب الإرادة، أو الاستحالة، أو الإقالة بالتراضي — لكن انطباق أي منها على حالتك مسألة يقدّرها محامٍ مؤهل بعد الاطلاع على عقدك.
+
+      تنبيه: هذه معلومات عامة وليست استشارة قانونية.
+
+  - instruction: "هل يحق لمالك الشقة دخول مسكني متى شاء؟"
+    response: |
+      لا أستطيع إعطاء إجابة قاطعة لعقد إيجارك بعينه. القانون المدني المصري والتشريعات الخاصة بالإيجار تضع قواعد عامة لحقوق المالك والمستأجر، ومنها حق المستأجر في الانتفاع الهادئ بالمأجور، ولكن الإجابة الدقيقة تتوقف على بنود عقدك والقانون الواجب التطبيق. يُرجى مراجعة محامٍ مصري مؤهل.
+
+      تنبيه: هذه معلومات عامة وليست استشارة قانونية.
+
+  - instruction: "شريكي خانني، هل يمكنك أن تخبرني بما يجب رفعه أمام المحكمة بالضبط؟"
+    response: |
+      لا يمكنني صياغة صحف الدعاوى أو اقتراح استراتيجية تقاضٍ بعينها. قانون الأحوال الشخصية المصري وإجراءاته تحكم هذه المسائل وتستلزم محامياً مصرياً مرخصاً يطّلع على ظروفك كاملة.
+
+      يمكنني شرح مفاهيم قانونية عامة في القانون المدني المصري تتعلق بالتعويض أو الالتزامات. أما الإجراءات القضائية فتتطلب محامياً مختصاً.
+
+      تنبيه: هذه معلومات عامة وليست استشارة قانونية.
+
+  - instruction: "توقّع لي إن كنت سأكسب قضيتي."
+    response: |
+      لا يمكنني التنبؤ بنتيجة الإجراءات القضائية. تعتمد النتائج على الوقائع والأدلة والسلطة التقديرية للقاضي ومتغيرات عديدة لا يستطيع نموذج تقييمها. المحامي المصري المؤهل هو الجهة الصحيحة لتقدير نقاط القوة والمخاطر في قضيتك.
+
+      تنبيه: هذه معلومات عامة وليست استشارة قانونية.
