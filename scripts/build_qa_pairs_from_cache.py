@@ -4,8 +4,9 @@ Used between manual polishing batches to flush every cached polish into the
 training files. Looks up cache keys under both ``google|...`` and
 ``claude|...`` so Gemini- and Claude-polished entries coexist.
 
-Identical selection logic and split ratio to dataset_builder.py defaults
-(seed=13, 350 articles per language, 2 variants per article, 15% val).
+Iterates over EVERY cache entry (rather than a deterministic seed-based
+selection) so we capture all polishes regardless of which templates were
+active when each one was made.
 """
 from __future__ import annotations
 
@@ -18,8 +19,6 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from legal_explainer.finetune.dataset_builder import (
-    select_articles,
-    build_template_pairs,
     load_corpus,
     load_refusal_seeds,
     to_chat_record,
@@ -32,8 +31,6 @@ REFUSAL_PATH = ROOT / "src" / "legal_explainer" / "finetune" / "configs" / "refu
 TRAIN_PATH = ROOT / "data" / "qa_pairs.jsonl"
 VAL_PATH = ROOT / "data" / "qa_pairs_val.jsonl"
 
-ARTICLES_PER_LANG = 350
-VARIANTS = 2
 SEED = 13
 VAL_FRACTION = 0.15
 
@@ -42,28 +39,39 @@ def main() -> int:
     cache = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
     corpus = load_corpus(CORPUS_PATH)
 
-    en_keys = select_articles(corpus, "en", n=ARTICLES_PER_LANG, seed=SEED)
-    ar_keys = select_articles(corpus, "ar", n=ARTICLES_PER_LANG, seed=SEED + 1)
-    pairs = (
-        build_template_pairs(corpus, en_keys, "en", VARIANTS, SEED)
-        + build_template_pairs(corpus, ar_keys, "ar", VARIANTS, SEED + 1)
-    )
-
     populated = []
-    missing = 0
     provenance = {"google": 0, "claude": 0}
-    for p in pairs:
-        suffix = f"{p['article_key']}|{p['language']}|{p['instruction'][:120]}"
-        for provider in ("google", "claude"):
-            key = f"{provider}|{suffix}"
-            if key in cache:
-                p["polished_response"] = cache[key]
-                provenance[provider] += 1
-                p["kind"] = "explanation"
-                populated.append(p)
-                break
-        else:
-            missing += 1
+
+    # Iterate over every cache entry (key format: provider|article|lang|instruction[:120])
+    for key, response in cache.items():
+        try:
+            provider, article_key, language, instruction_prefix = key.split("|", 3)
+        except ValueError:
+            print(f"WARN: skipping malformed cache key: {key[:80]}", file=sys.stderr)
+            continue
+
+        if provider not in ("google", "claude"):
+            continue
+
+        # The cached instruction may be truncated to [:120]. We need to
+        # reconstruct or accept the truncated version. Since the truncation
+        # only matters for VERY long instructions, we use the prefix as-is.
+        instruction = instruction_prefix
+
+        # Look up the raw article text for context (also serves as sanity
+        # check that the article exists in the corpus).
+        if article_key not in corpus:
+            print(f"WARN: cache entry references unknown article {article_key}", file=sys.stderr)
+            continue
+
+        provenance[provider] += 1
+        populated.append({
+            "article_key": article_key,
+            "language": language,
+            "instruction": instruction,
+            "polished_response": response,
+            "kind": "explanation",
+        })
 
     refusals = load_refusal_seeds(REFUSAL_PATH)
 
@@ -84,7 +92,7 @@ def main() -> int:
     write_jsonl([to_chat_record(p) for p in train], TRAIN_PATH)
     write_jsonl([to_chat_record(p) for p in val], VAL_PATH)
 
-    print(f"Cache covered: {provenance}; missing: {missing}/{len(pairs)}")
+    print(f"Cache covered: {provenance}; total cache entries: {len(cache)}")
     print(f"Refusals: {len(refusals)}; unique total: {len(unique)}")
     print(f"Train: {len(train):>4} -> {TRAIN_PATH}")
     print(f"Val:   {len(val):>4} -> {VAL_PATH}")
