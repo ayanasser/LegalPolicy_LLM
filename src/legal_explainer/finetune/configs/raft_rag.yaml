@@ -1,0 +1,51 @@
+# RAFT-track RAG config — used by `python -m legal_explainer.finetune.raft_rag ...`.
+#
+# This is the *RAFT* RAG (PEFT track). The standalone product RAG lives under the
+# repo root and is a teammate's; keep the two separate.
+#
+# Pipeline: query -> hybrid retrieve (BM25 + dense, RRF) -> RAFT context block
+# (dataset_builder._format_context_block, the exact training format) -> generate
+# with the RAFT-trained adapter.
+#
+#   build the index:   python -m legal_explainer.finetune.raft_rag build-index
+#                      (add --no-dense to skip the embedding download; BM25-only still works)
+#   ask:               python -m legal_explainer.finetune.raft_rag ask "Explain Article 775 simply"
+#   eval (closed/rag/oracle, +wandb):
+#                      python -m legal_explainer.finetune.raft_rag eval --set data/qa_pairs_val.jsonl --wandb
+
+corpus: data/orig_data.json
+artifacts_dir: artifacts/raft_rag        # index lives here (records.jsonl, bm25.pkl, dense.npy, index_meta.json)
+
+embedder:
+  # small + multilingual; BM25 carries the exact-term / article-ID lookups.
+  # For better Arabic recall, swap to intfloat/multilingual-e5-base or BAAI/bge-m3.
+  model: intfloat/multilingual-e5-small
+  query_prefix: "query: "                # e5 models want these prefixes; set to "" for other models
+  passage_prefix: "passage: "
+  device: cpu                            # CPU is plenty for ~1,100 short passages
+  batch_size: 32
+
+retrieval:
+  k: 1                                   # oracle articles surfaced into the context
+  n_distractors: 1                       # distractor articles added — matches RAFT training (which trained WITH distractors)
+  rrf_k: 60                              # Reciprocal-Rank Fusion constant (standard)
+  candidate_pool: 20                     # top-N from each of dense/sparse before fusion
+
+prompt:
+  max_article_chars: 900                 # same truncation dataset_builder uses for context blocks
+  shuffle_seed: 13                       # deterministic entry order at inference (training shuffled per-pair)
+
+generation:
+  # The RAFT-trained adapter to serve. Default targets the Qwen2.5-3B RAFT run
+  # (configs/qlora_qwen3b_raft.yaml, trained via scripts/train_unsloth.py).
+  # For the 1.5B baseline use runs/qlora-qwen2.5-1.5b-raft instead.
+  adapter_dir: runs/qlora-qwen2.5-3b-raft
+  max_new_tokens: 384
+  temperature: 0.2
+  top_p: 0.85
+  repetition_penalty: 1.15               # the fix for bullet-loops / runaway repetition
+  no_repeat_ngram_size: 3
+
+eval:
+  out_path: reports/eval/raft_rag_eval.json
+  wandb_project: legalpolicy-raft-rag

@@ -1,0 +1,53 @@
+# req_raft.txt — Python deps for **Path B** (the RAFT track): the hand-rolled
+# hybrid RAG (src/legal_explainer/finetune/raft_rag/) + RAFT QLoRA training via
+# Unsloth (scripts/train_unsloth.py). Lives in its own conda env so Unsloth's
+# pinned versions don't disturb the main `legalpolicy` env.
+#
+# Recreate the env:
+#     conda create -n RAFT -y python=3.11
+#     conda activate RAFT          # (or use /path/to/envs/RAFT/bin/pip)
+#     pip install -r req_raft.txt
+#
+# Notes:
+#   * `torch==2.10.0` resolves to the cu128 build from PyPI (linux default);
+#     verified working with NVIDIA driver 581.86 on an RTX 3050 6 GB (WSL2).
+#     Unsloth 2026.5.2 requires torch >= ~2.10, which is why we're on cu128 here
+#     rather than the cu121 build the `legalpolicy` env uses.
+#   * Import order matters at runtime: `import unsloth` must come before
+#     transformers/trl/peft — scripts/train_unsloth.py already does this.
+#   * For the absolute full lock (every transitive dep), use `pip freeze`.
+
+# --- core ML / QLoRA training ---
+torch==2.10.0
+transformers==5.5.0
+trl==0.24.0
+peft==0.19.1
+bitsandbytes==0.49.2
+accelerate==1.13.0
+datasets==4.3.0
+
+# --- Unsloth (2x faster / ~half VRAM QLoRA; makes Qwen2.5-3B fit 6 GB) ---
+unsloth==2026.5.2
+unsloth_zoo==2026.5.1
+xformers==0.0.35
+triton==3.6.0
+cut-cross-entropy==25.1.1
+torchao==0.17.0
+
+# --- experiment tracking ---
+wandb==0.26.1
+tensorboard==2.20.0          # fallback logger when no W&B section / not logged in
+
+# --- hand-rolled hybrid RAG (retrieval side; no GPU needed) ---
+sentence-transformers==5.5.0
+rank-bm25==0.2.2
+numpy==2.4.4
+scikit-learn==1.8.0          # sentence-transformers dependency
+
+# --- config / IO / misc ---
+pyyaml==6.0.3
+python-dotenv==1.2.2
+huggingface-hub==1.14.0
+tokenizers==0.22.2
+safetensors==0.8.0rc0
+hf-transfer==0.1.9           # faster HF downloads (set HF_HUB_ENABLE_HF_TRANSFER=1)

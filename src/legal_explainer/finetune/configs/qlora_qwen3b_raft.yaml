@@ -1,0 +1,67 @@
+# PEFT-RAFT QLoRA recipe — Qwen 2.5 3B Instruct, trained with Unsloth + Weights & Biases.
+#
+# This is the adapter the RAFT-track RAG serves (configs/raft_rag.yaml ->
+# generation.adapter_dir: runs/qlora-qwen2.5-3b-raft). It is trained on the RAFT
+# dataset (data/qa_pairs_raft.jsonl: each question prefixed with a context block =
+# oracle article + 1 distractor) so the adapter learns to (a) ground its answer in
+# the supplied article and (b) say "that article isn't here" when the oracle is absent.
+#
+# Why 3B + Unsloth: 3B has noticeably stronger Arabic and reasoning; Unsloth's
+# ~2x speed / ~50% VRAM cut is what makes 3B QLoRA comfortable on a 6 GB RTX 3050
+# at seq 1536 (bs=1 + grad-accum + grad-checkpointing). For the 1.5B baseline use
+# configs/qlora_qwen1_5b_raft.yaml with scripts/train.py instead.
+#
+#   build RAFT data: python scripts/build_dataset_raft.py --config <this file>   # (or reuse existing data/qa_pairs_raft.jsonl)
+#   train:           python scripts/train_unsloth.py --config <this file>
+#   serve via RAG:   python -m legal_explainer.finetune.raft_rag ask "Explain Article 775 simply"
+
+base_model: Qwen/Qwen2.5-3B-Instruct
+adapter_name: qlora-qwen2.5-3b-raft
+output_dir: runs/qlora-qwen2.5-3b-raft
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 1.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.06
+  bf16: true
+  gradient_checkpointing: true          # train_unsloth.py uses Unsloth's checkpointing impl
+  optim: paged_adamw_8bit
+  max_seq_length: 1536
+  packing: false
+  logging_steps: 5
+  eval_strategy: epoch
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+wandb:
+  project: legalpolicy-raft
+  run_name: qlora-qwen2.5-3b-raft        # defaults to adapter_name if omitted
+  # mode: online                         # set to "offline" / "disabled" to override; WANDB_MODE env wins
+
+data:
+  train_jsonl: data/qa_pairs_raft.jsonl
+  val_jsonl: data/qa_pairs_raft_val.jsonl
