@@ -1,0 +1,85 @@
+# Stage-A "knowledge injection" QLoRA recipe — Qwen 2.5 3B Instruct + Unsloth.
+#
+# Same role as qlora_qwen1_5b_knowledge.yaml (memorise the Egyptian Civil Code so the
+# adapter learns WHAT it says before Stage B teaches HOW to explain it), but on the
+# 3B base. The smoke test of the 1.5B v1 adapter showed memorisation works at r=16
+# (some articles reproduced char-perfect, mean char-sim 0.44 vs base 0.11) but the
+# article-number↔text binding was the weak link; 3B gives more base-model capacity
+# (and noticeably stronger Arabic generation) on top of the new 22.6k / 10-family
+# knowledge dataset that explicitly targets that binding.
+#
+# Engine: Unsloth (see src/legal_explainer/finetune/train_unsloth.py).
+# Unsloth's ~50% VRAM cut is what makes Qwen 3B QLoRA fit on a 6 GB RTX 3050
+# at seq 1536 (bs=1 + grad-accum + Unsloth's gradient checkpointing). Stock
+# transformers/PEFT at the same recipe would not fit.
+#
+# Build (one-time): python scripts/build_dataset_knowledge.py --config <this file>
+# Train:            /home/aya/miniconda3/envs/RAFT/bin/python scripts/train_unsloth.py --config <this file>
+# Smoke test:       python scripts/smoke_test_knowledge_closed_book.py --adapter-dir runs/qlora-qwen2.5-3b-knowledge
+
+base_model: Qwen/Qwen2.5-3B-Instruct
+adapter_name: qlora-qwen2.5-3b-knowledge
+output_dir: runs/qlora-qwen2.5-3b-knowledge
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  # r=16/alpha=32 carried over from the 1.5B knowledge runs (user's explicit choice
+  # this session). The smoke test showed r=16 can already drive some articles to
+  # char-perfect recall; if a later run shows capacity is the bottleneck, bump to
+  # r=32/alpha=64 (the qlora_qwen3b_raft.yaml setting — 3B + Unsloth still fits at
+  # r=32 in 6 GB).
+  r: 16
+  alpha: 32
+  # dropout=0 (not 0.05) so Unsloth fully patches the LoRA layers (faster + less
+  # VRAM); for a memorisation stage we deliberately want zero regularisation —
+  # fit the corpus hard.
+  dropout: 0
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  # 4 epochs because this is the memorisation stage — the v1 (1.5B) run saturated
+  # at epoch 3 and gave a clean adapter; same budget here. With ~21.7k train
+  # examples and effective batch 16 -> ~5,420 steps total per epoch≈1,355.
+  num_train_epochs: 4
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  # LR 1e-4 (vs the 1.5B knowledge config's 2e-4) — larger base wants gentler
+  # updates; matches the 3B-RAFT config that already trained successfully here.
+  learning_rate: 1.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true            # train_unsloth.py uses Unsloth's checkpointing impl
+  optim: paged_adamw_8bit
+  # Knowledge dataset p99 total chars ≈ 1,212 (≈ 1,070 tokens AR-heavy). 1536 gives
+  # comfortable headroom; Unsloth handles the extra seq fine on 3B at 6 GB.
+  max_seq_length: 1536
+  packing: false
+  logging_steps: 10
+  eval_strategy: epoch
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+# Disabled by default — train_unsloth.py auto-falls-back to TensorBoard if wandb
+# isn't installed / WANDB_DISABLED is set. Uncomment + set the project to re-enable.
+# wandb:
+#   project: legalpolicy-knowledge
+#   run_name: qlora-qwen2.5-3b-knowledge
+
+data:
+  train_jsonl: data/qa_pairs_knowledge.jsonl
+  val_jsonl: data/qa_pairs_knowledge_val.jsonl

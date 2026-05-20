@@ -1,0 +1,113 @@
+{
+  "summary": {
+    "closed": {
+      "cited_match": 0.0,
+      "has_citation": 1.0
+    },
+    "rag": {
+      "retrieval_hit": 1.0,
+      "cited_match": 0.0,
+      "has_citation": 1.0,
+      "grounding_overlap": 0.1393
+    },
+    "oracle": {
+      "cited_match": 0.0,
+      "has_citation": 0.5,
+      "grounding_overlap": 0.1812
+    }
+  },
+  "n_rows": 2,
+  "modes": [
+    "closed",
+    "rag",
+    "oracle"
+  ],
+  "rows": [
+    {
+      "i": 1,
+      "lang": "en",
+      "kind": "explanation",
+      "article_key": "Article 107",
+      "question": "Summarize the rule set out in Article 107 of the Egyptian Civil Code, with bullet points and a concrete example.",
+      "by_mode": {
+        "closed": {
+          "retrieved_oracle": [],
+          "retrieval_hit": null,
+          "cited_match": false,
+          "has_citation": true,
+          "grounding_overlap": null,
+          "refusal_ok": null,
+          "answer": "I'm sorry but there isn't an applicable article from the Egyptian civil code related to \"Article 125\" or any other specific article you might be referring to as it's not provided here. Please provide the correct article number or details if possible. I can then summarize the rule found within that particular article using bullet points along with a concrete (hypothetical) example based on the information contained therein.\n  \nIf no such article exists, I will inform you accordingly.",
+          "gen_seconds": 71.01
+        },
+        "rag": {
+          "retrieved_oracle": [
+            "Article 107"
+          ],
+          "retrieval_hit": true,
+          "cited_match": false,
+          "has_citation": true,
+          "grounding_overlap": 0.1313,
+          "refusal_ok": null,
+          "answer": "Certainly! Here's an outline based on Article 23 (which I believe should be Article 96 as per my knowledge base for Egyptian civil code articles), followed by a summary of Article 45:\n\n### Summary of Article [Article 98] - Determination of Legal Relationship\n\n- **Purpose**: The purpose of this article is to clarify how Egyptian law determines the type of legal relationship involved when there is uncertainty regarding the status of parties.\n  \n- **Application Scenario**:\n    - When a representative enters into a contract on behalf of another person (the principal).\n    - Both the representative",
+          "gen_seconds": 262.73
+        },
+        "oracle": {
+          "retrieved_oracle": [
+            "Article 107"
+          ],
+          "retrieval_hit": null,
+          "cited_match": false,
+          "has_citation": false,
+          "grounding_overlap": 0.1473,
+          "refusal_ok": null,
+          "answer": "Certainly! Here’s a summary of the rule as stated in Article **10**7 of Egypt's Civil Code:\n\n- **Rule Summary**: \n  - When a representative enters into a contract on behalf of another (the principal), if both the representative and the third party involved in the contract did not know at the moment of signing that the relationship of representation had ended, then after this knowledge becomes known, the original principal retains all rights and obligations under the contract.\n  \n- **Concrete Example**:\n  Suppose Mr. A appoints Mr. B as his agent for purchasing property. During the purchase pro",
+          "gen_seconds": 192.79
+        }
+      }
+    },
+    {
+      "i": 2,
+      "lang": "en",
+      "kind": "explanation",
+      "article_key": "Article 227",
+      "question": "What does Article 227 of the Egyptian Civil Code establish? Summarize it for a non-lawyer.",
+      "by_mode": {
+        "closed": {
+          "retrieved_oracle": [],
+          "retrieval_hit": null,
+          "cited_match": false,
+          "has_citation": true,
+          "grounding_overlap": null,
+          "refusal_ok": null,
+          "answer": "Article 219 (not found) of the current Egyptian Civil Law has been referenced in the original instruction but no such article exists in the most recent version of the code as of my last update. Therefore, I cannot provide information on what Article 345 establishes since there's no corresponding article available from which to draw conclusions. To address the specific question accurately, we would need access to an actual Egyptian Civil Codification that includes all necessary articles.",
+          "gen_seconds": 66.59
+        },
+        "rag": {
+          "retrieved_oracle": [
+            "Article 227"
+          ],
+          "retrieval_hit": true,
+          "cited_match": false,
+          "has_citation": true,
+          "grounding_overlap": 0.1473,
+          "refusal_ok": null,
+          "answer": "Article 314 (not 207 as mentioned but I assume you meant) establishes rules regarding interest rates under certain conditions:\n\nIf someone borrows money from another person and doesn't pay back on time, they can agree to have extra money added to make up for being late. This extra money is called \"interest.\" \n\nHowever, there's a limit - no matter what people agree to, the interest cannot be higher than 7%. If anyone tries to charge more than 8%, then the court will reduce it down to 7%.\n\nAlso, if the borrower pays more than allowed because of some kind of fee or reward given by the lender, the",
+          "gen_seconds": 151.08
+        },
+        "oracle": {
+          "retrieved_oracle": [
+            "Article 227"
+          ],
+          "retrieval_hit": null,
+          "cited_match": false,
+          "has_citation": true,
+          "grounding_overlap": 0.2152,
+          "refusal_ok": null,
+          "answer": "Article 198 of the Egypt's Civil Code establishes rules regarding interest rates when there is a delay in paying money owed. It says that both sides can agree on an extra fee (interest), but they cannot charge more than 7%. If they decide on a higher percentage, then the highest allowed amount (7%) applies, and anything over that must be returned. Also, fees or charges added to loans have strict limits; if these go beyond what’s allowed, they might be seen as hidden interest and could be adjusted down unless proven otherwise.",
+          "gen_seconds": 82.85
+        }
+      }
+    }
+  ]
+}

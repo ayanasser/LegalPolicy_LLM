@@ -1,0 +1,90 @@
+# "Both skills" QLoRA recipe — Qwen 2.5 3B Instruct + Unsloth.
+#
+# Trains a single adapter on the COMBINED dataset (knowledge + house-style) so
+# the resulting weights hold BOTH skills simultaneously:
+#   - WHAT the law says       (from qa_pairs_knowledge.jsonl — 21,679 examples,
+#                              10 task families, ~20× per article, 100% coverage)
+#   - HOW we want it spoken   (from qa_pairs.jsonl — 3,389 house-style examples,
+#                              the 1-line summary → "Article X provides:" → ≥3
+#                              bullets → worked example → DISCLAIMER template,
+#                              plus refusal seeds)
+#
+# Why combined-single-run instead of sequential Stage A → Stage B?
+# A sequential Stage B on qa_pairs.jsonl alone would optimise paraphrased
+# outputs that contradict the verbatim outputs the model just learned in Stage A,
+# risking catastrophic forgetting of the closed-book recall (the thesis result).
+# Mixing both signals in one pass keeps the optimiser honest to BOTH distributions
+# simultaneously — no forgetting because there's no "later stage" where one
+# distribution is absent.
+#
+# Recipe is the SAME shape as the successful Stage A v2 (qlora_qwen3b_knowledge.yaml)
+# so we have a clean apples-to-apples comparison: same base, same engine, same r,
+# same LR, same epochs, same max_seq — only the dataset changes. Expected
+# wall-clock: ~17 h on the RTX 3050 (~10% longer than the 22.6k knowledge run
+# because the combined set has ~25k examples).
+#
+# Build dataset:  python scripts/build_dataset_combined.py --config <this file>
+# Train:          /home/aya/miniconda3/envs/RAFT/bin/python scripts/train_unsloth.py --config <this file>
+# Smoke test:     python scripts/smoke_test_knowledge_closed_book.py --adapter-dir runs/qlora-qwen2.5-3b-combined
+# Judge eval:     python scripts/run_judge_inference.py --adapter-dir runs/qlora-qwen2.5-3b-combined --val-path data/qa_pairs_val.baseline.jsonl --out-path reports/eval/judge_predictions_combined_3b.json
+
+base_model: Qwen/Qwen2.5-3B-Instruct
+adapter_name: qlora-qwen2.5-3b-combined
+output_dir: runs/qlora-qwen2.5-3b-combined
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  # Same r/alpha as the Stage A v2 3B knowledge run — the smoke test confirmed
+  # this rank is more than enough for the knowledge signal; the house-style
+  # signal is a much smaller distribution (~3k examples, narrow template) and
+  # doesn't need extra capacity either.
+  r: 16
+  alpha: 32
+  dropout: 0          # MUST be 0 for Unsloth to fully patch the LoRA layers
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  num_train_epochs: 4
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  # LR matches the Stage A 3B run: 1e-4. The style examples are a smaller
+  # share of the mix, so the optimiser doesn't need a different setting for
+  # them; the same gentle 3B LR works on both signals.
+  learning_rate: 1.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true        # Unsloth's lower-VRAM impl
+  optim: paged_adamw_8bit
+  # 1536 to fit the longest combined-dataset records (house-style answers
+  # average ~250w and are the long tail here, well within 1536 tokens).
+  max_seq_length: 1536
+  packing: false
+  logging_steps: 10
+  eval_strategy: epoch
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+# W&B is enabled via .env (WANDB_API_KEY). train_unsloth.py auto-detects: if the
+# wandb section + key are present, logs to W&B; otherwise TensorBoard.
+wandb:
+  project: legalpolicy-combined
+  run_name: qlora-qwen2.5-3b-combined-v1
+
+data:
+  train_jsonl: data/qa_pairs_combined.jsonl
+  val_jsonl: data/qa_pairs_combined_val.jsonl
