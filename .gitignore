@@ -29,6 +29,10 @@ checkpoints/
 outputs/
 runs/
 
+# Generated indexes / build caches
+artifacts/                  # RAFT-RAG hybrid index (rebuild: python scripts/raft_rag.py build-index)
+unsloth_compiled_cache/     # Unsloth's per-run kernel compile cache
+
 # IDE
 .vscode/
 .idea/

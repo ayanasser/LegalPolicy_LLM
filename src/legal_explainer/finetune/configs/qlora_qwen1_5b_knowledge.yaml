@@ -1,0 +1,75 @@
+# Stage-A "knowledge injection" QLoRA recipe for LegalPolicy_LLM — Qwen 2.5 1.5B Instruct.
+#
+# This is NOT the house-style recipe. It trains the LoRA adapter on the plain,
+# varied knowledge dataset (verbatim recall / completion / fill-the-gap / reverse
+# lookup / placement / cross-language) so the adapter learns WHAT the Egyptian
+# Civil Code says. Stage B (qlora_qwen1_5b_local_stage1.yaml) then continues from
+# this adapter to teach HOW to explain it in house style.
+#
+# Differences from the Stage-1 recipe, and why:
+#   - LoRA rank kept at 16 (alpha 32) — fits the 6 GB GPU comfortably (same memory
+#     profile as the RAFT run, which used r=16). Bumping to r=32/64 would give the
+#     adapter more capacity for the ~1,093 articles, but is left as a follow-up if
+#     r=16 + the high-exposure dataset turns out not to be enough.
+#   - higher LR (3e-5 -> 2e-4): for knowledge injection you *want* the adapter to
+#     fit the corpus hard, not gently regularise toward a style.
+#   - fewer epochs than you'd expect (4): the dataset already gives each article
+#     ~14-15 exposures per epoch, so 4 epochs ≈ 55-60 effective passes per article.
+#   - max_seq_length 1280: most articles are short, but a few (and the bilingual
+#     "give me both" target) need more than 1024 tokens.
+#
+# Build: python scripts/build_dataset_knowledge.py --config <this file>
+# Train: python scripts/train.py --config <this file>
+#
+# Two-stage usage (after training this stage, point Stage B at this adapter):
+#   - run this config -> runs/qlora-qwen2.5-1.5b-knowledge/
+#   - merge it into the base (scripts/export_to_gguf.py / merge_export.py) OR
+#     resume LoRA training from it; then run the Stage-1 house-style recipe.
+#   (A dedicated two-stage train entrypoint can be added later — for now the two
+#    runs are sequential and the knowledge adapter is merged before Stage B.)
+
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+adapter_name: qlora-qwen2.5-1.5b-knowledge
+output_dir: runs/qlora-qwen2.5-1.5b-knowledge
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  num_train_epochs: 4
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 2.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  optim: paged_adamw_8bit
+  max_seq_length: 1280
+  packing: false
+  logging_steps: 10
+  eval_strategy: epoch
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+data:
+  train_jsonl: data/qa_pairs_knowledge.jsonl
+  val_jsonl: data/qa_pairs_knowledge_val.jsonl

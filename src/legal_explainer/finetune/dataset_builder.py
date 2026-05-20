@@ -185,6 +185,102 @@ def build_template_pairs(corpus, keys, lang, variants_per_article=2, seed=13):
     return out
 
 
+# ---------------------------------------------------------------------------
+# Stage 4 — PEFT-RAFT (Retrieval-Augmented Fine-Tuning)
+#
+# Each training example is rewritten so the question is preceded by a context
+# block containing the article it is about (the "oracle") plus one or more
+# distractor articles. The gold response is unchanged. This teaches the LoRA
+# adapter to (a) locate the right article in the provided context and (b)
+# rephrase it in house style — and, as a side effect, exposes the adapter to
+# every article's text many times during training, which is the strongest
+# content-learning signal available without enlarging the base model. Only the
+# adapter weights update, so this remains strictly a PEFT method.
+# ---------------------------------------------------------------------------
+
+RAFT_HEADER_EN = (
+    "Use the Egyptian Civil Code article(s) below to answer the question. "
+    "Ground your explanation strictly in the article the question is about. "
+    "If that article is not present below, say so plainly and do not invent its content."
+)
+RAFT_HEADER_AR = (
+    "استعن بنصوص القانون المدني المصري الواردة أدناه للإجابة عن السؤال. "
+    "اجعل شرحك مستنداً حصراً إلى المادة المطلوبة في السؤال. "
+    "وإن لم تكن تلك المادة موجودة أدناه فقل ذلك صراحةً ولا تختلق محتواها."
+)
+
+
+def _clean_article_text(text: str, max_chars: int = 900) -> str:
+    """Collapse whitespace and truncate article text for use in a context block."""
+    cleaned = re.sub(r"\s+", " ", (text or "").strip())
+    if len(cleaned) > max_chars:
+        cleaned = cleaned[:max_chars].rstrip() + " […]"
+    return cleaned
+
+
+def _format_context_block(article_entries: list[tuple[str, str]], lang: str) -> str:
+    """article_entries: list of (article_label, article_text). Returns the prompt prefix."""
+    header = RAFT_HEADER_EN if lang == "en" else RAFT_HEADER_AR
+    lines = [header, ""]
+    for label, text in article_entries:
+        lines.append(f"[{label}]")
+        lines.append(text)
+        lines.append("")
+    q_word = "Question" if lang == "en" else "السؤال"
+    lines.append(f"{q_word}:")
+    return "\n".join(lines) + " "
+
+
+def _eligible_distractor_keys(corpus, *, min_len=80, max_len=2000) -> list[str]:
+    return [
+        k for k in corpus
+        if k.startswith("Article") and isinstance(corpus[k], dict)
+        and (corpus[k].get("english") or "").strip()
+        and (corpus[k].get("arabic") or "").strip()
+        and min_len <= len((corpus[k]["english"] or "").strip()) <= max_len
+    ]
+
+
+def apply_raft_context(pairs: list[dict], corpus, *, n_distractors: int = 1,
+                       seed: int = 13, max_article_chars: int = 900) -> list[dict]:
+    """Rewrite each pair's instruction to include a RAFT-style context block.
+
+    - explanation pairs: context = [oracle article] + [n_distractors random others], shuffled.
+    - contrastive pairs (asked article does not exist): context = [n_distractors+1 random
+      real articles], none matching the asked number -> the gold "I can't find it" answer
+      is the natural RAFT 'oracle-absent' case.
+    - refusal pairs: context = "[No relevant Civil Code articles for this request.]" marker.
+    """
+    rng = random.Random(seed)
+    distractor_pool = _eligible_distractor_keys(corpus)
+    for p in pairs:
+        lang = p["language"]
+        field = "english" if lang == "en" else "arabic"
+        if p.get("kind") == "explanation" and p.get("article_key"):
+            oracle_key = p["article_key"]
+            others = [k for k in distractor_pool if k != oracle_key]
+            picks = rng.sample(others, k=min(n_distractors, len(others)))
+            entries = [(article_label(oracle_key, lang),
+                        _clean_article_text(corpus[oracle_key][field], max_article_chars))]
+            for k in picks:
+                entries.append((article_label(k, lang),
+                                _clean_article_text(corpus[k][field], max_article_chars)))
+            rng.shuffle(entries)
+            p["instruction"] = _format_context_block(entries, lang) + p["instruction"]
+        elif p.get("kind") == "contrastive":
+            picks = rng.sample(distractor_pool, k=min(n_distractors + 1, len(distractor_pool)))
+            entries = [(article_label(k, lang),
+                        _clean_article_text(corpus[k][field], max_article_chars)) for k in picks]
+            p["instruction"] = _format_context_block(entries, lang) + p["instruction"]
+        else:  # refusal or anything else without an article
+            marker = ("[No relevant Egyptian Civil Code articles for this request.]"
+                      if lang == "en"
+                      else "[لا توجد مواد ذات صلة من القانون المدني المصري لهذا الطلب.]")
+            ctx_label = "Context" if lang == "en" else "السياق"
+            p["instruction"] = _format_context_block([(ctx_label, marker)], lang) + p["instruction"]
+    return pairs
+
+
 def load_refusal_seeds(path: Path) -> list[dict]:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     out = []
@@ -474,6 +570,13 @@ def main():
                          "BOTH EN and AR polishes in data/_polish_cache.json. Useful when "
                          "the polish API is rate-limited or unavailable, since no new API "
                          "calls will be needed.")
+    ap.add_argument("--raft", action="store_true",
+                    help="Stage-4 PEFT-RAFT mode: prepend a context block (oracle article + "
+                         "distractors) to each question. Teaches the adapter to ground its "
+                         "answer in the provided article text.")
+    ap.add_argument("--raft-distractors", type=int, default=1,
+                    help="Number of distractor articles to include alongside the oracle "
+                         "article in each RAFT context block.")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
@@ -565,6 +668,10 @@ def main():
         print(f"Contrastive (article-doesn't-exist) pairs: {len(contrastive_pairs)}")
 
     all_pairs = template_pairs + refusal_pairs + contrastive_pairs
+
+    # Dedup on the *original* question + response, before any RAFT context is
+    # prepended (the RAFT header is identical across examples, so deduping after
+    # would wrongly collapse distinct examples).
     seen, unique = set(), []
     for p in all_pairs:
         key = (p["instruction"][:200], p["polished_response"][:200])
@@ -572,8 +679,16 @@ def main():
             continue
         seen.add(key)
         unique.append(p)
-    rng.shuffle(unique)
     print(f"Unique pairs: {len(unique)}")
+
+    if args.raft:
+        unique = apply_raft_context(
+            unique, corpus, n_distractors=args.raft_distractors, seed=args.seed,
+        )
+        print(f"RAFT mode: prepended context blocks (oracle + {args.raft_distractors} "
+              f"distractor(s)) to {len(unique)} pairs")
+
+    rng.shuffle(unique)
 
     n_val = max(1, int(len(unique) * args.val_fraction))
     val, train = unique[:n_val], unique[n_val:]
