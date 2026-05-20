@@ -30,8 +30,16 @@ outputs/
 runs/
 
 # Generated indexes / build caches
-artifacts/                  # RAFT-RAG hybrid index (rebuild: python scripts/raft_rag.py build-index)
-unsloth_compiled_cache/     # Unsloth's per-run kernel compile cache
+# RAFT-RAG hybrid index (rebuild: python scripts/raft_rag.py build-index)
+artifacts/
+# Unsloth's per-run kernel compile cache
+unsloth_compiled_cache/
+
+# Weights & Biases local run logs (synced to wandb.ai; safe to delete)
+wandb/
+
+# Personal scratch notes (not project source)
+me.md
 
 # IDE
 .vscode/

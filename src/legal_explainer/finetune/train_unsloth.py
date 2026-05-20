@@ -83,6 +83,9 @@ def main() -> None:
                     help="Use only the first N training examples (debug / dry run).")
     ap.add_argument("--max-eval-samples", type=int, default=None,
                     help="Use only the first N validation examples (debug / dry run).")
+    ap.add_argument("--resume", nargs="?", const=True, default=None,
+                    help="Resume from a checkpoint. With no value, HF Trainer auto-detects the "
+                         "latest checkpoint in output_dir. Pass a path to resume from a specific dir.")
     args = ap.parse_args()
     if args.dry_run:
         args.max_steps = args.max_steps or 3
@@ -204,7 +207,9 @@ def main() -> None:
         callbacks=callbacks,
     )
 
-    trainer.train()
+    if args.resume is not None:
+        print(f"Resume     : {args.resume!r} (HF Trainer will load optimizer/scheduler/rng + LoRA weights)")
+    trainer.train(resume_from_checkpoint=args.resume)
     trainer.save_model(str(output_dir))
     tokenizer.save_pretrained(str(output_dir))
     (output_dir / "training_config_used.json").write_text(json.dumps(cfg, indent=2), encoding="utf-8")

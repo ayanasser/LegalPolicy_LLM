@@ -59,6 +59,7 @@ from pathlib import Path
 import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
+CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
 
 
 # ---------------------------------------------------------------------------
@@ -556,6 +557,51 @@ def write_jsonl(records: list[dict], path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# refusal augmentation
+# ---------------------------------------------------------------------------
+
+def load_refusal_records(seeds_file: str, variants: int, seed: int) -> list[dict]:
+    """Load refusal seeds and expand each by `variants` paraphrase wrappers.
+
+    Reuses the seed format and wrapper pools from dataset_builder.py so the
+    refusal records here are byte-identical to those in qa_pairs.jsonl — the
+    combined-dataset builder's dedup pass then collapses cross-dataset
+    duplicates cleanly. Pass `variants=1` to skip wrapping (verbatim seeds).
+    """
+    # Lazy import so this module stays importable without the house-style stack.
+    from legal_explainer.finetune.dataset_builder import (
+        EN_REFUSAL_WRAPPERS, AR_REFUSAL_WRAPPERS,
+    )
+
+    seeds_path = CONFIGS_DIR / seeds_file
+    if not seeds_path.exists():
+        raise FileNotFoundError(f"Refusal seeds not found: {seeds_path}")
+    data = yaml.safe_load(seeds_path.read_text(encoding="utf-8")) or {}
+
+    rng = random.Random(seed)
+    records: list[dict] = []
+    for lang in ("en", "ar"):
+        wrappers = EN_REFUSAL_WRAPPERS if lang == "en" else AR_REFUSAL_WRAPPERS
+        for entry in data.get(lang, []):
+            question = entry["instruction"]
+            response = entry["response"].strip()
+            if variants <= 1:
+                chosen = ["{q}"]
+            else:
+                chosen = wrappers[:1] + rng.sample(
+                    wrappers[1:], k=min(variants - 1, len(wrappers) - 1))
+            for w in chosen:
+                records.append(to_record(
+                    instruction=w.format(q=question),
+                    response=response,
+                    language=lang,
+                    kind="refusal",          # same kind label as in qa_pairs.jsonl
+                    article_key=None,
+                ))
+    return records
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -574,6 +620,14 @@ def main() -> None:
                     help="Skip the completion/gap tasks for articles shorter than this (words).")
     ap.add_argument("--min-text-chars", type=int, default=15,
                     help="Skip an article entirely if it has no text >= this length in either language.")
+    ap.add_argument("--refusal-seeds", type=str, default="refusal_seeds_v2.yaml",
+                    help="Filename inside finetune/configs/ for refusal seeds (EN+AR). "
+                         "Pass --no-refusals to skip refusal injection entirely.")
+    ap.add_argument("--refusal-variants", type=int, default=8,
+                    help="Paraphrase wrappers per refusal seed. 1 = seeds verbatim. "
+                         "8 = the recommended share for safety SFT.")
+    ap.add_argument("--no-refusals", action="store_true",
+                    help="Skip refusal augmentation entirely (knowledge-only dataset).")
     ap.add_argument("--seed", type=int, default=13)
     args = ap.parse_args()
 
@@ -633,6 +687,15 @@ def main() -> None:
 
     # --- pass 3: corpus-level topic rosters (topic -> list of article numbers) ---
     records.extend(build_topic_rosters(by_en, by_ar, random.Random(args.seed * 3 + 1)))
+
+    # ---- refusal augmentation ----
+    if not args.no_refusals:
+        refusal_records = load_refusal_records(
+            args.refusal_seeds, variants=args.refusal_variants, seed=args.seed,
+        )
+        print(f"Refusal records: {len(refusal_records)} "
+              f"(from {args.refusal_seeds}, {args.refusal_variants}x augmentation)")
+        records.extend(refusal_records)
 
     # dedup on (instruction prefix, response prefix)
     seen: set[tuple[str, str]] = set()
