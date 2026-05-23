@@ -1,0 +1,5906 @@
+{
+  "egyptian_law": {
+    "relation_pairs": [
+      [
+        "Article 845",
+        "Partition"
+      ],
+      [
+        "Compensation (Set Off)",
+        "Third Party"
+      ],
+      [
+        "Contract",
+        "Mistakes of Calculation and Clerical Mistakes"
+      ],
+      [
+        "Debtor",
+        "Penalty"
+      ],
+      [
+        "Article 1018",
+        "Servitudes"
+      ],
+      [
+        "Neighbor",
+        "Private Canal or Drain"
+      ],
+      [
+        "Article 318",
+        "Article 321"
+      ],
+      [
+        "Building",
+        "Compensation"
+      ],
+      [
+        "Article 241",
+        "Caisse Du Tribunal"
+      ],
+      [
+        "Concessionaire of Public Utility Service",
+        "Public Authority"
+      ],
+      [
+        "Compromise",
+        "Written Document"
+      ],
+      [
+        "Sub-Surety",
+        "Surety"
+      ],
+      [
+        "Egyptian Civil Code",
+        "International Convention"
+      ],
+      [
+        "Court",
+        "Heirs"
+      ],
+      [
+        "Assignment of Rent",
+        "Mortgagee"
+      ],
+      [
+        "Inscription",
+        "Subrogation"
+      ],
+      [
+        "Debtor",
+        "Third Party"
+      ],
+      [
+        "Legal Interest",
+        "Purchaser"
+      ],
+      [
+        "Contract For Work",
+        "Contractor"
+      ],
+      [
+        "Creditors",
+        "Nazir"
+      ],
+      [
+        "Fair Compensation",
+        "Property Owner"
+      ],
+      [
+        "Judge",
+        "Mortgaged Property"
+      ],
+      [
+        "Lessee",
+        "Resiliation of Lease"
+      ],
+      [
+        "Improvements",
+        "Lessor"
+      ],
+      [
+        "Commercial Debt",
+        "Suretyship"
+      ],
+      [
+        "Contractual Obligation",
+        "Damages"
+      ],
+      [
+        "Article 255",
+        "Insolvency"
+      ],
+      [
+        "Insured",
+        "Premium"
+      ],
+      [
+        "Vendor",
+        "Warranty Against Dispossession"
+      ],
+      [
+        "Liquidation",
+        "Partnership Deed"
+      ],
+      [
+        "Article 449",
+        "Notice of Defect"
+      ],
+      [
+        "Debtor",
+        "General Privileges"
+      ],
+      [
+        "Local Custom",
+        "Servitude"
+      ],
+      [
+        "Intermediary",
+        "Possession"
+      ],
+      [
+        "Bad Faith",
+        "Good Faith"
+      ],
+      [
+        "Alteration",
+        "Lessee"
+      ],
+      [
+        "Illness Immediately Preceding Death (مرض الموت)",
+        "Will (الوصية)"
+      ],
+      [
+        "Retroactive Effect",
+        "Time Clause"
+      ],
+      [
+        "Delegation",
+        "Right Of Recourse"
+      ],
+      [
+        "Article 368",
+        "Compensation (Set Off)"
+      ],
+      [
+        "Administrator of an Estate",
+        "Registered Creditors"
+      ],
+      [
+        "Bad Faith",
+        "Possession"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Prescription"
+      ],
+      [
+        "Islamic Sharia",
+        "Judge"
+      ],
+      [
+        "Extinctive Prescription",
+        "Written Document"
+      ],
+      [
+        "Right of Occupation",
+        "Right of Usufruct"
+      ],
+      [
+        "Heir",
+        "Right of Usufruct"
+      ],
+      [
+        "Formal Summons to Pay",
+        "Mortgagee"
+      ],
+      [
+        "Article 961",
+        "Three Possessory Actions"
+      ],
+      [
+        "Purchaser",
+        "Warranty Against Dispossession"
+      ],
+      [
+        "Administrator",
+        "Heirs"
+      ],
+      [
+        "Mortgage",
+        "Partition"
+      ],
+      [
+        "Contract",
+        "Object of Obligation"
+      ],
+      [
+        "Principal",
+        "Voluntary Agent"
+      ],
+      [
+        "Article 1146",
+        "Movable Property"
+      ],
+      [
+        "Hekr",
+        "Wakf"
+      ],
+      [
+        "Registered Creditors",
+        "The Syndicate"
+      ],
+      [
+        "Insured",
+        "Mortgage"
+      ],
+      [
+        "Article 1148",
+        "Immovable Property"
+      ],
+      [
+        "Mortgage",
+        "Mortgagee Creditor"
+      ],
+      [
+        "Manager",
+        "Partnership"
+      ],
+      [
+        "Court",
+        "Manager"
+      ],
+      [
+        "Donor",
+        "Promise Of Gift"
+      ],
+      [
+        "Minor Lacking Discretion",
+        "Void Act"
+      ],
+      [
+        "Receiver",
+        "Third Party Holder"
+      ],
+      [
+        "Article 202",
+        "Effects of Obligations"
+      ],
+      [
+        "Lesion",
+        "Supplement Of Price Action"
+      ],
+      [
+        "Article 1118",
+        "Pledge Of A Movable"
+      ],
+      [
+        "Minor",
+        "Supervisor"
+      ],
+      [
+        "Special Privileges Over Immovables",
+        "Vendor's Privilege Over Immovable"
+      ],
+      [
+        "Common Parts",
+        "Ownership of Storeys in Buildings"
+      ],
+      [
+        "Heirs",
+        "Voluntary Agent"
+      ],
+      [
+        "Extinctive Prescription",
+        "Obligation"
+      ],
+      [
+        "Offer",
+        "Offeror"
+      ],
+      [
+        "Bare Owner",
+        "Usufructuary"
+      ],
+      [
+        "Contractor",
+        "Warranty"
+      ],
+      [
+        "Servitudes",
+        "Usufruct"
+      ],
+      [
+        "Preceding Owner",
+        "Third Party Holder"
+      ],
+      [
+        "Co-Owner in Common",
+        "Preemption"
+      ],
+      [
+        "Family Joint Ownership",
+        "Manager"
+      ],
+      [
+        "Formal Summons To Pay",
+        "Mortgage"
+      ],
+      [
+        "Book II: Specific Contracts",
+        "Sale Contract"
+      ],
+      [
+        "Sale During Last Illness",
+        "Vendor"
+      ],
+      [
+        "Article 844",
+        "Warranty Against Eviction"
+      ],
+      [
+        "Avoidance",
+        "Legal Incapacity"
+      ],
+      [
+        "Article 865",
+        "Collective Insurance"
+      ],
+      [
+        "Charie Court of First Instance",
+        "Hekr"
+      ],
+      [
+        "Compromise",
+        "Renunciation"
+      ],
+      [
+        "Article 1149",
+        "Immovable Property"
+      ],
+      [
+        "Domicile",
+        "Minor"
+      ],
+      [
+        "Article 365",
+        "Compensation (Set Off)"
+      ],
+      [
+        "Article 366",
+        "Compensation (Set Off)"
+      ],
+      [
+        "Ownership Transfer",
+        "Purchaser"
+      ],
+      [
+        "Lump Sum Contract",
+        "Master"
+      ],
+      [
+        "Life Annuity",
+        "Will"
+      ],
+      [
+        "Article 354",
+        "Novation"
+      ],
+      [
+        "Legal Capacity",
+        "Natural Guardianship"
+      ],
+      [
+        "Article 250",
+        "Court of First Instance"
+      ],
+      [
+        "Administrator of an Estate",
+        "Testamentary Executor"
+      ],
+      [
+        "Heirs",
+        "Inheritance Certificate"
+      ],
+      [
+        "Article 674",
+        "Section II: Contracts of Service"
+      ],
+      [
+        "Debtor",
+        "Giving in Payment"
+      ],
+      [
+        "Administrator of an Estate",
+        "Statement of Assets and Liabilities"
+      ],
+      [
+        "Article 184",
+        "Payment Not Due"
+      ],
+      [
+        "Interest",
+        "Summons"
+      ],
+      [
+        "Article 633",
+        "Nazir"
+      ],
+      [
+        "Lessor",
+        "Warranty Against Disturbance"
+      ],
+      [
+        "Acquisition by Appropriation",
+        "Movables Without an Owner"
+      ],
+      [
+        "Contract",
+        "Inalienability Clause"
+      ],
+      [
+        "Government Authority",
+        "Leased Property"
+      ],
+      [
+        "Article 494",
+        "Donor"
+      ],
+      [
+        "Article 192",
+        "Voluntary Agency"
+      ],
+      [
+        "Administrative Sale by Auction",
+        "Warranty Against Defects"
+      ],
+      [
+        "Pledge Of Debts",
+        "Section IV"
+      ],
+      [
+        "Acknowledgement of Debt",
+        "Joint and Several Debtor"
+      ],
+      [
+        "Idjaratein",
+        "Wakf"
+      ],
+      [
+        "Possessor",
+        "Third Party"
+      ],
+      [
+        "Debtor",
+        "Judgment Charge"
+      ],
+      [
+        "Article 655",
+        "Master of the Work (Rabb al-Amal)"
+      ],
+      [
+        "Right of Usufruct",
+        "Will"
+      ],
+      [
+        "Resolutory Condition",
+        "Suspensive Condition"
+      ],
+      [
+        "Chapter IV",
+        "Section I"
+      ],
+      [
+        "Gift",
+        "Valuable Consideration"
+      ],
+      [
+        "Donee",
+        "Revocation of Gift"
+      ],
+      [
+        "Debtor",
+        "Public Auction"
+      ],
+      [
+        "Mandatary (الوكيل)",
+        "Mandate (الوكالة)"
+      ],
+      [
+        "Juristic Person",
+        "Religious Groups And Communities"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Oath"
+      ],
+      [
+        "Caisse du Tribunal",
+        "Debtor"
+      ],
+      [
+        "Article 525",
+        "Personal Creditors"
+      ],
+      [
+        "Acceptance",
+        "Contract"
+      ],
+      [
+        "Lessor",
+        "Rent"
+      ],
+      [
+        "Egypt",
+        "Egyptian Nationality"
+      ],
+      [
+        "Damages",
+        "Moral Prejudice"
+      ],
+      [
+        "Article 375",
+        "Extinctive Prescription"
+      ],
+      [
+        "Ostensible Contract",
+        "Simulated Contract"
+      ],
+      [
+        "Alimony",
+        "Egypt"
+      ],
+      [
+        "Principal",
+        "Representative"
+      ],
+      [
+        "Judge",
+        "President of the Court"
+      ],
+      [
+        "Creditors of the Estate (دائنو التركة)",
+        "Estate (التركة)"
+      ],
+      [
+        "Article 234",
+        "Section III"
+      ],
+      [
+        "Heirs (ورثة)",
+        "Mandatary (الوكيل)"
+      ],
+      [
+        "Mandatary (الوكيل)",
+        "Special Mandate"
+      ],
+      [
+        "Court",
+        "Nullity"
+      ],
+      [
+        "Contractor's Estate",
+        "Master"
+      ],
+      [
+        "Master",
+        "Right of Redress"
+      ],
+      [
+        "Egypt",
+        "Public Policy"
+      ],
+      [
+        "Article 460",
+        "Right of Retention"
+      ],
+      [
+        "Assignment Of Debt",
+        "Creditor"
+      ],
+      [
+        "Bankruptcy",
+        "Debtor"
+      ],
+      [
+        "Legal Capacity",
+        "Person Under Legal Disability"
+      ],
+      [
+        "Article 617",
+        "Lessee"
+      ],
+      [
+        "Novation",
+        "Voidable Contract"
+      ],
+      [
+        "Assignment Of Debt",
+        "Third Party"
+      ],
+      [
+        "Court",
+        "Creditors"
+      ],
+      [
+        "Partition",
+        "Provisional Partition"
+      ],
+      [
+        "Aleatory Contracts",
+        "Contract of Insurance"
+      ],
+      [
+        "Formal Summons to Pay",
+        "Third Party Holder"
+      ],
+      [
+        "Article 675",
+        "Special Laws Relating to Service"
+      ],
+      [
+        "Article 993",
+        "Usufruct"
+      ],
+      [
+        "Alimentary Allowance",
+        "Heirs"
+      ],
+      [
+        "Deed Of Creation",
+        "Servitude"
+      ],
+      [
+        "Contract",
+        "Earnest Money"
+      ],
+      [
+        "Egypt",
+        "Marriage"
+      ],
+      [
+        "Co-Owner",
+        "Joint Ownership"
+      ],
+      [
+        "Contract For Work",
+        "Court"
+      ],
+      [
+        "Lessor",
+        "Tacit Renewal"
+      ],
+      [
+        "Buried Treasure",
+        "Wakf Property"
+      ],
+      [
+        "Article 189",
+        "Voluntary Agency"
+      ],
+      [
+        "Article 501",
+        "Revocation of Gift"
+      ],
+      [
+        "Article 511",
+        "Partner"
+      ],
+      [
+        "Aleatory Contracts",
+        "Gaming and Betting"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Wakf Property"
+      ],
+      [
+        "Beneficiary",
+        "Life Assurance"
+      ],
+      [
+        "Article 622",
+        "Cattle and Agricultural Implements"
+      ],
+      [
+        "Good Faith",
+        "Vendor"
+      ],
+      [
+        "Article 187",
+        "Payment Not Due"
+      ],
+      [
+        "Conditional Obligation",
+        "Suspensive Condition"
+      ],
+      [
+        "Beneficiary",
+        "Constituent of Wakf"
+      ],
+      [
+        "Insolvency",
+        "President of the Court"
+      ],
+      [
+        "Acts of Management",
+        "Mandatary (الوكيل)"
+      ],
+      [
+        "Article 1114",
+        "Pledge Of An Immovable"
+      ],
+      [
+        "Court",
+        "Movable Property"
+      ],
+      [
+        "Creditor",
+        "Damages"
+      ],
+      [
+        "Administrator",
+        "Creditors"
+      ],
+      [
+        "Chapter II: Contracts Relating to the Use of a Thing",
+        "Section I: Leases"
+      ],
+      [
+        "Debtor",
+        "Right of Retention"
+      ],
+      [
+        "Extinctive Prescription",
+        "Original Obligation"
+      ],
+      [
+        "Purchaser",
+        "Sale Contract"
+      ],
+      [
+        "Compromise",
+        "Legal Capacity"
+      ],
+      [
+        "Article 508",
+        "Partner"
+      ],
+      [
+        "Debtor",
+        "Retroactive Effect"
+      ],
+      [
+        "Mortgage",
+        "Mortgage Deed"
+      ],
+      [
+        "Prescription Period",
+        "Warranty Against Defects"
+      ],
+      [
+        "Fraudulent Misrepresentation",
+        "Third Party"
+      ],
+      [
+        "Consumable Things",
+        "Movable Property"
+      ],
+      [
+        "Extinctive Prescription",
+        "Periodic Payments"
+      ],
+      [
+        "Natural Fruits",
+        "Usufructuary"
+      ],
+      [
+        "Article 851",
+        "Family Joint Ownership"
+      ],
+      [
+        "Arbitration Award",
+        "Creditor"
+      ],
+      [
+        "Mortgage",
+        "Mortgaged Property"
+      ],
+      [
+        "Alternative Obligation",
+        "Debtor"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Interruption of Prescription"
+      ],
+      [
+        "Applicant",
+        "Court"
+      ],
+      [
+        "Debtor",
+        "Privileged Right"
+      ],
+      [
+        "The Debtor",
+        "The Judge"
+      ],
+      [
+        "Public Official",
+        "Unlawful Act"
+      ],
+      [
+        "Article 966",
+        "Violence"
+      ],
+      [
+        "Greffier",
+        "Judgment Charge"
+      ],
+      [
+        "Debtor",
+        "Mortgagor"
+      ],
+      [
+        "Creditor",
+        "Extinctive Prescription"
+      ],
+      [
+        "Judgment of Adjudication",
+        "Third Party Holder"
+      ],
+      [
+        "Article 1111",
+        "Article 230"
+      ],
+      [
+        "Machine",
+        "Person in Charge of Things"
+      ],
+      [
+        "Article 522",
+        "Partner"
+      ],
+      [
+        "Accession (الالتصاق)",
+        "Contract (العقد)"
+      ],
+      [
+        "Collective Insurance",
+        "Syndicate of Owners"
+      ],
+      [
+        "Non-Competition Agreement",
+        "Penalty Clause"
+      ],
+      [
+        "Amodiation",
+        "Force Majeure"
+      ],
+      [
+        "Co-partitioner's Privilege Over Immovable",
+        "Special Privileges Over Immovables"
+      ],
+      [
+        "Novation",
+        "Real Securities"
+      ],
+      [
+        "Domicile",
+        "Missing Person"
+      ],
+      [
+        "Article 954",
+        "Carrier"
+      ],
+      [
+        "Article 273",
+        "Article 459"
+      ],
+      [
+        "Article 227",
+        "Disguised Interest"
+      ],
+      [
+        "Article 1011",
+        "Hekr"
+      ],
+      [
+        "Bad Faith",
+        "The Debtor"
+      ],
+      [
+        "Contractor",
+        "Unit Price Contract"
+      ],
+      [
+        "Acceptance",
+        "Silence As Acceptance"
+      ],
+      [
+        "Administrator of an Estate",
+        "Estate"
+      ],
+      [
+        "Original Owner",
+        "Servitudes"
+      ],
+      [
+        "Oath of Payment",
+        "One-Year Prescription Rights"
+      ],
+      [
+        "Vendor",
+        "Warranty Against Disturbance"
+      ],
+      [
+        "Article 197",
+        "Voluntary Agency"
+      ],
+      [
+        "Contract of Service",
+        "Worker (العامل)"
+      ],
+      [
+        "Insured",
+        "Insurer"
+      ],
+      [
+        "Legal Capacity",
+        "Unlawful Act"
+      ],
+      [
+        "Donee",
+        "Judge"
+      ],
+      [
+        "Creditor",
+        "Holder of Mortgaged Property"
+      ],
+      [
+        "Master (رب العمل)",
+        "Profit Sharing"
+      ],
+      [
+        "Hotel Proprietor",
+        "Hotel Staff"
+      ],
+      [
+        "Neighboring Owner",
+        "Right of Servitude"
+      ],
+      [
+        "Master (رب العمل)",
+        "Salary"
+      ],
+      [
+        "Debtor",
+        "Document of Title of Debt"
+      ],
+      [
+        "Deposit (الوديعة)",
+        "Depository (المودع عنده)"
+      ],
+      [
+        "Mortgaged Property",
+        "Mortgagor"
+      ],
+      [
+        "Damages",
+        "Joint and Several Liability"
+      ],
+      [
+        "Neighbor",
+        "Right of Way"
+      ],
+      [
+        "Partnership",
+        "Partnership Deed"
+      ],
+      [
+        "Immovable Property",
+        "Mortgage"
+      ],
+      [
+        "Judicial Custody",
+        "Wakf Property"
+      ],
+      [
+        "Neighbor",
+        "Public Road"
+      ],
+      [
+        "Judge",
+        "Profit Sharing"
+      ],
+      [
+        "Creditor",
+        "Good Faith"
+      ],
+      [
+        "Dominant Tenement",
+        "Servient Tenement"
+      ],
+      [
+        "Extinction Of Representation",
+        "Principal"
+      ],
+      [
+        "Contract",
+        "Lesion"
+      ],
+      [
+        "Expenses",
+        "Principal"
+      ],
+      [
+        "Article 516",
+        "Managing Partner"
+      ],
+      [
+        "Egyptian Civil Code",
+        "Official Gazette"
+      ],
+      [
+        "Land",
+        "Property Owner"
+      ],
+      [
+        "Agricultural Industrial Or Commercial Enterprise",
+        "Court"
+      ],
+      [
+        "Lessor",
+        "Servants of the Lessor"
+      ],
+      [
+        "Article 461",
+        "Dissolution of Sale"
+      ],
+      [
+        "Article 1119",
+        "Article 247"
+      ],
+      [
+        "Debtor",
+        "Release Of Obligation"
+      ],
+      [
+        "Judicial Adviser",
+        "Voidable Act"
+      ],
+      [
+        "Conditional Obligation",
+        "Retroactive Effect"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Just Title"
+      ],
+      [
+        "Mandatory",
+        "Representative"
+      ],
+      [
+        "Expropriation",
+        "Mortgaged Property"
+      ],
+      [
+        "Article 850",
+        "Obligatory Joint Ownership"
+      ],
+      [
+        "Contract of Assignment",
+        "Debtor"
+      ],
+      [
+        "Legal Capacity",
+        "Minor Lacking Discretion"
+      ],
+      [
+        "Notice of Defect",
+        "Warranty Against Defects"
+      ],
+      [
+        "Damages",
+        "Lessor"
+      ],
+      [
+        "Animal",
+        "Person in Charge of Animal"
+      ],
+      [
+        "Formal Demand",
+        "Joint and Several Debtor"
+      ],
+      [
+        "Chapter IV",
+        "Privileged Rights"
+      ],
+      [
+        "Actual Tender",
+        "Debtor"
+      ],
+      [
+        "Creditor",
+        "Debtor"
+      ],
+      [
+        "Beneficiary",
+        "Wakf Property"
+      ],
+      [
+        "Architect (Muhandis Mi'mari)",
+        "Article 653"
+      ],
+      [
+        "Lessee",
+        "Lessor"
+      ],
+      [
+        "Contract Of Pledge",
+        "Pledgee"
+      ],
+      [
+        "Creditor",
+        "Protective Measures"
+      ],
+      [
+        "Purge",
+        "Surety"
+      ],
+      [
+        "Debtor",
+        "Impossibility Of Performance"
+      ],
+      [
+        "Administrator",
+        "Will"
+      ],
+      [
+        "Article 359",
+        "Delegation"
+      ],
+      [
+        "Alimony",
+        "Article 501"
+      ],
+      [
+        "Article 194",
+        "Article 717"
+      ],
+      [
+        "Court",
+        "Family Papers"
+      ],
+      [
+        "Light Shaft Opening",
+        "Neighbor"
+      ],
+      [
+        "Article 502",
+        "Spouse"
+      ],
+      [
+        "Gift",
+        "Release Of Obligation"
+      ],
+      [
+        "Article 1123",
+        "Article 305"
+      ],
+      [
+        "Article 195",
+        "Voluntary Agency"
+      ],
+      [
+        "Contractor (Muqawil)",
+        "Master of the Work (Rabb al-Amal)"
+      ],
+      [
+        "Debtor",
+        "Surety"
+      ],
+      [
+        "Unlawful Act",
+        "Victim"
+      ],
+      [
+        "Article 816",
+        "Article 818"
+      ],
+      [
+        "Force Majeure",
+        "Fortuitous Event"
+      ],
+      [
+        "Article 676",
+        "Canvasser"
+      ],
+      [
+        "Court Officials",
+        "Sale Of Litigious Rights"
+      ],
+      [
+        "Donor",
+        "Gift"
+      ],
+      [
+        "Hidden Contract",
+        "Simulated Contract"
+      ],
+      [
+        "Right of Occupation",
+        "Right of Ownership"
+      ],
+      [
+        "Debtor",
+        "Sale Of Litigious Rights"
+      ],
+      [
+        "Legally Incapable Person",
+        "Vendor"
+      ],
+      [
+        "Fraud",
+        "The Debtor"
+      ],
+      [
+        "Lessor",
+        "Lessor's Privilege"
+      ],
+      [
+        "Pledge",
+        "Prescription Interruption"
+      ],
+      [
+        "Cairo Court",
+        "Insolvency"
+      ],
+      [
+        "Liquidator",
+        "Manager"
+      ],
+      [
+        "Possessor",
+        "Right of Retention"
+      ],
+      [
+        "Judge",
+        "Oath of Payment"
+      ],
+      [
+        "Article 1137",
+        "Section II: Kinds of Privileges"
+      ],
+      [
+        "Advantageous Expenditure",
+        "Owner"
+      ],
+      [
+        "Purchaser by Auction",
+        "Third Party Holder"
+      ],
+      [
+        "Public Register",
+        "The Greffier"
+      ],
+      [
+        "Article 355",
+        "Current Account"
+      ],
+      [
+        "Principal",
+        "Self-Dealing"
+      ],
+      [
+        "General Privileges",
+        "Right of Tracing"
+      ],
+      [
+        "Contract Of Pledge",
+        "Pledgor"
+      ],
+      [
+        "Donee",
+        "Subrogation"
+      ],
+      [
+        "Article 994",
+        "Usufruct"
+      ],
+      [
+        "Ordinary Creditors",
+        "Right of Preference"
+      ],
+      [
+        "Installment Payment",
+        "Judge"
+      ],
+      [
+        "Article 320",
+        "Article 321"
+      ],
+      [
+        "Inscribed Creditor",
+        "Third Party Holder"
+      ],
+      [
+        "Contract",
+        "Legal Capacity"
+      ],
+      [
+        "Article 253",
+        "Article 261"
+      ],
+      [
+        "Damages",
+        "Debtor"
+      ],
+      [
+        "Real Right",
+        "Specific Performance"
+      ],
+      [
+        "Court",
+        "Judicial Custody"
+      ],
+      [
+        "Court of First Instance",
+        "Summary Court"
+      ],
+      [
+        "Credit Sale",
+        "Installment Payment"
+      ],
+      [
+        "Article 970",
+        "Competent Minister"
+      ],
+      [
+        "Heirs and Guardians",
+        "Oath of Payment"
+      ],
+      [
+        "Article 512",
+        "Partner"
+      ],
+      [
+        "Contract Of Pledge",
+        "Pledge Of Debts"
+      ],
+      [
+        "Agricultural Land",
+        "Lessee"
+      ],
+      [
+        "Judgment Charge",
+        "President Of The Court"
+      ],
+      [
+        "Lessee",
+        "Lessee's Repairs"
+      ],
+      [
+        "The Creditor",
+        "The Judge"
+      ],
+      [
+        "Architect",
+        "Contractor"
+      ],
+      [
+        "Debtor",
+        "Judge"
+      ],
+      [
+        "Principal",
+        "Undisclosed Representation"
+      ],
+      [
+        "Buildings Or Other Works",
+        "Contractor's And Architect's Privilege"
+      ],
+      [
+        "Administrator of an Estate",
+        "Debtors of the Estate"
+      ],
+      [
+        "Article 855",
+        "Mandate"
+      ],
+      [
+        "Administrator",
+        "Court"
+      ],
+      [
+        "Article 182",
+        "Payment Not Due"
+      ],
+      [
+        "Article 177",
+        "Liability Arising from Things"
+      ],
+      [
+        "Amodiation",
+        "Article 620"
+      ],
+      [
+        "Acts of Management",
+        "Minor Possessing Discretion"
+      ],
+      [
+        "Inscribed Creditor",
+        "Purge"
+      ],
+      [
+        "Contract",
+        "Representative"
+      ],
+      [
+        "Article 196",
+        "Voluntary Agency"
+      ],
+      [
+        "Contract of Service",
+        "Force Majeure"
+      ],
+      [
+        "Caisse of the Court",
+        "Third Party Holder"
+      ],
+      [
+        "Egypt",
+        "Inheritance"
+      ],
+      [
+        "Acts of Management",
+        "Creditor"
+      ],
+      [
+        "Price Determination",
+        "Purchaser"
+      ],
+      [
+        "Lessee",
+        "Wakf Property"
+      ],
+      [
+        "Debtor",
+        "Time Clause"
+      ],
+      [
+        "Founder of Wakf",
+        "Wakf"
+      ],
+      [
+        "Article 1147",
+        "Vendor's Privilege Over Immovable"
+      ],
+      [
+        "Extinguishment Of A Pledge",
+        "Section III"
+      ],
+      [
+        "Article 225",
+        "Fraud"
+      ],
+      [
+        "Damages",
+        "Restoration"
+      ],
+      [
+        "Purchaser",
+        "Sale Of An Inheritance"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Release of Debt"
+      ],
+      [
+        "Article 1000",
+        "Charie Court of First Instance"
+      ],
+      [
+        "Assured",
+        "Beneficiary"
+      ],
+      [
+        "Compensation in Lieu of Performance",
+        "Specific Performance"
+      ],
+      [
+        "Debtor",
+        "Formal Summons"
+      ],
+      [
+        "Administrator of an Estate",
+        "Heirs"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Possessor"
+      ],
+      [
+        "Article 858",
+        "Common Parts"
+      ],
+      [
+        "Article 458",
+        "Legal Interest"
+      ],
+      [
+        "Assignment Of Debt",
+        "Debtor"
+      ],
+      [
+        "Joint and Several Creditor",
+        "Solidarity"
+      ],
+      [
+        "Article 492",
+        "Gift"
+      ],
+      [
+        "Co-owners",
+        "Non-family Member"
+      ],
+      [
+        "Force Majeure",
+        "Unlawful Act"
+      ],
+      [
+        "Accessories of Debt",
+        "Surety"
+      ],
+      [
+        "Alluvium",
+        "Land Owner (مالك الأرض)"
+      ],
+      [
+        "Lessee",
+        "Nazir"
+      ],
+      [
+        "Article 842",
+        "Co-Owner"
+      ],
+      [
+        "Article 999",
+        "Hekr"
+      ],
+      [
+        "Co-debtor",
+        "Debtor"
+      ],
+      [
+        "Family Joint Ownership",
+        "Joint Ownership"
+      ],
+      [
+        "Contractor",
+        "Lump Sum Contract"
+      ],
+      [
+        "Antiquities",
+        "Special Regulations"
+      ],
+      [
+        "Article 193",
+        "Voluntary Agency"
+      ],
+      [
+        "Authentic Document",
+        "Donor"
+      ],
+      [
+        "Grantee of Hekr",
+        "Grantor of Hekr"
+      ],
+      [
+        "Extinctive Prescription",
+        "Periodic Rights"
+      ],
+      [
+        "Former Owner",
+        "Third Party Holder"
+      ],
+      [
+        "Managing Partner",
+        "Partnership"
+      ],
+      [
+        "Administrator of an Estate",
+        "Estate Winding Up"
+      ],
+      [
+        "Lesion",
+        "Public Auction"
+      ],
+      [
+        "Representative",
+        "Undisclosed Representation"
+      ],
+      [
+        "Lessee",
+        "Sub-Lessee"
+      ],
+      [
+        "Commercial And Civil Corporations",
+        "Juristic Person"
+      ],
+      [
+        "Article 224",
+        "Article 430"
+      ],
+      [
+        "Article 443",
+        "Dissolution of Sale"
+      ],
+      [
+        "Article 457",
+        "Purchaser"
+      ],
+      [
+        "Creditor",
+        "Foreign Court"
+      ],
+      [
+        "Creditors",
+        "Estate"
+      ],
+      [
+        "Movable Property",
+        "Ownership"
+      ],
+      [
+        "Court",
+        "Lessor"
+      ],
+      [
+        "Servitudes",
+        "Third Party Holder"
+      ],
+      [
+        "Damages",
+        "Unlawful Act"
+      ],
+      [
+        "Master",
+        "Materials"
+      ],
+      [
+        "Policy of Insurance",
+        "Suicide"
+      ],
+      [
+        "Article 610",
+        "Lessor"
+      ],
+      [
+        "Extinctive Prescription",
+        "Taxes and Dues"
+      ],
+      [
+        "Contract",
+        "Good Faith"
+      ],
+      [
+        "Owner",
+        "Person in Charge of Building"
+      ],
+      [
+        "Judge",
+        "Lower Storey"
+      ],
+      [
+        "Debtor",
+        "Solidarity"
+      ],
+      [
+        "Mandate",
+        "Voluntary Agent"
+      ],
+      [
+        "Neighbor",
+        "Oblique View"
+      ],
+      [
+        "Assured",
+        "Premium"
+      ],
+      [
+        "Debtor",
+        "Third Party Holder"
+      ],
+      [
+        "Annuity",
+        "Creditor"
+      ],
+      [
+        "Article 503",
+        "Fruits"
+      ],
+      [
+        "Judge",
+        "Natural Obligation"
+      ],
+      [
+        "Novation",
+        "Third Party"
+      ],
+      [
+        "Article 372",
+        "Gift"
+      ],
+      [
+        "Insured",
+        "Pledge"
+      ],
+      [
+        "Debtor",
+        "Facultative Obligation"
+      ],
+      [
+        "Lease",
+        "Right of Management"
+      ],
+      [
+        "Custom",
+        "Lessee"
+      ],
+      [
+        "Giving in Payment",
+        "Obligation"
+      ],
+      [
+        "Lawyers",
+        "Sale Of Litigious Rights"
+      ],
+      [
+        "Article 1004",
+        "Hekr"
+      ],
+      [
+        "Right of Usufruct",
+        "Standing Crops"
+      ],
+      [
+        "Contract Of Pledge",
+        "Pledge Of An Immovable"
+      ],
+      [
+        "Representative of the Syndicate",
+        "Syndicate of Owners"
+      ],
+      [
+        "Co-owner",
+        "Partition"
+      ],
+      [
+        "Notary",
+        "President of the Court"
+      ],
+      [
+        "Court",
+        "Debtor"
+      ],
+      [
+        "Article 235",
+        "The Creditor"
+      ],
+      [
+        "Article 524",
+        "Partner"
+      ],
+      [
+        "Avoidance",
+        "Mistake"
+      ],
+      [
+        "Assignor",
+        "Debtor"
+      ],
+      [
+        "Abnormal Expenses",
+        "Usufructuary"
+      ],
+      [
+        "Judge",
+        "Rescission"
+      ],
+      [
+        "Legal Disposition",
+        "Right of Usufruct"
+      ],
+      [
+        "Court of First Instance",
+        "Insolvency"
+      ],
+      [
+        "Code of Procedure",
+        "Expropriation"
+      ],
+      [
+        "Accession to Immovable Property (الالتصاق بالعقار)",
+        "Land Owner (مالك الأرض)"
+      ],
+      [
+        "Sea",
+        "State"
+      ],
+      [
+        "Movable Property",
+        "Real Rights"
+      ],
+      [
+        "Delegate",
+        "Voluntary Agent"
+      ],
+      [
+        "Chapter II: Judgment Charges upon Immovable Property",
+        "Judgment Charge"
+      ],
+      [
+        "Exclusion",
+        "Partner"
+      ],
+      [
+        "Administrative Authority",
+        "Concessionaire"
+      ],
+      [
+        "Egypt",
+        "Suretyship"
+      ],
+      [
+        "Article 1008",
+        "Hekr"
+      ],
+      [
+        "Avoidance of Contract",
+        "Essential Mistake"
+      ],
+      [
+        "Article 373",
+        "Impossibility Of Performance"
+      ],
+      [
+        "Depositor (المودع)",
+        "Depository (المودع عنده)"
+      ],
+      [
+        "Public Funds",
+        "Usufructuary"
+      ],
+      [
+        "Bankruptcy",
+        "Mortgage"
+      ],
+      [
+        "Family Joint Ownership",
+        "Joint Property"
+      ],
+      [
+        "Court",
+        "Servitude"
+      ],
+      [
+        "Legal Capacity",
+        "Personal Liberty"
+      ],
+      [
+        "Neighbor",
+        "Owner"
+      ],
+      [
+        "Article 176",
+        "Liability Arising from Things"
+      ],
+      [
+        "Legally Incapable Person",
+        "Lesion"
+      ],
+      [
+        "Possession",
+        "Successor In Title"
+      ],
+      [
+        "Article 856",
+        "Ownership of Storeys in Buildings"
+      ],
+      [
+        "Purchaser",
+        "Registered Creditors"
+      ],
+      [
+        "Cairo Court",
+        "Minister of Justice"
+      ],
+      [
+        "Authentic Document",
+        "Mortgage"
+      ],
+      [
+        "Beneficiary",
+        "Grantor"
+      ],
+      [
+        "Master",
+        "Sub-contractor"
+      ],
+      [
+        "Resolutory Condition",
+        "Sale Upon Trial"
+      ],
+      [
+        "Book IV: Accessory Rights Or Real Securities",
+        "Chapter I: Mortgages"
+      ],
+      [
+        "Contractor's Heirs",
+        "Master"
+      ],
+      [
+        "Debtor",
+        "Special Privileges"
+      ],
+      [
+        "Expropriation",
+        "Right of Tracing"
+      ],
+      [
+        "Alimentary Allowance",
+        "Juge de Service"
+      ],
+      [
+        "First Name And Family Name",
+        "Name Rights"
+      ],
+      [
+        "Lessee",
+        "Proces Verbal"
+      ],
+      [
+        "Article 506",
+        "Third Party"
+      ],
+      [
+        "Assurance Agent",
+        "Employer"
+      ],
+      [
+        "Right of Use",
+        "Right of Usufruct"
+      ],
+      [
+        "Annuity",
+        "Redemption"
+      ],
+      [
+        "Privileged Right",
+        "State Treasury"
+      ],
+      [
+        "Article 895",
+        "Article 913"
+      ],
+      [
+        "Mortgagee",
+        "Third Party Holder"
+      ],
+      [
+        "Assignment of Debt",
+        "Creditor"
+      ],
+      [
+        "Mistake of Fact",
+        "Mistake of Law"
+      ],
+      [
+        "Judge",
+        "Nazir"
+      ],
+      [
+        "Article 258",
+        "Caisse du Tribunal"
+      ],
+      [
+        "Neighbor",
+        "Prescription"
+      ],
+      [
+        "Purchaser",
+        "Sale Subject To Tasting"
+      ],
+      [
+        "Security",
+        "Usufructuary"
+      ],
+      [
+        "Deceased",
+        "Estate"
+      ],
+      [
+        "Bonds Payable To Order",
+        "Pledge Of Debts"
+      ],
+      [
+        "Extinctive Prescription",
+        "Prescription Suspension"
+      ],
+      [
+        "Vendor",
+        "Vendor's Privilege Over Movable"
+      ],
+      [
+        "Contractor",
+        "Workmen"
+      ],
+      [
+        "Hotel Proprietor's Privilege",
+        "Lessor's Privilege"
+      ],
+      [
+        "Compromise",
+        "Compromise Nullity"
+      ],
+      [
+        "Forced Sales",
+        "Public Auction"
+      ],
+      [
+        "Article 1126",
+        "Pledge Of Debts"
+      ],
+      [
+        "Contracting Parties",
+        "Price Determination"
+      ],
+      [
+        "Commercial Traveller",
+        "Employer"
+      ],
+      [
+        "Contractor's And Architect's Privilege",
+        "Inscription"
+      ],
+      [
+        "Absent Person",
+        "Moslem Law"
+      ],
+      [
+        "Concessionaire",
+        "Consumer"
+      ],
+      [
+        "Creditor",
+        "Third Party Holder"
+      ],
+      [
+        "Commercial Representative",
+        "Employer"
+      ],
+      [
+        "Extinctive Prescription",
+        "Prescription Interruption"
+      ],
+      [
+        "Article 684",
+        "Worker"
+      ],
+      [
+        "Court",
+        "Preemption"
+      ],
+      [
+        "Direct View",
+        "Neighbor"
+      ],
+      [
+        "Article 1148",
+        "Mortgage"
+      ],
+      [
+        "Co-Owner",
+        "Warranty Against Eviction"
+      ],
+      [
+        "Insolvency",
+        "Release of Debt"
+      ],
+      [
+        "Article 684",
+        "Tips"
+      ],
+      [
+        "Owner",
+        "Possessor"
+      ],
+      [
+        "Article 823",
+        "Article 824"
+      ],
+      [
+        "Debtor",
+        "Mortgage"
+      ],
+      [
+        "Assignment of Right",
+        "Attachment"
+      ],
+      [
+        "Article 868",
+        "Registered Creditors"
+      ],
+      [
+        "Article 530",
+        "The Court"
+      ],
+      [
+        "Co-owner",
+        "Co-partitioner's Privilege Over Immovable"
+      ],
+      [
+        "Indivisibility",
+        "Joint and Several Debtor"
+      ],
+      [
+        "Immovable Property",
+        "Preemption"
+      ],
+      [
+        "State",
+        "Taxes and Dues"
+      ],
+      [
+        "Civil Code",
+        "Legal Capacity"
+      ],
+      [
+        "Compensation for Dismissal",
+        "Worker (العامل)"
+      ],
+      [
+        "Effects",
+        "Hotel Proprietor's Privilege"
+      ],
+      [
+        "Contract of Adhesion",
+        "Leonine Condition"
+      ],
+      [
+        "Contractor's And Architect's Privilege",
+        "Special Privileges Over Immovables"
+      ],
+      [
+        "Good Faith",
+        "Lessee"
+      ],
+      [
+        "Lessor",
+        "Transfer of Ownership"
+      ],
+      [
+        "Article 685",
+        "Worker"
+      ],
+      [
+        "Article 514",
+        "Partner"
+      ],
+      [
+        "Contract Of Adhesion",
+        "Offeror"
+      ],
+      [
+        "Co-debtor",
+        "Joint and Several Debtor"
+      ],
+      [
+        "Chapter IV: Privileged Rights",
+        "Section I: General Provisions"
+      ],
+      [
+        "Article 185",
+        "Court"
+      ],
+      [
+        "Annulment of Sale",
+        "Article 443"
+      ],
+      [
+        "Article 528",
+        "Heirs"
+      ],
+      [
+        "Assignment of a Right",
+        "Assignor"
+      ],
+      [
+        "Article 237",
+        "Paulian Action"
+      ],
+      [
+        "Legal Representative",
+        "Life Assured"
+      ],
+      [
+        "Divorce",
+        "Marriage"
+      ],
+      [
+        "Article 917",
+        "Heirs (الورثة)"
+      ],
+      [
+        "Assignee",
+        "Assignor"
+      ],
+      [
+        "Article 1146",
+        "Co-partitioner's Privilege Over Movable"
+      ],
+      [
+        "Servitude",
+        "Wakf Property"
+      ],
+      [
+        "Article 961",
+        "Disturbance"
+      ],
+      [
+        "Delegation",
+        "Novation"
+      ],
+      [
+        "Debtor",
+        "Lender"
+      ],
+      [
+        "Article 846",
+        "Provisional Partition"
+      ],
+      [
+        "Caisse du Tribunal",
+        "Public Auction"
+      ],
+      [
+        "Debtor",
+        "Gross Negligence"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Solidarity"
+      ],
+      [
+        "Hotel Proprietor's Privilege",
+        "Vendor's Privilege Over Movable"
+      ],
+      [
+        "Partner",
+        "Partnership Deed"
+      ],
+      [
+        "Prescription",
+        "Servitude"
+      ],
+      [
+        "Contractual Obligations",
+        "Egypt"
+      ],
+      [
+        "Contract Of Lease",
+        "Credit Sale"
+      ],
+      [
+        "Joint and Several Liability (التضامن)",
+        "Substitute (نائب الوكيل)"
+      ],
+      [
+        "Lease",
+        "Notice of Evacuation"
+      ],
+      [
+        "Action of Revendication",
+        "Article 443"
+      ],
+      [
+        "Industrial or Commercial Establishment",
+        "Lessee"
+      ],
+      [
+        "Administrator",
+        "Expert"
+      ],
+      [
+        "Land Owner (مالك الأرض)",
+        "Third Party (أجنبي)"
+      ],
+      [
+        "Article 517",
+        "Managing Partner"
+      ],
+      [
+        "Lessor",
+        "Other Lessee"
+      ],
+      [
+        "Article 630",
+        "Nazir"
+      ],
+      [
+        "Mandatary (الوكيل)",
+        "Substitute (نائب الوكيل)"
+      ],
+      [
+        "Joint and Several Liability (التضامن)",
+        "Mandator (الموكل)"
+      ],
+      [
+        "Mortgage",
+        "Public Auction"
+      ],
+      [
+        "Preemptor",
+        "Vendor"
+      ],
+      [
+        "Article 223",
+        "Contractual Damages"
+      ],
+      [
+        "Pledge",
+        "Public Auction"
+      ],
+      [
+        "Heirs",
+        "Will"
+      ],
+      [
+        "Estate",
+        "The Court"
+      ],
+      [
+        "Debtor",
+        "Misappropriation"
+      ],
+      [
+        "Article 226",
+        "Moratory Interest"
+      ],
+      [
+        "Possession",
+        "Three Possessory Actions"
+      ],
+      [
+        "Code of Procedure",
+        "Mortgage"
+      ],
+      [
+        "Minor Possessing Discretion",
+        "Voidable Act"
+      ],
+      [
+        "Agreement of Lease",
+        "Lessee"
+      ],
+      [
+        "Mandatary (الوكيل)",
+        "Mandator (الموكل)"
+      ],
+      [
+        "Creditor",
+        "Third Party"
+      ],
+      [
+        "The Creditor",
+        "The Debtor"
+      ],
+      [
+        "The State",
+        "Uncultivated Land"
+      ],
+      [
+        "Founder (Waqif)",
+        "Nazir"
+      ],
+      [
+        "Article 188",
+        "Voluntary Agency"
+      ],
+      [
+        "President of the Court of First Instance",
+        "Representative of the Syndicate"
+      ],
+      [
+        "Depository",
+        "Owner"
+      ],
+      [
+        "Fraud",
+        "Lessor"
+      ],
+      [
+        "Article 494",
+        "Subrogation"
+      ],
+      [
+        "Egyptian Civil Code",
+        "National Courts"
+      ],
+      [
+        "Direct Lineal Relationship",
+        "Family"
+      ],
+      [
+        "Article 651",
+        "Ten-Year Warranty (Decennial Liability)"
+      ],
+      [
+        "Estate",
+        "Summary Court"
+      ],
+      [
+        "Inalienability Clause",
+        "Will"
+      ],
+      [
+        "Owner",
+        "Sale Of A Thing Belonging To Another"
+      ],
+      [
+        "Judge",
+        "Owner"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Extinctive Prescription"
+      ],
+      [
+        "Article 191",
+        "Voluntary Agency"
+      ],
+      [
+        "Master (رب العمل)",
+        "Non-Competition Agreement"
+      ],
+      [
+        "Debtor",
+        "Delegation"
+      ],
+      [
+        "Inscription",
+        "Third Party"
+      ],
+      [
+        "Egypt",
+        "Judge"
+      ],
+      [
+        "Just Title",
+        "Possessor"
+      ],
+      [
+        "Abandonment",
+        "Court of First Instance"
+      ],
+      [
+        "Partition",
+        "Personal Creditor"
+      ],
+      [
+        "Novation",
+        "Suretyship"
+      ],
+      [
+        "Article 455",
+        "Proper Working Warranty"
+      ],
+      [
+        "Fruits And Revenues",
+        "Mortgage"
+      ],
+      [
+        "Conditional Obligation",
+        "Resolutory Condition"
+      ],
+      [
+        "Alimentary Allowance",
+        "Debtor"
+      ],
+      [
+        "Article 356",
+        "Novation"
+      ],
+      [
+        "Inscription",
+        "Mortgage"
+      ],
+      [
+        "Right of Ownership",
+        "Right of Use"
+      ],
+      [
+        "Creditor",
+        "Summons"
+      ],
+      [
+        "Article 500",
+        "Revocation of Gift"
+      ],
+      [
+        "Article 1124",
+        "Pledge Of Debts"
+      ],
+      [
+        "Debtor",
+        "Force Majeure"
+      ],
+      [
+        "Deceased",
+        "Heirs"
+      ],
+      [
+        "Article 623",
+        "Lessee"
+      ],
+      [
+        "Assignor",
+        "Warranty of Solvency"
+      ],
+      [
+        "Islands (الجزر)",
+        "River"
+      ],
+      [
+        "Right of Usufruct",
+        "Usufructuary"
+      ],
+      [
+        "Inheritance",
+        "Will"
+      ],
+      [
+        "Lessor",
+        "Lien"
+      ],
+      [
+        "Acquisitive Prescription",
+        "State Property"
+      ],
+      [
+        "Accession to Movable Property (الالتصاق بالمنقول)",
+        "Court (المحكمة)"
+      ],
+      [
+        "Heirs",
+        "Public Register"
+      ],
+      [
+        "Pledge",
+        "Right of Retention"
+      ],
+      [
+        "Annuity",
+        "Debtor"
+      ],
+      [
+        "Article 1125",
+        "Pledge Of Debts"
+      ],
+      [
+        "Interdiction",
+        "Prodigality"
+      ],
+      [
+        "Article 365",
+        "Article 609"
+      ],
+      [
+        "Insolvency",
+        "Joint and Several Debtor"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Good Faith"
+      ],
+      [
+        "Extinctive Prescription",
+        "One-Year Prescription Rights"
+      ],
+      [
+        "Insured",
+        "Salvage Measures"
+      ],
+      [
+        "Extinctive Prescription",
+        "Professional Remuneration"
+      ],
+      [
+        "Lessor",
+        "Sub-Lessee"
+      ],
+      [
+        "Article 866",
+        "Representative of the Syndicate"
+      ],
+      [
+        "Mortgage",
+        "Mortgagor"
+      ],
+      [
+        "Buildings, Plantations, and Works (بناء أو غراس أو منشآت)",
+        "Land Owner (مالك الأرض)"
+      ],
+      [
+        "Pledge",
+        "Privileged Right"
+      ],
+      [
+        "Legal Personality",
+        "Personality Rights"
+      ],
+      [
+        "Morality",
+        "Public Policy"
+      ],
+      [
+        "Public Domain",
+        "State"
+      ],
+      [
+        "Judge Des Referes",
+        "Receiver"
+      ],
+      [
+        "Judgment Charge",
+        "President of the Court"
+      ],
+      [
+        "Agreed Damages",
+        "Damages"
+      ],
+      [
+        "Insurance Contract",
+        "Lawful Economic Interest"
+      ],
+      [
+        "Estate",
+        "The Deceased"
+      ],
+      [
+        "Co-Owner",
+        "Provisional Partition"
+      ],
+      [
+        "Article 496",
+        "Donor"
+      ],
+      [
+        "Insurer",
+        "Life Assurance"
+      ],
+      [
+        "Article 186",
+        "Payment Not Due"
+      ],
+      [
+        "Servitudes",
+        "State Property"
+      ],
+      [
+        "Lessor",
+        "Surety"
+      ],
+      [
+        "Creditor",
+        "Judicial Custody"
+      ],
+      [
+        "Nazir",
+        "Sole Beneficiary"
+      ],
+      [
+        "Article 633",
+        "Three-Year Lease Limit"
+      ],
+      [
+        "Civil Code",
+        "Contract"
+      ],
+      [
+        "Judicial Sale",
+        "Warranty Against Defects"
+      ],
+      [
+        "Court",
+        "Purge"
+      ],
+      [
+        "Article 507",
+        "Partnership Deed"
+      ],
+      [
+        "Borrower (Musta'ir)",
+        "Loan for Use (Ariyah)"
+      ],
+      [
+        "Estate",
+        "Heirs"
+      ],
+      [
+        "Court",
+        "Partnership"
+      ],
+      [
+        "Article 185",
+        "Payment Not Due"
+      ],
+      [
+        "Assignee",
+        "Debtor"
+      ],
+      [
+        "Debtor",
+        "Receipt in Discharge"
+      ],
+      [
+        "Sale Upon Trial",
+        "Suspensive Condition"
+      ],
+      [
+        "Article 440",
+        "Article 443"
+      ],
+      [
+        "Partner",
+        "Partnership Capital"
+      ],
+      [
+        "Hotel Proprietor's Privilege",
+        "Third Party In Good Faith"
+      ],
+      [
+        "Gaming and Betting",
+        "Judge"
+      ],
+      [
+        "Right of Retention",
+        "Vendor"
+      ],
+      [
+        "Leased Property",
+        "Other Lessee"
+      ],
+      [
+        "Article 970",
+        "Hereditary Rights"
+      ],
+      [
+        "Article 1148",
+        "Contractor's And Architect's Privilege"
+      ],
+      [
+        "Creditor",
+        "Judgment Charge"
+      ],
+      [
+        "Fair Compensation",
+        "Right of Way"
+      ],
+      [
+        "Article 505",
+        "Partnership"
+      ],
+      [
+        "Assignee",
+        "Lessee"
+      ],
+      [
+        "Incoming Lessee",
+        "Lessee"
+      ],
+      [
+        "Co-Owner",
+        "Right of Action"
+      ],
+      [
+        "Bare Owner",
+        "Hekr"
+      ],
+      [
+        "Article 236",
+        "The Creditor"
+      ],
+      [
+        "Article 300",
+        "Indivisibility"
+      ],
+      [
+        "Legal Capacity",
+        "Legal Guardianship"
+      ],
+      [
+        "Acts of Management",
+        "Prodigality"
+      ],
+      [
+        "Article 194",
+        "Voluntary Agency"
+      ],
+      [
+        "Fraudulent Concealment",
+        "Prescription Period"
+      ],
+      [
+        "Consent",
+        "Contract"
+      ],
+      [
+        "Contract of Service",
+        "Master (رب العمل)"
+      ],
+      [
+        "The Thing Pledged",
+        "Third Party"
+      ],
+      [
+        "Necessary Expenditure",
+        "Owner"
+      ],
+      [
+        "Article 461",
+        "Commodities and Movable Effects"
+      ],
+      [
+        "Architect (Muhandis Mi'mari)",
+        "Master of the Work (Rabb al-Amal)"
+      ],
+      [
+        "Avoidance",
+        "Nullity"
+      ],
+      [
+        "Article 513",
+        "Partner"
+      ],
+      [
+        "Judge",
+        "Three Possessory Actions"
+      ],
+      [
+        "Judge",
+        "Penalty"
+      ],
+      [
+        "Public Domain",
+        "Public Juristic Persons"
+      ],
+      [
+        "Mortgage",
+        "Mortgagee"
+      ],
+      [
+        "Debtor",
+        "Novation"
+      ],
+      [
+        "Good Faith",
+        "Third Party Holder"
+      ],
+      [
+        "Leased Property",
+        "Lessee"
+      ],
+      [
+        "Third Party In Good Faith",
+        "Vendor's Privilege Over Movable"
+      ],
+      [
+        "Grantee of Hekr",
+        "Hekr"
+      ],
+      [
+        "Article 859",
+        "Judge"
+      ],
+      [
+        "Article 451",
+        "Warranty Against Defects"
+      ],
+      [
+        "Non-User",
+        "Servitude"
+      ],
+      [
+        "Contract",
+        "Third Party"
+      ],
+      [
+        "Servient Tenement",
+        "Servitude"
+      ],
+      [
+        "Avoidance",
+        "Ratification"
+      ],
+      [
+        "Prescription",
+        "Restitution"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Article 974"
+      ],
+      [
+        "Associations And Foundations",
+        "Juristic Person"
+      ],
+      [
+        "Contract for Work (Muqawalah)",
+        "Master of the Work (Rabb al-Amal)"
+      ],
+      [
+        "Acceptance",
+        "Offer"
+      ],
+      [
+        "Donee",
+        "Gift"
+      ],
+      [
+        "Lessee",
+        "Movables"
+      ],
+      [
+        "Master (رب العمل)",
+        "Notice Period"
+      ],
+      [
+        "Perishment Before Delivery",
+        "Purchaser"
+      ],
+      [
+        "Insurance Contract",
+        "Policy of Insurance"
+      ],
+      [
+        "Luxurious Expenditure",
+        "Owner"
+      ],
+      [
+        "Article 510",
+        "Partner"
+      ],
+      [
+        "Article 682",
+        "Judge"
+      ],
+      [
+        "Co-partitioner's Privilege Over Movable",
+        "Vendor's Privilege Over Movable"
+      ],
+      [
+        "Partnership Liquidation",
+        "Personal Creditors"
+      ],
+      [
+        "Debtor",
+        "Securities"
+      ],
+      [
+        "Article 456",
+        "Purchaser"
+      ],
+      [
+        "Contracting Parties",
+        "Installment Payment"
+      ],
+      [
+        "Balance Sheet",
+        "Profit Sharing"
+      ],
+      [
+        "Debtor",
+        "Merger"
+      ],
+      [
+        "Administrator of an Estate",
+        "The Judge"
+      ],
+      [
+        "Article 190",
+        "Voluntary Agency"
+      ],
+      [
+        "Administrator of an Estate",
+        "The Court"
+      ],
+      [
+        "Fire",
+        "Lessee"
+      ],
+      [
+        "Sale With Right Of Redemption",
+        "Vendor"
+      ],
+      [
+        "Bad Faith",
+        "Possessor"
+      ],
+      [
+        "Egypt",
+        "Morality"
+      ],
+      [
+        "Article 238",
+        "Paulian Action"
+      ],
+      [
+        "Attempted Homicide",
+        "Beneficiary"
+      ],
+      [
+        "Contract Of Pledge",
+        "Extinguishment Of A Pledge"
+      ],
+      [
+        "Article 618",
+        "Incoming Lessee"
+      ],
+      [
+        "Owner",
+        "Right of Way"
+      ],
+      [
+        "Agreed Damages",
+        "Debtor"
+      ],
+      [
+        "Agricultural Land",
+        "Heirs of Lessee"
+      ],
+      [
+        "Heir of Depository",
+        "Purchaser"
+      ],
+      [
+        "Nazir",
+        "Wakf Property"
+      ],
+      [
+        "Amodiation",
+        "Article 621"
+      ],
+      [
+        "Beneficiary",
+        "Insurer"
+      ],
+      [
+        "Contractor (Muqawil)",
+        "Subcontractor"
+      ],
+      [
+        "Creditor",
+        "Right of Retention"
+      ],
+      [
+        "Article 523",
+        "Partner"
+      ],
+      [
+        "Pledge Of An Immovable",
+        "Section IV"
+      ],
+      [
+        "Article 367",
+        "Compensation (Set Off)"
+      ],
+      [
+        "Contract Interpretation",
+        "Debtor"
+      ],
+      [
+        "Article 849",
+        "Summary Judge"
+      ],
+      [
+        "Article 491",
+        "Articles 466 and 467"
+      ],
+      [
+        "Compromise",
+        "Declaratory Effect"
+      ],
+      [
+        "Judge",
+        "Usufructuary"
+      ],
+      [
+        "Court Of First Instance",
+        "Judgment Charge"
+      ],
+      [
+        "Future Property",
+        "Mortgage"
+      ],
+      [
+        "Article 452",
+        "Prescription Period"
+      ],
+      [
+        "Building",
+        "Common Parts"
+      ],
+      [
+        "Obligations Of The Vendor",
+        "Vendor"
+      ],
+      [
+        "Consumable Things",
+        "Usufructuary"
+      ],
+      [
+        "Article 303",
+        "Assignment of a Right"
+      ],
+      [
+        "Article 1121",
+        "Article 1129"
+      ],
+      [
+        "Contract For Work",
+        "Master"
+      ],
+      [
+        "Heirs of Grantee of Hekr",
+        "Hekr"
+      ],
+      [
+        "Contractor",
+        "Materials"
+      ],
+      [
+        "Legitimate Defense",
+        "Unlawful Act"
+      ],
+      [
+        "Contractual Obligations",
+        "Immovable Property"
+      ],
+      [
+        "Subrogation",
+        "Third Party Holder"
+      ],
+      [
+        "Expropriation",
+        "Mortgagee"
+      ],
+      [
+        "Article 655",
+        "Contractor (Muqawil)"
+      ],
+      [
+        "Article 1144",
+        "Hotel Proprietor's Privilege"
+      ],
+      [
+        "Lessee",
+        "Reduction of Rent"
+      ],
+      [
+        "Sale Contract",
+        "Vendor"
+      ],
+      [
+        "Cattle and Agricultural Implements",
+        "Lessee"
+      ],
+      [
+        "Creditor",
+        "Novation"
+      ],
+      [
+        "Pledge Of A Movable",
+        "Section IV"
+      ],
+      [
+        "Creditor",
+        "Payor"
+      ],
+      [
+        "Enforceable Judgment",
+        "Judgment Charge"
+      ],
+      [
+        "Sale Contract",
+        "Sale by Sample"
+      ],
+      [
+        "Revendication Action",
+        "Vendor"
+      ],
+      [
+        "Court",
+        "Elam Charei"
+      ],
+      [
+        "Article 717",
+        "Heirs"
+      ],
+      [
+        "Obligations",
+        "Personal Rights"
+      ],
+      [
+        "Article 183",
+        "Payment Not Due"
+      ],
+      [
+        "Article 253",
+        "Cairo Court"
+      ],
+      [
+        "Lease",
+        "Mortgagee"
+      ],
+      [
+        "Contract",
+        "Court"
+      ],
+      [
+        "Chapter III",
+        "Section I"
+      ],
+      [
+        "Donor",
+        "Future Property Gift"
+      ],
+      [
+        "Debtor",
+        "Insolvency"
+      ],
+      [
+        "Nominative Bonds",
+        "Pledge Of Debts"
+      ],
+      [
+        "Article 1147",
+        "Immovable Property"
+      ],
+      [
+        "Good Faith",
+        "Mortgage"
+      ],
+      [
+        "Fraud",
+        "Vendor"
+      ],
+      [
+        "Inscription",
+        "Privileged Right"
+      ],
+      [
+        "Article 529",
+        "Partnership"
+      ],
+      [
+        "Debtor",
+        "Object of Obligation"
+      ],
+      [
+        "Article 671",
+        "Concessionaire of Public Utility Service"
+      ],
+      [
+        "Lesion",
+        "Special Provisions for Lesion"
+      ],
+      [
+        "Inscription",
+        "Mortgagor"
+      ],
+      [
+        "Article 462",
+        "Sale Contract"
+      ],
+      [
+        "Mandatary (الوكيل)",
+        "Renunciation of Mandate"
+      ],
+      [
+        "Force Majeure",
+        "The Thing Pledged"
+      ],
+      [
+        "Article 180",
+        "Enrichment Without Just Cause"
+      ],
+      [
+        "Article 245",
+        "Hidden Contract"
+      ],
+      [
+        "Article 262",
+        "Insolvency"
+      ],
+      [
+        "Damages",
+        "Thief"
+      ],
+      [
+        "Extinguishment Of A Pledge",
+        "Third Parties In Good Faith"
+      ],
+      [
+        "Article 1116",
+        "Pledge Of An Immovable"
+      ],
+      [
+        "General Privileges",
+        "Special Privileges"
+      ],
+      [
+        "Aleatory Contracts",
+        "Life Annuity"
+      ],
+      [
+        "Article 627",
+        "Lessor"
+      ],
+      [
+        "Laws on Wills (القوانين الصادرة في شأنها)",
+        "Will (الوصية)"
+      ],
+      [
+        "Deficiency And Excess",
+        "Purchaser"
+      ],
+      [
+        "Article 242",
+        "Fraud"
+      ],
+      [
+        "Article 1145",
+        "Movable Property"
+      ],
+      [
+        "Legal Fruits",
+        "Usufructuary"
+      ],
+      [
+        "Article 1144",
+        "Movable Property"
+      ],
+      [
+        "Cairo Court",
+        "Greffier"
+      ],
+      [
+        "Article 246",
+        "Right of Retention"
+      ],
+      [
+        "Missing Person",
+        "Moslem Law"
+      ],
+      [
+        "Estate",
+        "Mohammedan Law"
+      ],
+      [
+        "Notice Period",
+        "Worker (العامل)"
+      ],
+      [
+        "Insurance Contract",
+        "Section III: Contracts of Insurance"
+      ],
+      [
+        "Heirs of Lessee",
+        "Lessee"
+      ],
+      [
+        "Article 563",
+        "Lease Contract"
+      ],
+      [
+        "New Obligation",
+        "Novation"
+      ],
+      [
+        "Administrator of an Estate",
+        "The Deceased"
+      ],
+      [
+        "Creditor",
+        "Debt"
+      ],
+      [
+        "Article 369",
+        "Compensation (Set Off)"
+      ],
+      [
+        "Article 238",
+        "Fraud"
+      ],
+      [
+        "Avoidance of Contract",
+        "Fraudulent Misrepresentation"
+      ],
+      [
+        "Article 1112",
+        "Extinguishment Of A Pledge"
+      ],
+      [
+        "Court",
+        "Family Joint Ownership"
+      ],
+      [
+        "Insolvency",
+        "Misappropriation"
+      ],
+      [
+        "Greffier Of The Court",
+        "Judgment Charge"
+      ],
+      [
+        "Article 179",
+        "Enrichment Without Just Cause"
+      ],
+      [
+        "Creditor",
+        "Release Of Obligation"
+      ],
+      [
+        "Delivery",
+        "Vendor"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Novation"
+      ],
+      [
+        "Curatorship",
+        "Legal Capacity"
+      ],
+      [
+        "Contract Of Pledge",
+        "Pledge Of A Movable"
+      ],
+      [
+        "Immovable Property",
+        "Preemptor"
+      ],
+      [
+        "Article 227",
+        "Moratory Interest"
+      ],
+      [
+        "Bad Faith",
+        "Violence"
+      ],
+      [
+        "Article 370",
+        "Merger"
+      ],
+      [
+        "Contract",
+        "Public Auction"
+      ],
+      [
+        "Contractor",
+        "Sub-contractor"
+      ],
+      [
+        "Hidden Contract",
+        "Universal Successors in Title"
+      ],
+      [
+        "Non-Partner Manager",
+        "Partnership"
+      ],
+      [
+        "Article 1145",
+        "Vendor's Privilege Over Movable"
+      ],
+      [
+        "Novation",
+        "Obligation"
+      ],
+      [
+        "Article 673",
+        "Fortuitous Event"
+      ],
+      [
+        "Lessor",
+        "Vendor's Privilege Over Movable"
+      ],
+      [
+        "Mortgage",
+        "Third Party Holder"
+      ],
+      [
+        "Chapter IV",
+        "Transmission of an Obligation"
+      ],
+      [
+        "Article 1123",
+        "Pledge Of Debts"
+      ],
+      [
+        "Legal Capacity",
+        "Restitution"
+      ],
+      [
+        "Pledge",
+        "Possessor"
+      ],
+      [
+        "Article 1000",
+        "Law Relating to the Publication of Real Rights"
+      ],
+      [
+        "Article 670",
+        "Principle of Equality"
+      ],
+      [
+        "Interest",
+        "Loan for Consumption"
+      ],
+      [
+        "Article 563",
+        "Article 608"
+      ],
+      [
+        "Representative",
+        "Self-Dealing"
+      ],
+      [
+        "Alluvium",
+        "River"
+      ],
+      [
+        "Policy of Insurance",
+        "Void Conditions"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Merger"
+      ],
+      [
+        "Borrower",
+        "Hidden Defect"
+      ],
+      [
+        "Article 453",
+        "Warranty Against Defects"
+      ],
+      [
+        "Creditor",
+        "Surety"
+      ],
+      [
+        "Invention",
+        "Worker (العامل)"
+      ],
+      [
+        "Article 613",
+        "Lessor"
+      ],
+      [
+        "Debts of the Estate (ديون التركة)",
+        "Estate (التركة)"
+      ],
+      [
+        "Juristic Person",
+        "Wakfs"
+      ],
+      [
+        "Egypt",
+        "Legal Capacity"
+      ],
+      [
+        "Public Road",
+        "Right of Way"
+      ],
+      [
+        "Testamentary Executor",
+        "The Judge"
+      ],
+      [
+        "Domicile",
+        "Person Under Legal Disability"
+      ],
+      [
+        "Article 673",
+        "Strike"
+      ],
+      [
+        "Co-owners",
+        "Manager"
+      ],
+      [
+        "Collateral Relationship",
+        "Family"
+      ],
+      [
+        "Article 298",
+        "Co-debtor"
+      ],
+      [
+        "Lessee",
+        "New Owner"
+      ],
+      [
+        "Article 230",
+        "Caisse Du Tribunal"
+      ],
+      [
+        "Creditor",
+        "Insolvency"
+      ],
+      [
+        "Deceased",
+        "Will"
+      ],
+      [
+        "Contract of Gift",
+        "Life Annuity"
+      ],
+      [
+        "Bearer Securities",
+        "Pledge Of A Movable"
+      ],
+      [
+        "Debtor",
+        "Judicial Deposit"
+      ],
+      [
+        "Article 670",
+        "Fair Competition"
+      ],
+      [
+        "Right of Ownership",
+        "Right of Usufruct"
+      ],
+      [
+        "Article 864",
+        "Syndicate of Owners"
+      ],
+      [
+        "Public Auction",
+        "The Judge"
+      ],
+      [
+        "Joint and Several Liability",
+        "Suretyship"
+      ],
+      [
+        "Beneficiary",
+        "Policy of Insurance"
+      ],
+      [
+        "Debtor",
+        "Pledge"
+      ],
+      [
+        "Preemptor",
+        "Purchaser"
+      ],
+      [
+        "Building",
+        "Syndicate of Owners"
+      ],
+      [
+        "Purchaser",
+        "Warranty Against Defects"
+      ],
+      [
+        "Article 234",
+        "Right of Preference"
+      ],
+      [
+        "Hidden Contract",
+        "Particular Successors in Title"
+      ],
+      [
+        "Movables Without an Owner",
+        "Wild Animals"
+      ],
+      [
+        "Article 366",
+        "Extinctive Prescription"
+      ],
+      [
+        "Judge",
+        "Receiver"
+      ],
+      [
+        "Article 200",
+        "Effects of Obligations"
+      ],
+      [
+        "Dominant Tenement",
+        "Servitude"
+      ],
+      [
+        "Contract",
+        "Contracting Party"
+      ],
+      [
+        "Egypt",
+        "Guardianship"
+      ],
+      [
+        "Creditor",
+        "Judge"
+      ],
+      [
+        "Estate",
+        "The Omdah"
+      ],
+      [
+        "Neighbor",
+        "Party Wall"
+      ],
+      [
+        "Prodigality",
+        "Wakf"
+      ],
+      [
+        "Article 625",
+        "Lessee"
+      ],
+      [
+        "Amodiation",
+        "Lease"
+      ],
+      [
+        "Purchaser",
+        "Vendor"
+      ],
+      [
+        "Article 353",
+        "Novation"
+      ],
+      [
+        "Contract",
+        "Particular Successor in Title"
+      ],
+      [
+        "Loan for Consumption",
+        "Sale"
+      ],
+      [
+        "Egyptian Civil Code",
+        "Minister of Justice"
+      ],
+      [
+        "Abandonment",
+        "Third Party Holder"
+      ],
+      [
+        "Co-owner",
+        "Court"
+      ],
+      [
+        "Age Misstatement",
+        "Sum Assured"
+      ],
+      [
+        "Liquidator",
+        "Partnership Property"
+      ],
+      [
+        "Article 852",
+        "Family Joint Ownership"
+      ],
+      [
+        "Creditor",
+        "Time Clause"
+      ],
+      [
+        "Co-Owners In Common",
+        "Servitude"
+      ],
+      [
+        "Article 680",
+        "Contract of Service"
+      ],
+      [
+        "Immovable Property",
+        "Ownership"
+      ],
+      [
+        "Article 527",
+        "Partnership"
+      ],
+      [
+        "Insurer",
+        "Judicial Deposit"
+      ],
+      [
+        "Court",
+        "Revocation of Gift"
+      ],
+      [
+        "Common Fund",
+        "Tips"
+      ],
+      [
+        "Article 244",
+        "Simulated Contract"
+      ],
+      [
+        "Insolvency",
+        "Lessor"
+      ],
+      [
+        "Discerning Minor",
+        "Legal Capacity"
+      ],
+      [
+        "Damages",
+        "Judge"
+      ],
+      [
+        "Compensation",
+        "Lessor"
+      ],
+      [
+        "Good Faith",
+        "Simulated Contract"
+      ],
+      [
+        "Co-owners",
+        "The Syndicate"
+      ],
+      [
+        "Bankruptcy",
+        "Creditor"
+      ],
+      [
+        "Article 683",
+        "Worker"
+      ],
+      [
+        "Concessionaire of Public Utility Service",
+        "Consumer"
+      ],
+      [
+        "Insurer",
+        "Subrogation"
+      ],
+      [
+        "Assured",
+        "Life Assured"
+      ],
+      [
+        "Depositor",
+        "Depository"
+      ],
+      [
+        "Article 678",
+        "Contract of Service"
+      ],
+      [
+        "Loan for Consumption",
+        "Loan for Use"
+      ],
+      [
+        "Article 675",
+        "Section II: Contracts of Service"
+      ],
+      [
+        "Preemption",
+        "Usufructuary"
+      ],
+      [
+        "Boundary Marks",
+        "Owner"
+      ],
+      [
+        "Egypt",
+        "Foreign Juristic Person"
+      ],
+      [
+        "Court of First Instance",
+        "Greffier"
+      ],
+      [
+        "Employer",
+        "Worker"
+      ],
+      [
+        "Court",
+        "Purchaser"
+      ],
+      [
+        "Egyptian Civil Code",
+        "Mixed Courts"
+      ],
+      [
+        "Article 244",
+        "Good Faith"
+      ],
+      [
+        "Actual Tender",
+        "Judicial Deposit"
+      ],
+      [
+        "Co-owner",
+        "Joint Ownership"
+      ],
+      [
+        "Purchaser",
+        "Sale Upon Trial"
+      ],
+      [
+        "Purchaser",
+        "The Thing Sold"
+      ],
+      [
+        "Non-Competition Agreement",
+        "Worker (العامل)"
+      ],
+      [
+        "Extinctive Prescription",
+        "Prescription Calculation"
+      ],
+      [
+        "Testamentary Executor",
+        "The Deceased"
+      ],
+      [
+        "Co-debtor",
+        "Insolvency"
+      ],
+      [
+        "Fruits of the Property",
+        "Third Party Holder"
+      ],
+      [
+        "Normal Charges",
+        "Usufructuary"
+      ],
+      [
+        "Mortgaged Property",
+        "Rules of Accession"
+      ],
+      [
+        "Article 677",
+        "Contract of Service"
+      ],
+      [
+        "Article 360",
+        "Delegation"
+      ],
+      [
+        "Immovable Property",
+        "Real Rights"
+      ],
+      [
+        "Deficiency And Excess",
+        "Vendor"
+      ],
+      [
+        "Compensation (Set Off)",
+        "Creditor"
+      ],
+      [
+        "Lessor",
+        "Movables"
+      ],
+      [
+        "Creditor",
+        "Solidarity"
+      ],
+      [
+        "Article 260",
+        "Misappropriation"
+      ],
+      [
+        "Fraudulent Misrepresentation",
+        "Legal Incapacity"
+      ],
+      [
+        "Alluvium",
+        "Riparian Owners (الملاك المجاورين)"
+      ],
+      [
+        "Commercial Debt",
+        "Negotiable Instruments"
+      ],
+      [
+        "Pledgee",
+        "The Thing Pledged"
+      ],
+      [
+        "Surety",
+        "Suretyship"
+      ],
+      [
+        "Article 629",
+        "Beneficiary"
+      ],
+      [
+        "Leased Property",
+        "Third Party"
+      ],
+      [
+        "Article 526",
+        "Partnership"
+      ],
+      [
+        "Article 841",
+        "Code of Procedure"
+      ],
+      [
+        "Compensation",
+        "Lessee"
+      ],
+      [
+        "Court (المحكمة)",
+        "Good Faith (حسن النية)"
+      ],
+      [
+        "Novation",
+        "Original Obligation"
+      ],
+      [
+        "Insanity",
+        "Interdiction"
+      ],
+      [
+        "Avoidance of Contract",
+        "Duress"
+      ],
+      [
+        "Possession",
+        "Possessor"
+      ],
+      [
+        "Consideration",
+        "Nullity"
+      ],
+      [
+        "Debtor",
+        "Renunciation of Prescription"
+      ],
+      [
+        "Mortgaged Property",
+        "Right of Tracing"
+      ],
+      [
+        "Co-Owner",
+        "Right of Repurchase"
+      ],
+      [
+        "Co-owners",
+        "Common Parts"
+      ],
+      [
+        "Mohammedan Law (الشريعة الإسلامية)",
+        "Will (الوصية)"
+      ],
+      [
+        "Article 446",
+        "Warranty Against Dispossession"
+      ],
+      [
+        "Agreement of Lease",
+        "Lessor"
+      ],
+      [
+        "Article 676",
+        "Assurance Agent"
+      ],
+      [
+        "Formal Summons to Pay",
+        "Mortgaged Property"
+      ],
+      [
+        "Purchaser",
+        "Sale Of A Thing Belonging To Another"
+      ],
+      [
+        "Article 234",
+        "The Debtor"
+      ],
+      [
+        "Gift",
+        "Sale Of A Thing Belonging To Another"
+      ],
+      [
+        "Article 243",
+        "Paulian Action"
+      ],
+      [
+        "Lessee",
+        "Restitution"
+      ],
+      [
+        "Contract",
+        "Declaration Of Intention"
+      ],
+      [
+        "Partnership",
+        "The Court"
+      ],
+      [
+        "Person Lacking Discretion",
+        "Possession"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Subrogation"
+      ],
+      [
+        "Estate",
+        "Public Auction"
+      ],
+      [
+        "Article 516",
+        "Non-Partner Manager"
+      ],
+      [
+        "Preemption",
+        "Public Auction"
+      ],
+      [
+        "Article 199",
+        "Effects of Obligations"
+      ],
+      [
+        "Custom",
+        "Judge"
+      ],
+      [
+        "Assignor",
+        "Joint and Several Creditor"
+      ],
+      [
+        "Contract of Adhesion",
+        "Equity"
+      ],
+      [
+        "Judicial Deposit",
+        "Pledgor"
+      ],
+      [
+        "Deterioration Before Delivery",
+        "Purchaser"
+      ],
+      [
+        "Life Insurance",
+        "Suicide"
+      ],
+      [
+        "Article 445",
+        "Servitude"
+      ],
+      [
+        "Article 444",
+        "Partial Dispossession"
+      ],
+      [
+        "Court",
+        "Person in Charge of Building"
+      ],
+      [
+        "Article 362",
+        "Compensation (Set Off)"
+      ],
+      [
+        "Depository (المودع عنده)",
+        "Reasonable Person (الرجل المعتاد)"
+      ],
+      [
+        "Administrator",
+        "Legacies"
+      ],
+      [
+        "Greffier of the Court",
+        "Registrar of the Cairo Court"
+      ],
+      [
+        "Article 843",
+        "Co-Owner"
+      ],
+      [
+        "Article 357",
+        "Real Securities"
+      ],
+      [
+        "Juristic Person",
+        "Partnership"
+      ],
+      [
+        "Domestic Animals",
+        "Wild Animals"
+      ],
+      [
+        "Concessionaire",
+        "Monopoly"
+      ],
+      [
+        "Inalienability Clause",
+        "Third Party"
+      ],
+      [
+        "Abandonment of Mortgaged Property",
+        "Mortgagor"
+      ],
+      [
+        "Administrator of an Estate",
+        "Ministere Public"
+      ],
+      [
+        "Assignment of a Right",
+        "Attachment"
+      ],
+      [
+        "Family Joint Ownership",
+        "Non-family Member"
+      ],
+      [
+        "Competent Authority",
+        "Right of Management"
+      ],
+      [
+        "Neighboring Owner",
+        "Preemption"
+      ],
+      [
+        "Improvements",
+        "Lessee"
+      ],
+      [
+        "Animal",
+        "Animal Keeper"
+      ],
+      [
+        "Lease",
+        "Usufructuary"
+      ],
+      [
+        "Article 491",
+        "Gift"
+      ],
+      [
+        "Neighbor",
+        "Property Owner"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Transaction"
+      ],
+      [
+        "Lower Storey",
+        "Upper Storey"
+      ],
+      [
+        "Egypt",
+        "Private International Law"
+      ],
+      [
+        "Estate (التركة)",
+        "Heirs (الورثة)"
+      ],
+      [
+        "Professional Remuneration",
+        "Written Document"
+      ],
+      [
+        "Article 672",
+        "Consumer"
+      ],
+      [
+        "Contract",
+        "Offer"
+      ],
+      [
+        "Article 224",
+        "The Judge"
+      ],
+      [
+        "Original Debtor",
+        "Person Assuming the Debt"
+      ],
+      [
+        "Real Security",
+        "Suretyship"
+      ],
+      [
+        "Inscription",
+        "Law Regulating the Publication of Real Rights"
+      ],
+      [
+        "Preemption",
+        "Right of Usufruct"
+      ],
+      [
+        "Article 926",
+        "Third Party (أجنبي)"
+      ],
+      [
+        "Bearer Warrant",
+        "Movable Property"
+      ],
+      [
+        "Code De Procedure",
+        "Formal Summons"
+      ],
+      [
+        "Assured",
+        "Paid-Up Policy"
+      ],
+      [
+        "Right of Redress",
+        "Supervisor"
+      ],
+      [
+        "Article 245",
+        "Universal Successors in Title"
+      ],
+      [
+        "Hotel Proprietor",
+        "Lessor"
+      ],
+      [
+        "Administrator",
+        "Judge"
+      ],
+      [
+        "Family",
+        "First Name And Family Name"
+      ],
+      [
+        "Debtor",
+        "Heirs and Guardians"
+      ],
+      [
+        "Gregorian Calendar",
+        "Prescription"
+      ],
+      [
+        "Costs of Legal Proceedings",
+        "Privileged Right"
+      ],
+      [
+        "Vendor",
+        "Vendor's Privilege Over Immovable"
+      ],
+      [
+        "Heirs",
+        "Juge de Service"
+      ],
+      [
+        "Pledgor",
+        "The Judge"
+      ],
+      [
+        "Article 654",
+        "Ten-Year Warranty (Decennial Liability)"
+      ],
+      [
+        "Heirs",
+        "Misappropriation"
+      ],
+      [
+        "Dissolution of Sale",
+        "Purchaser"
+      ],
+      [
+        "Partner",
+        "Partnership"
+      ],
+      [
+        "Contract",
+        "Public Policy"
+      ],
+      [
+        "Chapter III: Contracts for the Hire of Services",
+        "Section II: Loan for Use"
+      ],
+      [
+        "Creditor",
+        "Resolutory Condition"
+      ],
+      [
+        "Lessor",
+        "Purchaser"
+      ],
+      [
+        "Co-Owner",
+        "Personal Creditor"
+      ],
+      [
+        "Juristic Person",
+        "The State"
+      ],
+      [
+        "Building",
+        "Inner Walls"
+      ],
+      [
+        "Usufruct",
+        "Usufructuary"
+      ],
+      [
+        "Article 492",
+        "Future Property"
+      ],
+      [
+        "Creditor",
+        "Lender"
+      ],
+      [
+        "Article 855",
+        "Joint Property"
+      ],
+      [
+        "Judgment",
+        "Promise To Contract"
+      ],
+      [
+        "Article 239",
+        "Insolvency"
+      ],
+      [
+        "Court",
+        "Judicial Deposit"
+      ],
+      [
+        "Lessor",
+        "Successor in Title"
+      ],
+      [
+        "Article 679",
+        "Contract of Service"
+      ],
+      [
+        "Article 681",
+        "Worker"
+      ],
+      [
+        "Master",
+        "Workmen"
+      ],
+      [
+        "Architect",
+        "Master"
+      ],
+      [
+        "Article 631",
+        "Wakf Property"
+      ],
+      [
+        "Architect",
+        "Contractor's And Architect's Privilege"
+      ],
+      [
+        "Fraudulent Concealment",
+        "Warranty Against Defects"
+      ],
+      [
+        "Pledge Of A Movable",
+        "Third Parties In Good Faith"
+      ],
+      [
+        "Joint and Several Liability (التضامن)",
+        "Mandatary (الوكيل)"
+      ],
+      [
+        "Kholou-el-intifaa",
+        "Wakf"
+      ],
+      [
+        "Establishments Injurious to Neighbors",
+        "Regulations"
+      ],
+      [
+        "Article 444",
+        "Article 450"
+      ],
+      [
+        "Co-owners",
+        "Syndicate of Owners"
+      ],
+      [
+        "Buildings, Plantations, and Works (بناء أو غراس أو منشآت)",
+        "Materials (المواد)"
+      ],
+      [
+        "Article 958",
+        "Three Possessory Actions"
+      ],
+      [
+        "Compensation",
+        "Joint and Several Debtor"
+      ],
+      [
+        "Hidden Defect",
+        "Lender"
+      ],
+      [
+        "Light Constructions (المنشآت الصغيرة)",
+        "Third Party (أجنبي)"
+      ],
+      [
+        "Lessor",
+        "New Owner"
+      ],
+      [
+        "Insurance Contract",
+        "Limitation Period"
+      ],
+      [
+        "Dissolution",
+        "Liquidation"
+      ],
+      [
+        "Fungibles",
+        "Movable Property"
+      ],
+      [
+        "Supplement Of Price Action",
+        "Third Party"
+      ],
+      [
+        "Mortgage",
+        "Privileged Right"
+      ],
+      [
+        "Article 511",
+        "Usufruct"
+      ],
+      [
+        "Assured",
+        "Insurer"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Possession"
+      ],
+      [
+        "Co-Owner",
+        "Partition"
+      ],
+      [
+        "Debtor",
+        "Extinctive Prescription"
+      ],
+      [
+        "Partner",
+        "Retirement"
+      ],
+      [
+        "Sale Of An Inheritance",
+        "Vendor"
+      ],
+      [
+        "Code Of Procedure",
+        "Revendication Action"
+      ],
+      [
+        "Fraud",
+        "Purchaser"
+      ],
+      [
+        "Owner",
+        "Usufructuary"
+      ],
+      [
+        "Article 181",
+        "Payment Not Due"
+      ],
+      [
+        "Mandator (الموكل)",
+        "Revocation of Mandate"
+      ],
+      [
+        "Partner",
+        "Personal Creditors"
+      ],
+      [
+        "Article 965",
+        "Juristic Person"
+      ],
+      [
+        "Insurance Reserve",
+        "Life Insurance"
+      ],
+      [
+        "Egypt",
+        "Tort"
+      ],
+      [
+        "Building",
+        "Person in Charge of Building"
+      ],
+      [
+        "Heirs",
+        "Public Auction"
+      ],
+      [
+        "Co-owner",
+        "Common Movable Property"
+      ],
+      [
+        "Contract",
+        "Obligation"
+      ],
+      [
+        "Division by Disposition (Mortis Causa)",
+        "Testator (الموصى)"
+      ],
+      [
+        "Real Securities",
+        "Tacit Renewal"
+      ],
+      [
+        "Article 1117",
+        "Pledge Of A Movable"
+      ],
+      [
+        "Lessee",
+        "Notice of Evacuation"
+      ],
+      [
+        "Co-owner",
+        "Party Wall"
+      ],
+      [
+        "Subrogation",
+        "Surety"
+      ],
+      [
+        "Natural Obligation",
+        "Public Policy"
+      ],
+      [
+        "Mortgage",
+        "Servitude"
+      ],
+      [
+        "Contract",
+        "Fraudulent Misrepresentation"
+      ],
+      [
+        "Leased Property",
+        "Lessor"
+      ],
+      [
+        "Article 1119",
+        "Pledge Of A Movable"
+      ],
+      [
+        "Pledgor",
+        "The Thing Pledged"
+      ],
+      [
+        "The Thing Sold",
+        "Vendor"
+      ],
+      [
+        "Cairo Court",
+        "Registrar of the Cairo Court"
+      ],
+      [
+        "Damages",
+        "Necessity"
+      ],
+      [
+        "Sale Contract",
+        "Sale Subject to Tasting"
+      ],
+      [
+        "Pledge",
+        "The Thing Pledged"
+      ],
+      [
+        "Article 930",
+        "Materials (المواد)"
+      ],
+      [
+        "Debtor",
+        "Real Security"
+      ],
+      [
+        "Apparent Servitudes",
+        "Servitudes"
+      ],
+      [
+        "Birth And Death Registers",
+        "Legal Personality"
+      ],
+      [
+        "Egyptian Civil Code",
+        "Qasr El-Qubba"
+      ],
+      [
+        "Article 495",
+        "Donor"
+      ],
+      [
+        "Expert",
+        "Partition"
+      ],
+      [
+        "Land",
+        "Private Canal or Drain"
+      ],
+      [
+        "Co-owners",
+        "Family Joint Ownership"
+      ],
+      [
+        "Movable Property",
+        "Rights In Non-Material Things"
+      ],
+      [
+        "Family Joint Ownership",
+        "Mandate"
+      ],
+      [
+        "Debtor",
+        "Specific Performance"
+      ],
+      [
+        "Joint Ownership",
+        "Partition"
+      ],
+      [
+        "Avoidance of Contract",
+        "Legal Incapacity"
+      ],
+      [
+        "Force Majeure",
+        "Insured"
+      ],
+      [
+        "Contract of Service",
+        "Prescription Period"
+      ],
+      [
+        "Inscription",
+        "Vendor's Privilege Over Immovable"
+      ],
+      [
+        "Lender (Mu'ir)",
+        "Loan for Use (Ariyah)"
+      ],
+      [
+        "Third Party",
+        "Warranty Against Disturbance"
+      ],
+      [
+        "Debtor",
+        "Stipulator"
+      ],
+      [
+        "Donor",
+        "Revocation of Gift"
+      ],
+      [
+        "Debtor",
+        "Natural Obligation"
+      ],
+      [
+        "Compensation (Set Off)",
+        "Debtor"
+      ],
+      [
+        "Actual Tender",
+        "Final Judgment"
+      ],
+      [
+        "Auction",
+        "Mortgaged Property"
+      ],
+      [
+        "Chapter III: Contracts for the Hire of Services",
+        "Section I: Contracts for Work"
+      ],
+      [
+        "Court",
+        "Judicial Adviser"
+      ],
+      [
+        "Greffier of the Court",
+        "Insolvency"
+      ],
+      [
+        "Article 832",
+        "Co-Owner"
+      ],
+      [
+        "Article 850",
+        "Family Joint Ownership"
+      ],
+      [
+        "Creditor",
+        "Representative"
+      ],
+      [
+        "Preemption",
+        "Wakf"
+      ],
+      [
+        "Juristic Person",
+        "Legal Capacity"
+      ],
+      [
+        "Legal Representative",
+        "Possession"
+      ],
+      [
+        "Contract",
+        "Morality"
+      ],
+      [
+        "Judicial Custody",
+        "Receiver"
+      ],
+      [
+        "Co-partitioner's Privilege Over Immovable",
+        "Inscription"
+      ],
+      [
+        "Immovable Property",
+        "Movable Property"
+      ],
+      [
+        "Article 685",
+        "Employer"
+      ],
+      [
+        "Good Faith",
+        "Possessor"
+      ],
+      [
+        "Life Assurance",
+        "Table of Rates"
+      ],
+      [
+        "Article 528",
+        "Partnership"
+      ],
+      [
+        "Article 1149",
+        "Co-partitioner's Privilege Over Immovable"
+      ],
+      [
+        "Court",
+        "Retirement"
+      ],
+      [
+        "Compensation",
+        "Registered Creditors"
+      ],
+      [
+        "Master",
+        "Servant"
+      ],
+      [
+        "Immovable Property",
+        "Law Regulating the Publication of Real Rights"
+      ],
+      [
+        "Article 443",
+        "Total Dispossession"
+      ],
+      [
+        "Bad Faith",
+        "Vendor"
+      ],
+      [
+        "Damages",
+        "Reinstatement"
+      ],
+      [
+        "Article 868",
+        "Compensation"
+      ],
+      [
+        "Egyptian Civil Code",
+        "State with Multiple Legal Systems"
+      ],
+      [
+        "Article 224",
+        "Contractual Damages"
+      ],
+      [
+        "Court",
+        "Minor Possessing Discretion"
+      ],
+      [
+        "Article 363",
+        "Compensation (Set Off)"
+      ],
+      [
+        "Contract Of Pledge",
+        "Pledged Thing"
+      ],
+      [
+        "Article 959",
+        "Violence"
+      ],
+      [
+        "Master (رب العمل)",
+        "Worker (العامل)"
+      ],
+      [
+        "Avoidance",
+        "Fraudulent Misrepresentation"
+      ],
+      [
+        "Article 261",
+        "Article 263"
+      ],
+      [
+        "Co-Owner",
+        "Summary Court"
+      ],
+      [
+        "Mandatary (الوكيل)",
+        "Third Party (الغير)"
+      ],
+      [
+        "Article 449",
+        "Purchaser"
+      ],
+      [
+        "Bilateral Contract",
+        "Rescission"
+      ],
+      [
+        "Hotel Proprietor",
+        "Traveller"
+      ],
+      [
+        "Article 674",
+        "Contract of Service"
+      ],
+      [
+        "Payment",
+        "Section I: Payment"
+      ],
+      [
+        "Article 655",
+        "Section I: Contracts for Work"
+      ],
+      [
+        "Cattle and Agricultural Implements",
+        "Lessor"
+      ],
+      [
+        "Domicile",
+        "Trade Or Profession Domicile"
+      ],
+      [
+        "Duress",
+        "Third Party"
+      ],
+      [
+        "Ownership Transfer",
+        "Vendor"
+      ],
+      [
+        "Debtor",
+        "Receipt"
+      ],
+      [
+        "Damages",
+        "Penal Offence"
+      ],
+      [
+        "Lessor",
+        "Warranty Against Defects"
+      ],
+      [
+        "Court",
+        "Interdiction"
+      ],
+      [
+        "Beneficiary",
+        "Stipulator"
+      ],
+      [
+        "Article 506",
+        "Juristic Person"
+      ],
+      [
+        "Article 860",
+        "Upper Storey"
+      ],
+      [
+        "Judgment Charge",
+        "Mortgage"
+      ],
+      [
+        "Beneficiary",
+        "Stipulation for Third Party"
+      ],
+      [
+        "Article 673",
+        "Force Majeure"
+      ],
+      [
+        "Contract",
+        "Promise To Contract"
+      ],
+      [
+        "Fraudulent Concealment",
+        "Warranty Against Dispossession"
+      ],
+      [
+        "Egyptian Civil Code",
+        "Private International Law"
+      ],
+      [
+        "Mortgage",
+        "Section III: Extinguishment of the Mortgage"
+      ],
+      [
+        "Judge",
+        "Natural Justice"
+      ],
+      [
+        "Original Obligation",
+        "Suretyship"
+      ],
+      [
+        "Creditor",
+        "Specific Performance"
+      ],
+      [
+        "Contract",
+        "Essential Mistake"
+      ],
+      [
+        "Article 1128",
+        "Pledge Of Debts"
+      ],
+      [
+        "Expert",
+        "Summary Court"
+      ],
+      [
+        "Debt",
+        "Surety"
+      ],
+      [
+        "Assured",
+        "Policy of Insurance"
+      ],
+      [
+        "Court",
+        "Lesion"
+      ],
+      [
+        "Assignment of a Right",
+        "Joint and Several Creditor"
+      ],
+      [
+        "Fire Insurance",
+        "Insurer"
+      ],
+      [
+        "Material Movables",
+        "Pledge Of A Movable"
+      ],
+      [
+        "Contract Of Pledge",
+        "Secured Debt"
+      ],
+      [
+        "Mandator (الموكل)",
+        "Third Party (الغير)"
+      ],
+      [
+        "Contract",
+        "Equity"
+      ],
+      [
+        "Bilateral Contract",
+        "Contract"
+      ],
+      [
+        "Joint Ownership",
+        "Obligatory Joint Ownership"
+      ],
+      [
+        "Assignment of Debt",
+        "Surety"
+      ],
+      [
+        "Judicial Custody",
+        "Nazir"
+      ],
+      [
+        "Contract",
+        "Contract Interpretation"
+      ],
+      [
+        "Court",
+        "Exclusion"
+      ],
+      [
+        "Immovable Property",
+        "Lesion"
+      ],
+      [
+        "The Court",
+        "The Greffier"
+      ],
+      [
+        "Judgment Charge",
+        "Section I: The Constitution of a Judgment Charge"
+      ],
+      [
+        "Third Party Holder",
+        "Title Deed"
+      ],
+      [
+        "Beneficiary",
+        "Promisor"
+      ],
+      [
+        "Bare Owner",
+        "Preemption"
+      ],
+      [
+        "Life Assured",
+        "Life Insurance"
+      ],
+      [
+        "Insurer",
+        "Sum Assured"
+      ],
+      [
+        "Hekr",
+        "Idjaratein"
+      ],
+      [
+        "Proprietary Rights",
+        "Things Outside The Ambit Of Trade"
+      ],
+      [
+        "Current Account",
+        "Novation"
+      ],
+      [
+        "Creditors of the Estate (دائنو التركة)",
+        "Debts of the Estate (ديون التركة)"
+      ],
+      [
+        "Article 364",
+        "Compensation (Set Off)"
+      ],
+      [
+        "Borrower (Musta'ir)",
+        "Lender (Mu'ir)"
+      ],
+      [
+        "Insanity",
+        "Void Act"
+      ],
+      [
+        "Promisor",
+        "Stipulator"
+      ],
+      [
+        "Sale During Last Illness",
+        "Third Party In Good Faith"
+      ],
+      [
+        "Alimentary Allowance",
+        "Article 259"
+      ],
+      [
+        "Article 627",
+        "Heirs of Lessee"
+      ],
+      [
+        "Article 443",
+        "Article 444"
+      ],
+      [
+        "Co-owner",
+        "Co-partitioner's Privilege Over Movable"
+      ],
+      [
+        "Heirs",
+        "Sale During Last Illness"
+      ],
+      [
+        "Acquirer",
+        "Co-owner"
+      ],
+      [
+        "Interested Parties",
+        "Receiver"
+      ],
+      [
+        "Joint and Several Debtor",
+        "Judgment"
+      ],
+      [
+        "Charie Court of First Instance",
+        "President of the Court"
+      ],
+      [
+        "Creditor",
+        "Securities"
+      ],
+      [
+        "Force Majeure",
+        "Lessee"
+      ],
+      [
+        "Contract of Adhesion",
+        "Judge"
+      ],
+      [
+        "Article 326",
+        "Subrogation"
+      ],
+      [
+        "Auction",
+        "Expropriation"
+      ],
+      [
+        "Creditor",
+        "Merger"
+      ],
+      [
+        "Article 629",
+        "Nazir"
+      ],
+      [
+        "Alimentary Allowance",
+        "President of the Court"
+      ],
+      [
+        "Good Faith (حسن النية)",
+        "Third Party (أجنبي)"
+      ],
+      [
+        "Article 927",
+        "Article 982"
+      ],
+      [
+        "Bad Faith",
+        "The Creditor"
+      ],
+      [
+        "Compulsory Expropriation",
+        "Public Auction"
+      ],
+      [
+        "Article 494",
+        "Dispossession"
+      ],
+      [
+        "Contract",
+        "Duress"
+      ],
+      [
+        "Creditor",
+        "Enforceable Judgment"
+      ],
+      [
+        "Delegation",
+        "Third Party"
+      ],
+      [
+        "Division by Disposition (Mortis Causa)",
+        "Heirs (الورثة)"
+      ],
+      [
+        "Formal Summons",
+        "Vendor"
+      ],
+      [
+        "Future Debt",
+        "Surety"
+      ],
+      [
+        "Debtor Of A Pledged Debt",
+        "Pledgee"
+      ],
+      [
+        "Mandatary (الوكيل)",
+        "Reasonable Person (الرجل المعتاد)"
+      ],
+      [
+        "Exchange",
+        "Sale Of Commodities"
+      ],
+      [
+        "Judge",
+        "Partition"
+      ],
+      [
+        "Article 445",
+        "Warranty Against Dispossession"
+      ],
+      [
+        "Chapter IV: Privileged Rights",
+        "Section II: Kinds of Privileges"
+      ],
+      [
+        "Hotel Proprietor",
+        "Hotel Proprietor's Privilege"
+      ],
+      [
+        "Mortgage",
+        "Pledge"
+      ],
+      [
+        "Imbecility",
+        "Minor Possessing Discretion"
+      ],
+      [
+        "Managing Partner",
+        "Partnership Deed"
+      ],
+      [
+        "Article 198",
+        "The Law"
+      ],
+      [
+        "Mortgagee",
+        "Right of Preference"
+      ],
+      [
+        "Invention",
+        "Master (رب العمل)"
+      ],
+      [
+        "Court",
+        "Inventory"
+      ],
+      [
+        "Donee",
+        "Donor"
+      ],
+      [
+        "Court of First Instance",
+        "Debtor"
+      ],
+      [
+        "Holder in Good Faith",
+        "Lessor"
+      ],
+      [
+        "Article 853",
+        "Non-family Member"
+      ],
+      [
+        "Apparent Servitudes",
+        "Rights of Way"
+      ],
+      [
+        "Co-owner",
+        "Mortgage"
+      ],
+      [
+        "Article 913",
+        "Estate (التركة)"
+      ],
+      [
+        "Giving in Payment",
+        "Payment"
+      ],
+      [
+        "Debtor",
+        "Payment"
+      ],
+      [
+        "Master",
+        "Unit Price Contract"
+      ],
+      [
+        "Public Domain",
+        "Public Utility"
+      ],
+      [
+        "Auction",
+        "Third Party Holder"
+      ],
+      [
+        "Debtor Of A Pledged Debt",
+        "Pledgor"
+      ],
+      [
+        "Article 178",
+        "Liability Arising from Things"
+      ],
+      [
+        "Legal Capacity",
+        "Minor"
+      ],
+      [
+        "Imbecility",
+        "Interdiction"
+      ],
+      [
+        "Judge (القاضى)",
+        "Mandator (الموكل)"
+      ],
+      [
+        "Sale Contract",
+        "Sale upon Trial"
+      ],
+      [
+        "Debtor",
+        "Security"
+      ],
+      [
+        "Fire Insurance",
+        "Theft"
+      ],
+      [
+        "Partnership",
+        "Third Party"
+      ],
+      [
+        "Code Of Procedure",
+        "Court"
+      ],
+      [
+        "Succession of a Living Person",
+        "Void Act"
+      ],
+      [
+        "Article 632",
+        "Lessee"
+      ],
+      [
+        "Brokers And Experts",
+        "Sale By Representative To Himself"
+      ],
+      [
+        "Purchaser",
+        "Warranty Of Eviction"
+      ],
+      [
+        "Essential Mistake",
+        "Good Faith"
+      ],
+      [
+        "Administrator",
+        "Inventory"
+      ],
+      [
+        "Original Obligation",
+        "Real Securities"
+      ],
+      [
+        "Agreed Damages",
+        "Judge"
+      ],
+      [
+        "Vendor",
+        "Warranty Against Defects"
+      ],
+      [
+        "Heirs",
+        "Principal"
+      ],
+      [
+        "Administrator of an Estate",
+        "Expert"
+      ],
+      [
+        "Article 1012",
+        "Hekr"
+      ],
+      [
+        "Provinces (Mudirias)",
+        "The State"
+      ],
+      [
+        "Architect (Muhandis Mi'mari)",
+        "Contractor (Muqawil)"
+      ],
+      [
+        "Article 374",
+        "Extinctive Prescription"
+      ],
+      [
+        "Article 448",
+        "Warranty Against Defects"
+      ],
+      [
+        "Contract",
+        "Universal Successor in Title"
+      ],
+      [
+        "Lessee",
+        "Rent"
+      ],
+      [
+        "Holder in Good Faith",
+        "Privileged Right"
+      ],
+      [
+        "Article 368",
+        "Assignment Of Debt"
+      ],
+      [
+        "Compromise",
+        "Dispute"
+      ],
+      [
+        "Avoidance",
+        "Duress"
+      ],
+      [
+        "Extinctive Prescription",
+        "Prescription Commencement"
+      ],
+      [
+        "Holder in Good Faith",
+        "Hotel Proprietor"
+      ],
+      [
+        "Article 962",
+        "Three Possessory Actions"
+      ],
+      [
+        "Pledgee",
+        "Pledgor"
+      ],
+      [
+        "Heir of Depository",
+        "Owner"
+      ],
+      [
+        "Inscription",
+        "Rank Assignment"
+      ],
+      [
+        "Article 201",
+        "Effects of Obligations"
+      ],
+      [
+        "Article 1115",
+        "Pledge Of An Immovable"
+      ],
+      [
+        "Chapter I: Mortgages",
+        "Section I: The Constitution Of Mortgages"
+      ],
+      [
+        "Contract for Work (Muqawalah)",
+        "Contractor (Muqawil)"
+      ],
+      [
+        "Article 209",
+        "Article 650"
+      ],
+      [
+        "Debtor",
+        "Expenses"
+      ],
+      [
+        "Property Owner",
+        "Right of Ownership"
+      ],
+      [
+        "Administrator",
+        "Estate"
+      ],
+      [
+        "Article 453",
+        "Fraudulent Concealment"
+      ],
+      [
+        "Hotel Proprietor",
+        "Vendor's Privilege Over Movable"
+      ],
+      [
+        "Profit Sharing",
+        "Worker (العامل)"
+      ],
+      [
+        "Joint Ownership",
+        "Manager"
+      ],
+      [
+        "Articles 104 to 107",
+        "Mandator (الموكل)"
+      ],
+      [
+        "Fruits And Revenue",
+        "Pledgee"
+      ],
+      [
+        "Article 1127",
+        "Pledge Of Debts"
+      ],
+      [
+        "Lessor",
+        "Notice of Evacuation"
+      ],
+      [
+        "Article 446",
+        "Fraudulent Concealment"
+      ],
+      [
+        "Court",
+        "Lower Storey"
+      ],
+      [
+        "Owner",
+        "Party Wall"
+      ],
+      [
+        "Contract",
+        "Ownership"
+      ],
+      [
+        "Contract of Loan for Consumption",
+        "Deposit"
+      ],
+      [
+        "Court",
+        "Good Faith"
+      ],
+      [
+        "Caisse du Tribunal",
+        "Creditor"
+      ],
+      [
+        "Pledgee",
+        "The Judge"
+      ],
+      [
+        "Borrower",
+        "Lender"
+      ],
+      [
+        "Article 1113",
+        "Extinguishment Of A Pledge"
+      ],
+      [
+        "Article 228",
+        "Moratory Interest"
+      ],
+      [
+        "Purge",
+        "Third Party Holder"
+      ],
+      [
+        "Indemnification",
+        "Insurer"
+      ],
+      [
+        "Owner",
+        "Person in Charge of Animal"
+      ],
+      [
+        "Trade Secrets",
+        "Worker (العامل)"
+      ],
+      [
+        "Debtor",
+        "Fraud"
+      ],
+      [
+        "Hidden Contract",
+        "Ostensible Contract"
+      ],
+      [
+        "Article 1129",
+        "Pledge Of Debts"
+      ],
+      [
+        "Creditor",
+        "Person Assuming the Debt"
+      ],
+      [
+        "Contractor",
+        "Master"
+      ],
+      [
+        "Contractor",
+        "Contractor's And Architect's Privilege"
+      ],
+      [
+        "Co-owner",
+        "Majority Decision"
+      ],
+      [
+        "Article 848",
+        "Contract of Lease"
+      ],
+      [
+        "Pledged Debt",
+        "Pledgee"
+      ],
+      [
+        "Article 611",
+        "Lessee"
+      ],
+      [
+        "Article 520",
+        "Partner"
+      ],
+      [
+        "Article 1122",
+        "Institutions Authorized To Lend Money On Pledge"
+      ],
+      [
+        "Insurance Contract",
+        "Special Laws"
+      ],
+      [
+        "Creditor",
+        "Security"
+      ],
+      [
+        "Judge",
+        "Liquidator"
+      ],
+      [
+        "Code of Procedure",
+        "Judicial Deposit"
+      ],
+      [
+        "Avoidance of Contract",
+        "Lesion"
+      ],
+      [
+        "Juristic Person",
+        "Provinces (Mudirias)"
+      ],
+      [
+        "Acquisitive Prescription",
+        "Suspension of Prescription"
+      ],
+      [
+        "Novation",
+        "Promissory Note"
+      ],
+      [
+        "Domicile",
+        "Juristic Person"
+      ],
+      [
+        "Court",
+        "Lessee"
+      ],
+      [
+        "Article 493",
+        "Donor"
+      ],
+      [
+        "Article 515",
+        "Partnership Deed"
+      ],
+      [
+        "Extinctive Prescription",
+        "Judge"
+      ],
+      [
+        "Article 358",
+        "Suretyship"
+      ],
+      [
+        "Article 521",
+        "Partner"
+      ],
+      [
+        "Mortgage",
+        "Pactum Commissorium"
+      ],
+      [
+        "Mortgaged Property",
+        "Third Party Holder"
+      ],
+      [
+        "Interested Party",
+        "Inventory"
+      ],
+      [
+        "Duress",
+        "Payor"
+      ],
+      [
+        "Pledged Thing",
+        "The Judge"
+      ],
+      [
+        "Right of User and Occupation",
+        "Usufruct"
+      ],
+      [
+        "Law Regulating the Publication of Real Rights",
+        "Mortgage"
+      ],
+      [
+        "Mortgagee",
+        "Unsecured Creditor"
+      ],
+      [
+        "Compromise",
+        "Public Policy"
+      ],
+      [
+        "Creditor",
+        "Pledge"
+      ],
+      [
+        "Article 519",
+        "Partner"
+      ],
+      [
+        "Article 371",
+        "Release Of Obligation"
+      ],
+      [
+        "Common Parts",
+        "Title Deeds"
+      ],
+      [
+        "Article 916",
+        "Testator (الموصى)"
+      ],
+      [
+        "Contract",
+        "Natural Guardian"
+      ],
+      [
+        "Creditor",
+        "Subrogation"
+      ],
+      [
+        "Creditor",
+        "Restitution"
+      ],
+      [
+        "Heirs",
+        "Partnership"
+      ],
+      [
+        "Contract",
+        "Sources Of Obligations"
+      ],
+      [
+        "Article 1111",
+        "Contract Of Pledge"
+      ],
+      [
+        "Damages",
+        "Security"
+      ],
+      [
+        "Egypt",
+        "Non-Contractual Obligations"
+      ],
+      [
+        "Article 502",
+        "Revocation of Gift"
+      ],
+      [
+        "Advance Proof",
+        "Prescription"
+      ],
+      [
+        "Civil Obligation",
+        "Natural Obligation"
+      ]
+    ],
+    "count": 1474,
+    "create_time": 1779496019,
+    "update_time": 1779496019,
+    "_id": "egyptian_law"
+  }
+}
