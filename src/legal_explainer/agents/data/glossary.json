@@ -1,0 +1,212 @@
+{
+  "contract": {
+    "id": "contract",
+    "en": {
+      "term": "contract",
+      "definition": "An agreement between two or more parties that creates mutual obligations enforceable by law.",
+      "related_articles": ["Article 89", "Article 90"]
+    },
+    "ar": {
+      "term": "عقد",
+      "definition": "اتفاق بين طرفين أو أكثر يُنشئ التزامات متبادلة يحميها القانون.",
+      "related_articles": ["المادة 89", "المادة 90"]
+    },
+    "aliases": ["agreement", "اتفاق", "اتفاقية"]
+  },
+  "obligation": {
+    "id": "obligation",
+    "en": {
+      "term": "obligation",
+      "definition": "A legal duty that binds one party to give, do, or refrain from doing something for another party.",
+      "related_articles": ["Article 198"]
+    },
+    "ar": {
+      "term": "التزام",
+      "definition": "واجب قانوني يُلزم الشخص بالقيام بعمل أو الامتناع عن عمل لمصلحة شخص آخر.",
+      "related_articles": ["المادة 198"]
+    },
+    "aliases": ["duty", "واجب"]
+  },
+  "damages": {
+    "id": "damages",
+    "en": {
+      "term": "damages",
+      "definition": "Monetary compensation awarded to a party who has suffered loss or injury due to another's act or omission.",
+      "related_articles": ["Article 221", "Article 222"]
+    },
+    "ar": {
+      "term": "تعويض",
+      "definition": "مبلغ مالي يُحكم به للطرف المتضرر جبراً للضرر الذي لحق به من فعل غيره.",
+      "related_articles": ["المادة 221", "المادة 222"]
+    },
+    "aliases": ["compensation", "indemnification", "indemnity", "جبر", "تعويضات"]
+  },
+  "liability": {
+    "id": "liability",
+    "en": {
+      "term": "liability",
+      "definition": "Legal responsibility for one's acts or omissions, giving rise to an obligation to compensate or perform.",
+      "related_articles": ["Article 163"]
+    },
+    "ar": {
+      "term": "مسؤولية",
+      "definition": "المسؤولية القانونية عن الأفعال أو التقصير، وما يترتب عليها من واجب التعويض أو التنفيذ.",
+      "related_articles": ["المادة 163"]
+    },
+    "aliases": ["responsibility", "مسئولية"]
+  },
+  "force_majeure": {
+    "id": "force_majeure",
+    "en": {
+      "term": "force majeure",
+      "definition": "An unforeseeable, unavoidable event outside the parties' control (e.g. natural disaster, war) that excuses non-performance of a contract.",
+      "related_articles": ["Article 215"]
+    },
+    "ar": {
+      "term": "قوة قاهرة",
+      "definition": "حادث غير متوقع لا يمكن دفعه ويخرج عن إرادة المتعاقدين (كالكوارث الطبيعية والحرب)، يُعفي من تنفيذ الالتزام.",
+      "related_articles": ["المادة 215"]
+    },
+    "aliases": ["act of god", "ظرف قاهر", "حادث جبري"]
+  },
+  "lease": {
+    "id": "lease",
+    "en": {
+      "term": "lease",
+      "definition": "A contract by which the lessor grants the lessee the use of a thing for a specified period in exchange for rent.",
+      "related_articles": ["Article 558", "Article 559"]
+    },
+    "ar": {
+      "term": "إيجار",
+      "definition": "عقد يلتزم بمقتضاه المؤجر أن يُمكِّن المستأجر من الانتفاع بشيء معين مدة محددة لقاء أجر معلوم.",
+      "related_articles": ["المادة 558", "المادة 559"]
+    },
+    "aliases": ["rent", "rental", "أجرة"]
+  },
+  "mandate": {
+    "id": "mandate",
+    "en": {
+      "term": "mandate",
+      "definition": "A contract by which a person (the mandatary) is authorized to perform a legal act on behalf of another (the mandator).",
+      "related_articles": ["Article 699", "Article 713"]
+    },
+    "ar": {
+      "term": "وكالة",
+      "definition": "عقد يُفوِّض بمقتضاه شخص (الوكيل) إلى آخر (الموكِّل) في القيام بعمل قانوني نيابة عنه.",
+      "related_articles": ["المادة 699", "المادة 713"]
+    },
+    "aliases": ["agency", "agent", "mandatary", "وكيل", "موكل", "نائب"]
+  },
+  "inheritance": {
+    "id": "inheritance",
+    "en": {
+      "term": "inheritance",
+      "definition": "The transfer of a deceased person's estate, rights, and obligations to their heirs by operation of law.",
+      "related_articles": ["Article 875"]
+    },
+    "ar": {
+      "term": "ميراث",
+      "definition": "انتقال أموال المتوفى وحقوقه والتزاماته إلى ورثته بحكم القانون.",
+      "related_articles": ["المادة 875"]
+    },
+    "aliases": ["succession", "estate", "تركة", "وراثة"]
+  },
+  "ownership": {
+    "id": "ownership",
+    "en": {
+      "term": "ownership",
+      "definition": "The exclusive right to use, enjoy, and dispose of a thing within the limits set by law.",
+      "related_articles": ["Article 802"]
+    },
+    "ar": {
+      "term": "ملكية",
+      "definition": "الحق في استعمال الشيء والانتفاع به والتصرف فيه على وجه الانفراد في حدود القانون.",
+      "related_articles": ["المادة 802"]
+    },
+    "aliases": ["property", "title", "حق الملكية"]
+  },
+  "gift": {
+    "id": "gift",
+    "en": {
+      "term": "gift",
+      "definition": "A contract by which a person voluntarily transfers ownership of a thing to another without consideration.",
+      "related_articles": ["Article 486", "Article 500"]
+    },
+    "ar": {
+      "term": "هبة",
+      "definition": "عقد يتصرف به الواهب في مال له، دون مقابل، تبرعاً لشخص آخر يقبل ذلك.",
+      "related_articles": ["المادة 486", "المادة 500"]
+    },
+    "aliases": ["donation", "تبرع"]
+  },
+  "loan_for_use": {
+    "id": "loan_for_use",
+    "en": {
+      "term": "loan for use",
+      "definition": "A contract by which the lender delivers a non-fungible thing to the borrower to use gratuitously and return at the end of the agreed period.",
+      "related_articles": ["Article 635", "Article 644"]
+    },
+    "ar": {
+      "term": "عارية",
+      "definition": "عقد يلتزم به المعير أن يُسلِّم المستعير شيئاً غير قابل للاستهلاك لينتفع به دون مقابل ويردَّه بعد الانتفاع.",
+      "related_articles": ["المادة 635", "المادة 644"]
+    },
+    "aliases": ["commodatum", "إعارة"]
+  },
+  "pre_emption": {
+    "id": "pre_emption",
+    "en": {
+      "term": "pre-emption",
+      "definition": "The right of a co-owner, neighbour, or qualified person to acquire immovable property sold to a third party under the same terms.",
+      "related_articles": ["Article 935", "Article 936"]
+    },
+    "ar": {
+      "term": "شفعة",
+      "definition": "حق يُجيز للشريك أو الجار أو من في حكمهما تملُّك العقار المبيع لأجنبي بنفس شروط البيع.",
+      "related_articles": ["المادة 935", "المادة 936"]
+    },
+    "aliases": ["right of first refusal", "حق الشفعة"]
+  },
+  "usufruct": {
+    "id": "usufruct",
+    "en": {
+      "term": "usufruct",
+      "definition": "The right to use and enjoy the fruits of property belonging to another, with the duty to preserve its substance.",
+      "related_articles": ["Article 985"]
+    },
+    "ar": {
+      "term": "حق الانتفاع",
+      "definition": "حق عيني يخوِّل صاحبه استعمال شيء مملوك للغير واستغلاله، مع التزامه بالمحافظة على أصل الشيء.",
+      "related_articles": ["المادة 985"]
+    },
+    "aliases": ["right of use and enjoyment", "انتفاع"]
+  },
+  "joint_ownership": {
+    "id": "joint_ownership",
+    "en": {
+      "term": "joint ownership",
+      "definition": "Ownership of a single thing by two or more persons in undivided shares.",
+      "related_articles": ["Article 825"]
+    },
+    "ar": {
+      "term": "ملكية شائعة",
+      "definition": "ملكية الشيء الواحد لعدة أشخاص على الشيوع، بحيث يكون لكل منهم حصة شائعة فيه.",
+      "related_articles": ["المادة 825"]
+    },
+    "aliases": ["co-ownership", "common ownership", "شيوع", "شركة على الشيوع"]
+  },
+  "nationality": {
+    "id": "nationality",
+    "en": {
+      "term": "nationality",
+      "definition": "The legal bond between a person and a state determining the law applicable to their personal status.",
+      "related_articles": ["Article 25"]
+    },
+    "ar": {
+      "term": "جنسية",
+      "definition": "الرابطة القانونية بين الشخص والدولة، وهي التي تحدد القانون الواجب التطبيق على أحواله الشخصية.",
+      "related_articles": ["المادة 25"]
+    },
+    "aliases": ["citizenship", "تابعية"]
+  }
+}
