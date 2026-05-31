@@ -166,7 +166,10 @@ async def comparator_node(state: GraphState) -> dict[str, Any]:
 async def explainer_node(state: GraphState) -> dict[str, Any]:
     state["flow"].subagent_start("explainer")
     explanation = await run_explainer(
-        state["user_query"], state.get("findings", {}), flow=state["flow"]
+        state["user_query"],
+        state.get("findings", {}),
+        flow=state["flow"],
+        on_chunk=state["flow"].answer_chunk,
     )
     state["trace"].log(
         "subagent",
@@ -239,11 +242,18 @@ def get_app():
 # ── Public entry point ───────────────────────────────────────────────────────
 
 
-async def run_orchestrated_lg(user_query: str) -> OrchestratorResult:
-    """LangGraph drop-in for `orchestrator.run_orchestrated`. Same return type."""
+async def run_orchestrated_lg(
+    user_query: str, flow_logger: FlowLogger | None = None
+) -> OrchestratorResult:
+    """LangGraph drop-in for `orchestrator.run_orchestrated`. Same return type.
+
+    If `flow_logger` is provided, it is used (and its `events` list is
+    populated as the run progresses) — useful for UIs that want to render the
+    flow afterward. Otherwise a fresh logger is created internally.
+    """
     query_id = uuid.uuid4().hex[:12]
     trace = TraceLogger(query_id)
-    flow = FlowLogger(query_id)
+    flow = flow_logger if flow_logger is not None else FlowLogger(query_id)
     t_start = time.time()
 
     flow.query(user_query)

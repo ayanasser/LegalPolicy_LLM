@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Callable
 
 from claude_agent_sdk import (
     AssistantMessage,
@@ -46,7 +46,14 @@ async def run_explainer(
     user_query: str,
     findings: dict[str, Any],
     flow: FlowLogger | None = None,
+    on_chunk: Callable[[str], None] | None = None,
 ) -> ExplainerAnswer:
+    """Synthesize the user-facing answer.
+
+    `on_chunk(text)` is called for every TextBlock received from the model as
+    the response streams in — useful for UIs that want to render the answer
+    progressively rather than wait for the whole thing.
+    """
     options = ClaudeAgentOptions(
         system_prompt=_SYSTEM,
         allowed_tools=[],
@@ -62,6 +69,12 @@ async def run_explainer(
             for block in message.content:
                 if isinstance(block, TextBlock):
                     text_parts.append(block.text)
+                    if on_chunk is not None:
+                        try:
+                            on_chunk(block.text)
+                        except Exception:
+                            # Never let a UI callback break the orchestrator.
+                            pass
         elif isinstance(message, ResultMessage):
             cost = getattr(message, "total_cost_usd", None) or 0.0
             duration = getattr(message, "duration_ms", 0)
