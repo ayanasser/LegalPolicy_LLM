@@ -18,7 +18,7 @@ from claude_agent_sdk import (
     TextBlock,
     query,
 )
-from claude_agent_sdk.types import ToolUseBlock
+from claude_agent_sdk.types import ToolResultBlock, ToolUseBlock, UserMessage
 
 from legal_explainer.agents.config import (
     PROMPTS_DIR,
@@ -61,6 +61,46 @@ def _extract_json_block(text: str) -> dict[str, Any]:
         return {}
 
 
+def _summarize_tool_result(content) -> str:
+    """Compact a ToolResultBlock's content into a one-line summary for the
+    flow trace. Tool results can be huge (full chunks, full article text);
+    this picks out the most informative slice."""
+    if content is None:
+        return "(empty)"
+    # MCP envelope: list of {type: text, text: "..."} dicts
+    if isinstance(content, list):
+        text_parts = [
+            block.get("text", "") for block in content
+            if isinstance(block, dict) and block.get("type") == "text"
+        ]
+        text = "\n".join(text_parts)
+    else:
+        text = str(content)
+
+    text = text.strip()
+    # Try to surface structured fields from our tool envelopes ({found, ok, ...}).
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            if parsed.get("found") is True and "article_number" in parsed:
+                t = parsed.get("text", "") or ""
+                return f"found Article {parsed['article_number']}: {t[:160]}…"
+            if parsed.get("found") is False:
+                return f"not found ({parsed.get('reason', '?')})"
+            if parsed.get("ok") is True:
+                ents = len(parsed.get("entities", []))
+                rels = len(parsed.get("relationships", []))
+                chunks = len(parsed.get("chunks", []))
+                return f"ok — {ents} entities, {rels} relations, {chunks} chunks"
+            if parsed.get("ok") is False:
+                return f"no match ({parsed.get('message', '?')})"
+            if parsed.get("canonical_id"):
+                return f"glossary hit: {parsed['canonical_id']}"
+    except (ValueError, json.JSONDecodeError):
+        pass
+    return text[:200] + ("…" if len(text) > 200 else "")
+
+
 async def run_researcher(
     user_query: str, flow: FlowLogger | None = None
 ) -> ResearcherFindings:
@@ -92,6 +132,17 @@ async def run_researcher(
                     text_parts.append(block.text)
                 elif isinstance(block, ToolUseBlock) and flow is not None:
                     flow.tool_call(block.name.split("__")[-1], block.input)
+        elif isinstance(message, UserMessage) and flow is not None:
+            # Tool results come back to the model wrapped in a UserMessage
+            # whose content is a list of ToolResultBlock(s).
+            content = message.content if isinstance(message.content, list) else []
+            for block in content:
+                if isinstance(block, ToolResultBlock):
+                    summary = _summarize_tool_result(block.content)
+                    if block.is_error:
+                        flow.tool_error("(tool)", summary)
+                    else:
+                        flow.tool_result("(tool)", summary)
         elif isinstance(message, ResultMessage):
             cost = getattr(message, "total_cost_usd", None) or 0.0
             duration = getattr(message, "duration_ms", 0)

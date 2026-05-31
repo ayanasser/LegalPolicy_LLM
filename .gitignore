@@ -54,3 +54,11 @@ data/_polish_*.json
 
 # Langfuse / local logs
 *.log
+
+# LaTeX build artifacts
+*.aux
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk

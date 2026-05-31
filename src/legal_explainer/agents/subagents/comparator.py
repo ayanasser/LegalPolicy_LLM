@@ -17,7 +17,7 @@ from claude_agent_sdk import (
     TextBlock,
     query,
 )
-from claude_agent_sdk.types import ToolUseBlock
+from claude_agent_sdk.types import ToolResultBlock, ToolUseBlock, UserMessage
 
 from legal_explainer.agents.config import (
     COMPARATOR_MODEL,
@@ -88,6 +88,18 @@ async def run_comparator(
                     text_parts.append(block.text)
                 elif isinstance(block, ToolUseBlock) and flow is not None:
                     flow.tool_call(block.name.split("__")[-1], block.input)
+        elif isinstance(message, UserMessage) and flow is not None:
+            from legal_explainer.agents.subagents.researcher import (
+                _summarize_tool_result,
+            )
+            content = message.content if isinstance(message.content, list) else []
+            for block in content:
+                if isinstance(block, ToolResultBlock):
+                    summary = _summarize_tool_result(block.content)
+                    if block.is_error:
+                        flow.tool_error("(tool)", summary)
+                    else:
+                        flow.tool_result("(tool)", summary)
         elif isinstance(message, ResultMessage):
             cost = getattr(message, "total_cost_usd", None) or 0.0
             duration = getattr(message, "duration_ms", 0)
