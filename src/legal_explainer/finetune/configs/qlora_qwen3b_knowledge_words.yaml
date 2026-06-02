@@ -1,0 +1,73 @@
+# Stage-A knowledge-injection QLoRA recipe — Qwen 2.5 3B Instruct, trained on
+# the **words-form** knowledge dataset (article numbers spelled out in Arabic
+# and English) with the **r=32 / alpha=64 + MLP modules** capacity bump.
+#
+# Two changes vs runs/qlora-qwen2.5-3b-knowledge (the earlier r=16/32 run):
+#   1. Data: data/qa_pairs_knowledge_words.jsonl (+_val) — article numbers as
+#      words ("Article seven hundred and seventy five" / "المادة سبعمائة و
+#      خمسة و سبعون"). Subword tokenisers treat "775" as a single opaque token;
+#      spelled-out forms decompose into semantically-meaningful pieces that
+#      strengthen the number ↔ article binding, especially in Arabic.
+#   2. Prompts in that file are now language-tagged ([EN] / [AR] / [BI]) by
+#      scripts/prefix_language_tag.py — locks the output language and reduces
+#      script bleed (Chinese / French tokens leaking into Arabic answers).
+#
+# Capacity bump: r=16 → 32, alpha=32 → 64, target_modules already includes the
+# MLP projections (gate/up/down) — factual knowledge lives in MLP layers, so
+# expanding their LoRA matrices is the right place to add capacity.
+#
+#   train: python scripts/train_unsloth.py --config <this file>
+#   eval (closed-book on the colloquial CSV):
+#     python scripts/eval_csv_closedbook.py --adapter runs/qlora-qwen2.5-3b-knowledge-words \
+#         --csv data/general_user_legal_questions.csv \
+#         --out reports/eval/general_user_legal_questions_knowledge_words.json
+
+base_model: Qwen/Qwen2.5-3B-Instruct
+adapter_name: qlora-qwen2.5-3b-knowledge-words
+output_dir: runs/qlora-qwen2.5-3b-knowledge-words
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  r: 32                                  # bumped from 16 — more capacity for ~1,093 bilingual articles
+  alpha: 64                              # kept at 2*r
+  dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  num_train_epochs: 4
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 1.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true           # train_unsloth.py applies Unsloth's checkpointing
+  optim: paged_adamw_8bit
+  max_seq_length: 1280                   # the longest kn_card / kn_bilingual targets fit comfortably
+  packing: false
+  logging_steps: 10
+  eval_strategy: epoch
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+wandb:
+  project: legalpolicy-knowledge
+  run_name: qlora-qwen2.5-3b-knowledge-words
+
+data:
+  train_jsonl: data/qa_pairs_knowledge_words.jsonl
+  val_jsonl: data/qa_pairs_knowledge_words_val.jsonl

@@ -135,10 +135,14 @@ class RAGPipeline:
 
     def startup(self) -> None:
         """Load models and open connections.  Called once at API startup."""
-        print("[pipeline] Loading BGE-M3 …")
+        device = self.cfg.embed_device
+        # fp16 is a no-op / unsupported on CPU — only keep it for CUDA.
+        use_fp16 = self.cfg.embed_use_fp16 and device != "cpu"
+        print(f"[pipeline] Loading BGE-M3 on {device} (fp16={use_fp16}) …")
         self._embed_model = BGEM3FlagModel(
             self.cfg.embed_model_name,
-            use_fp16=self.cfg.embed_use_fp16,
+            use_fp16=use_fp16,
+            devices=device,
         )
         print("[pipeline] Connecting to Neo4j …")
         self._driver = GraphDatabase.driver(

@@ -1,0 +1,4 @@
+{"ts": "2026-06-02T12:52:09.568681+00:00", "query_id": "30e1eeaf30d4", "step": "safety", "verdict": "allow", "reason": null}
+{"ts": "2026-06-02T12:52:24.478546+00:00", "query_id": "30e1eeaf30d4", "step": "route", "complexity": "medium", "rule_matched": null, "used_llm": true, "reason": "The user is asking a topical legal question about liability when exercising a right causes harm — not requesting a single glossary definition or a comparison.", "glossary_term_id": null}
+{"ts": "2026-06-02T12:54:14.574042+00:00", "query_id": "30e1eeaf30d4", "step": "subagent", "agent": "researcher", "cost_usd": 0.22780000000000003, "duration_ms": 108653}
+{"ts": "2026-06-02T12:54:56.268637+00:00", "query_id": "30e1eeaf30d4", "step": "subagent", "agent": "explainer", "cost_usd": 0.130885, "duration_ms": 40310}

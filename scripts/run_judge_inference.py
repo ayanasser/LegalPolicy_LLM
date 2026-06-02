@@ -97,6 +97,11 @@ def main():
                          "(matches RAFT training format).")
     ap.add_argument("--corpus-path", type=Path, default=DEFAULT_CORPUS_PATH,
                     help="Path to orig_data.json (used to build RAFT context blocks).")
+    ap.add_argument("--language-tag", choices=["auto", "off"], default="off",
+                    help="auto -> prepend [AR] / [EN] / [BI] to each prompt to match adapters "
+                         "trained on a language-tagged dataset (e.g. via "
+                         "scripts/prefix_language_tag.py). off (default) leaves prompts as-is "
+                         "for backward compatibility with un-tagged adapters.")
     args = ap.parse_args()
 
     rows = [json.loads(l) for l in args.val_path.read_text(encoding="utf-8").splitlines()]
@@ -141,6 +146,10 @@ def main():
             )
         else:
             prompt_msg = user_msg
+        if args.language_tag == "auto":
+            lang = ex.get("language") or "en"
+            tag = "[AR] " if lang == "ar" else ("[BI] " if lang == "bi" else "[EN] ")
+            prompt_msg = tag + prompt_msg
         chat = [{"role": "user", "content": prompt_msg}]
         prompt_text = tok.apply_chat_template(
             chat, tokenize=False, add_generation_prompt=True
