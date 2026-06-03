@@ -74,8 +74,9 @@ BGE-M3 + Neo4j Aura graph + vector index + Qwen3 (Ollama). Needs `NEO4J_*` in `.
 
 ## 4. Bilingual RAG — Gradio / FastAPI (Project 4)  ·  UI http://localhost:7861
 
-Converted from `notebooks/bilingual-rag-system-over-the-egyptian-civil-code.ipynb`.
-BGE-M3 + Chroma (persistent) + multilingual cross-encoder rerank + `qwen2.5:3b-instruct`.
+Converted from `notebooks/bilingual-rag-system-over-the-egyptian-civil-code_fixed_trial.ipynb`.
+BGE-M3 + Chroma (persistent) + multilingual cross-encoder rerank + `qwen2.5:3b-instruct`,
+with exact article-number lookup (e.g. "نص المادة 446") bypassing semantic search.
 
 ```bash
 ./scripts/run_bilingual_rag.sh build   # one-time index build

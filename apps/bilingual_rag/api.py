@@ -78,6 +78,7 @@ class Hit(BaseModel):
 class AskResponse(BaseModel):
     answer: str
     keywords: list[str] | None = None
+    article_numbers: list[int] = []
     search_query: str = ""
     detected_language: str | None = None
     hits: list[Hit]
@@ -124,6 +125,7 @@ async def ask(req: AskRequest):
     r = await asyncio.to_thread(pipe.answer, req.question, k=req.top_k, use_rerank=req.use_rerank)
     return AskResponse(
         answer=r["answer"], keywords=r.get("keywords"),
+        article_numbers=r.get("article_numbers") or [],
         search_query=r.get("search_query", ""), detected_language=r.get("detected_language"),
         hits=_to_hits(r["hits"]), processing_time_ms=r.get("processing_time_ms", 0),
     )

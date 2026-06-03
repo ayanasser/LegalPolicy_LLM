@@ -480,6 +480,26 @@ question
 
 ---
 
+## MLOps — Observability with Langfuse
+
+Every question asked through the Unified UI is **traced to a self-hosted
+Langfuse v3** instance — production-style observability for the whole system.
+
+- **Self-hosted** via Docker Compose (`deploy/langfuse/`): web · worker · Postgres · ClickHouse · Redis · MinIO.
+- One **trace per question**, **named after the project** that answered it — so you filter/compare per backend.
+- Each trace logs **input** (question), **output** (answer), latency, and **metadata** (backend id, kind, #retrieved articles).
+- The helper **no-ops safely** if Langfuse is down — tracing never breaks the app.
+
+```
+question → Unified UI → trace("Neo4j Graph RAG"){ input, output, latency, metadata }
+```
+
+> `src/legal_explainer/observability/langfuse_tracing.py` · UI at http://localhost:3000
+
+<!-- Speaker note: Shows MLOps maturity — not just models, but monitoring/eval infrastructure. -->
+
+---
+
 ## How to Run
 
 ```bash

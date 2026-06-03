@@ -27,6 +27,19 @@ from . import config
 from .backends import REGISTRY, DEFAULT_LABEL
 from .suggestions import load_suggestions
 
+try:
+    # Langfuse tracing (MLOps observability). No-ops if Langfuse isn't configured.
+    from legal_explainer.observability.langfuse_tracing import trace_question
+except Exception:  # pragma: no cover - keep the UI working even if src/ isn't on path
+    import contextlib
+
+    @contextlib.contextmanager
+    def trace_question(*a, **k):
+        class _N:
+            def set_output(self, *a, **k):
+                pass
+        yield _N()
+
 _RETRIEVAL_HEADERS = ["article", "score", "lang", "snippet"]
 
 
@@ -123,7 +136,15 @@ def build_ui() -> gr.Blocks:
             if not message:
                 return history, gr.update(), gr.update(), "", ""
             backend = REGISTRY[backend_label]
-            reply = backend.generate(message, history)
+            # Trace each question to Langfuse; trace_name == the project (backend) label.
+            with trace_question(backend.label, message, backend_id=backend.id) as _tr:
+                reply = backend.generate(message, history)
+                _tr.set_output(
+                    reply.text,
+                    kind=backend.kind,
+                    status=reply.meta,
+                    n_retrieved=(len(reply.retrieval) if reply.retrieval else 0),
+                )
             history = history + [
                 {"role": "user", "content": message},
                 {"role": "assistant", "content": reply.text},

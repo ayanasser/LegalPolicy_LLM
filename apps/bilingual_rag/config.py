@@ -1,7 +1,7 @@
 """
 Configuration for the Bilingual RAG service (Project 4).
 
-Converted from notebooks/bilingual-rag-system-over-the-egyptian-civil-code.ipynb.
+Converted from notebooks/bilingual-rag-system-over-the-egyptian-civil-code_fixed_trial.ipynb.
 Everything is overridable via environment variables so the same code runs the
 standalone Gradio app, the FastAPI service, and the index builder.
 """

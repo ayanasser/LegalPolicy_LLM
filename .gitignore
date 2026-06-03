@@ -54,6 +54,8 @@ data/_polish_*.json
 
 # Langfuse / local logs
 *.log
+# Langfuse self-hosted stack secrets (auto-provisioned keys, db passwords)
+deploy/langfuse/.env
 
 # LaTeX build artifacts
 *.aux

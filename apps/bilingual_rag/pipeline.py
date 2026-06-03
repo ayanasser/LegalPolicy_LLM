@@ -2,16 +2,17 @@
 Bilingual RAG pipeline over the Egyptian Civil Code (Arabic + English).
 
 A faithful, importable port of the Kaggle notebook
-`notebooks/bilingual-rag-system-over-the-egyptian-civil-code.ipynb`. The notebook
-indexed into Chroma + Qdrant + (optional) Elasticsearch; this module keeps the
-default path — **Chroma** (persistent) — and drops the other two backends to keep
-the standalone service simple and reproducible.
+`notebooks/bilingual-rag-system-over-the-egyptian-civil-code_fixed_trial.ipynb`.
+The notebook indexed into Chroma + Qdrant + (optional) Elasticsearch; this module
+keeps the default path — **Chroma** (persistent) — and drops the other two
+backends to keep the standalone service simple and reproducible.
 
 Flow (identical to the notebook's `rag_pipeline`):
     question
-      → keyword extraction (Qwen via Ollama)
-      → BGE-M3 vector search over Chroma
-      → (optional) multilingual cross-encoder rerank against the original question
+      → exact article-number lookup if the question names one (e.g. "المادة 446")
+      → else: keyword extraction (Qwen via Ollama)
+              → BGE-M3 vector search over Chroma
+              → (optional) multilingual cross-encoder rerank against the question
       → grounded bilingual prompt
       → Qwen answer (Ollama)
 
@@ -104,6 +105,39 @@ def detect_language(text: str) -> str:
         if "؀" <= ch <= "ۿ":
             return "ar"
     return "en"
+
+
+# ── Exact article-number lookup (verbatim from the *_fixed_trial notebook) ─────
+# Dense/semantic search is great for *meaning* but weak at matching an exact
+# article number (e.g. "نص المادة 446") — it returns semantically-near articles
+# instead of the exact one. When the question names a specific article number we
+# fall back to a direct metadata lookup on `article_number` in the vector DB.
+
+# Map Arabic-Indic digits (٠-٩) → ASCII so "٤٤٦" == "446".
+_AR_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")
+
+
+def extract_article_numbers(question: str) -> list[int]:
+    """Detect explicit article numbers in a question (Arabic OR English, any digit script)."""
+    q = question.translate(_AR_DIGITS)
+    nums: list[int] = []
+    has_article_word = bool(re.search(r"المادة|مادة|article|art", q, re.IGNORECASE))
+    if has_article_word:
+        # An 'article' word is present → treat every standalone number as an article
+        # number. Handles "المادة 446", "articles 3 and 7", "المادة 3 و 7", etc.
+        nums = [int(x) for x in re.findall(r"\d{1,4}", q)]
+    else:
+        # No 'article' word: only trust a number glued to an 'article'-like token.
+        for m in re.finditer(r"(?:المادة|مادة|articles?|art\.?)\s*[#:\-]?\s*(\d{1,4})",
+                             q, re.IGNORECASE):
+            nums.append(int(m.group(1)))
+    # de-duplicate, preserve order
+    seen, out = set(), []
+    for n in nums:
+        if n not in seen:
+            seen.add(n)
+            out.append(n)
+    return out
 
 
 # ── Pipeline ──────────────────────────────────────────────────────────────────
@@ -252,6 +286,33 @@ class BilingualRAGPipeline:
             })
         return hits
 
+    def fetch_articles_by_number(self, numbers: list[int], language: str | None = None,
+                                 max_chunks: int = 12) -> list[dict]:
+        """Direct exact lookup of article(s) by `article_number` from Chroma metadata.
+        Returns hits in the same shape as vector_search (score = 1.0, exact match)."""
+        if not numbers:
+            return []
+        where: dict[str, Any] = {"article_number": {"$in": numbers}}
+        if language:
+            where = {"$and": [{"article_number": {"$in": numbers}}, {"language": language}]}
+        res = self.collection.get(where=where, include=["documents", "metadatas"])
+        hits: list[dict] = []
+        for doc, meta in zip(res["documents"], res["metadatas"]):
+            hits.append({
+                "text": doc,
+                "article_number": meta["article_number"],
+                "language": meta["language"],
+                "section_path": meta.get("section_path", ""),
+                "score": 1.0,
+                "_ci": meta.get("chunk_index", 0),
+            })
+        # Order by the requested article order, then chunk index (multi-chunk reads in order).
+        order = {n: i for i, n in enumerate(numbers)}
+        hits.sort(key=lambda h: (order.get(h["article_number"], 999), h["_ci"]))
+        for h in hits:
+            h.pop("_ci", None)
+        return hits[:max_chunks]
+
     def extract_keywords(self, question: str, max_keywords: int = 8) -> list[str]:
         kw_system = (
             "You are a keyword extraction engine for a legal search system. "
@@ -346,6 +407,22 @@ class BilingualRAGPipeline:
         use_keywords = self.cfg.use_keywords if use_keywords is None else use_keywords
 
         lang = detect_language(question) if restrict_language else None
+
+        # Step 0: if the question names a specific article number, fetch it DIRECTLY
+        # by metadata (exact match). Semantic search can't reliably match a number
+        # like 446, so this guarantees the exact article is returned.
+        article_numbers = extract_article_numbers(question)
+        if article_numbers:
+            hits = self.fetch_articles_by_number(article_numbers, language=lang)
+            if hits:
+                return {
+                    "question": question,
+                    "keywords": [f"المادة {n}" for n in article_numbers],
+                    "article_numbers": article_numbers,
+                    "search_query": f"article={article_numbers}",
+                    "detected_language": lang, "hits": hits,
+                }
+
         keywords = None
         search_query = question
         if use_keywords:
@@ -365,7 +442,7 @@ class BilingualRAGPipeline:
             hits = self.vector_search(search_query, k=k, language=lang)
 
         return {
-            "question": question, "keywords": keywords,
+            "question": question, "keywords": keywords, "article_numbers": [],
             "search_query": search_query, "detected_language": lang, "hits": hits,
         }
 
