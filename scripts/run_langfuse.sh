@@ -28,7 +28,22 @@ case "${1:-up}" in
     echo "[langfuse] still starting — check: ./scripts/run_langfuse.sh logs"
     ;;
   down) "${COMPOSE[@]}" down ;;
-  logs) "${COMPOSE[@]}" logs -f --tail=120 ;;
+  reset)
+    echo "[langfuse] wiping containers + data volumes (postgres/clickhouse/minio/redis)…"
+    "${COMPOSE[@]}" down -v
+    echo "[langfuse] reset done — run '$0 up' to start fresh."
+    ;;
+  logs) shift || true; "${COMPOSE[@]}" logs -f --tail=120 "$@" ;;
+  web)  "${COMPOSE[@]}" logs --tail=120 langfuse-web ;;  # web startup/migration logs (no follow)
   ps)   "${COMPOSE[@]}" ps ;;
-  *) echo "usage: $0 [up|down|logs|ps]"; exit 1 ;;
+  status)
+    "${COMPOSE[@]}" ps
+    echo -n "[langfuse] http://localhost:3000 → "
+    if curl -s -o /dev/null http://localhost:3000/api/public/health 2>/dev/null; then
+      echo "UP ✓"
+    else
+      echo "not responding (still migrating or crashed — see: $0 web)"
+    fi
+    ;;
+  *) echo "usage: $0 [up|down|logs [service]|web|ps|status]"; exit 1 ;;
 esac

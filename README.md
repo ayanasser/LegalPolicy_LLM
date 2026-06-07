@@ -1,185 +1,355 @@
 # LegalPolicy_LLM
 
-A bilingual (English + Arabic) legal explainer over the **Egyptian Civil Code**. The project is organized into 8 epics covering scope, corpus, RAG, fine-tuning, tooling, multi-agent collaboration, evaluation, and observability — see [docs/epics_tasks.md](docs/epics_tasks.md) for the full plan and [docs/project_decisions_and_status.md](docs/project_decisions_and_status.md) for the current decisions log.
+A **bilingual (English + Arabic) legal explainer** over the **Egyptian Civil Code** (1,093 articles). The project explores *five complementary ways* to build a trustworthy, educational legal-information assistant — prompt engineering, parameter-efficient fine-tuning, graph RAG, vector RAG, and multi-agent orchestration — and unifies all of them behind **one chat interface**.
 
-This README is scoped to the **fine-tuning epic** (QLoRA domain adaptation). Other epics will get their own setup notes as they come online.
-
----
-
-## What the fine-tuning epic does
-
-Adapts a small open Qwen 2.5 instruct model to bilingual explanations of Egyptian Civil Code articles, in the project's house style (definition-first, structured, plain language, with a refusal/disclaimer policy). It does this with **QLoRA** — 4-bit quantized base + LoRA adapters — so it runs on a consumer GPU.
-
-Two parallel training tracks are supported from a shared dataset and pipeline:
-
-| Track | Base model | Where it runs | Recipe |
-|---|---|---|---|
-| **Local (primary)** | Qwen 2.5 **1.5B** Instruct | Single 6 GB GPU on WSL2 / Linux | [configs/qlora_qwen1_5b_local.yaml](src/legal_explainer/finetune/configs/qlora_qwen1_5b_local.yaml) |
-| **Cloud (stretch)** | Qwen 2.5 **3B** Instruct | Google Colab T4 (16 GB) | [notebooks/qlora_qwen2_5_3b_colab.ipynb](notebooks/qlora_qwen2_5_3b_colab.ipynb) |
-
-Both produce a LoRA adapter, optionally merged into the base and exported to GGUF (q4_K_M) for serving via Ollama.
+> ⚖️ **Scope & safety.** This is an *educational* explainer of statute text. It explains what the law says in plain language; it does **not** give personal legal advice, predict case outcomes, or replace a lawyer. Every project enforces a deterministic safety/refusal layer and appends disclaimers.
 
 ---
 
-## Prerequisites (local track)
+## Table of contents
 
-- Linux or WSL2 (this project is developed on WSL2 / Ubuntu)
-- NVIDIA GPU with **≥ 6 GB VRAM** and CUDA 12.x driver. Verify with `nvidia-smi`.
-- **Miniconda or Anaconda** installed.
-- A local checkout of [llama.cpp](https://github.com/ggerganov/llama.cpp) — only needed for the optional GGUF export step.
-- An **Anthropic API key** if you want Claude to polish the synthesized training pairs into the house style. Set `ANTHROPIC_API_KEY` in your shell (or in a `.env` file). Without this, the dataset builder falls back to raw article text as the response (lower style quality, free).
-
-For the cloud track you only need a Google account; everything else is set up inside the Colab notebook.
+1. [What's in this repo](#whats-in-this-repo)
+2. [The six projects + unified UI](#the-six-projects--unified-ui)
+3. [Architecture at a glance](#architecture-at-a-glance)
+4. [Quick start](#quick-start)
+5. [Environment & secrets](#environment--secrets)
+6. [Running each project](#running-each-project)
+7. [Fine-tuning pipeline (QLoRA)](#fine-tuning-pipeline-qlora)
+8. [Evaluation](#evaluation)
+9. [Observability (Langfuse)](#observability-langfuse)
+10. [Data & corpus](#data--corpus)
+11. [Repository layout](#repository-layout)
+12. [The 8 epics](#the-8-epics)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
-## Setup (conda environment)
+## What's in this repo
+
+This is a research/thesis codebase that builds the same bilingual legal explainer in several architectures so they can be compared head-to-head:
+
+| # | Project | Technique | Stack |
+|---|---------|-----------|-------|
+| 1 | **Prompt Design** | System-prompt engineering + deterministic safety | Ollama `llama3.2:3b` (and a Qwen variant) |
+| 2 | **Finetuned Knowledge** | Closed-book QLoRA — the model *memorizes* the Code | Qwen2.5-3B-Instruct + LoRA adapter (GPU) |
+| 3 | **Neo4j Graph RAG** | Graph + vector retrieval, grounded answers | BGE-M3 + Neo4j Aura + Qwen3 (Ollama) |
+| 4 | **Bilingual RAG** | Vector RAG + reranking + exact-article lookup | BGE-M3 + Chroma + cross-encoder + Qwen2.5-3B |
+| 5 | **Multi-Agent** | LangGraph orchestration (router → subagents → tools) | LangGraph + LLM gateway + LightRAG KG |
+| 6 | **Legal Graph-RAG + Finetuned** | Fusion: legal prompt → graph retrieval → finetuned model writes the answer | Project 1 + 3 + 2 in one process |
+| — | **Unified UI** | One Gradio chat; a dropdown picks any backend above | Fronts all projects over HTTP / in-process |
+
+Plus a full supporting layer: a QLoRA fine-tuning pipeline (dataset synthesis → training → GGUF export), a RAGAS-style evaluation harness with LLM-as-judge, and a self-hosted Langfuse stack for tracing and cost tracking.
+
+---
+
+## The six projects + unified UI
+
+### Project 1 — Prompt Design (CLI)
+Pure prompt engineering: a carefully structured system prompt (definition → plain English → key elements → example → disclaimer), absolute prohibitions (no personal advice, no case prediction), structured refusals, and a deterministic safety pre-filter. No training, no retrieval.
+- Entry: [src/Prompt Design/legal_policy_assistant_egypt_v2.py](src/Prompt%20Design/legal_policy_assistant_egypt_v2.py) · run via `./scripts/run_prompt_design.sh`
+
+### Project 2 — Finetuned Knowledge 3B (Gradio · :7860)
+A **closed-book** model: a QLoRA adapter trained so Qwen2.5-3B *internalizes* the Civil Code and answers from memory — no live retrieval. Demonstrates PEFT actually learning the domain (the thesis core). Single-turn by design (to stay in-distribution with training).
+- Adapter: `runs/qlora-qwen2.5-3b-knowledge/` · Entry: [app/finetuned_3b_knowledge_chat_app.py](app/finetuned_3b_knowledge_chat_app.py) · ~2.5 GB VRAM
+
+### Project 3 — Neo4j Graph RAG (FastAPI · :8000)
+Hybrid retrieval over a Neo4j Aura knowledge graph + vector index (BGE-M3), with answers generated by Qwen3 via Ollama. Supports direct article lookup, semantic search, and reranking.
+- Entry: [apps/api/main.py](apps/api/main.py) · `/health`, `/api/v1/ask`, `/api/v1/search`, `/api/v1/article/{number}`
+
+### Project 4 — Bilingual RAG (Gradio :7861 / FastAPI :8100)
+Persistent Chroma vector store + multilingual cross-encoder rerank + Qwen2.5-3B, with **exact article-number lookup** that bypasses semantic search for queries like `نص المادة 446`. Converted from the original research notebook.
+- Entry: [apps/bilingual_rag/gradio_app.py](apps/bilingual_rag/gradio_app.py) · [apps/bilingual_rag/api.py](apps/bilingual_rag/api.py) · build index with `./scripts/run_bilingual_rag.sh build`
+
+### Project 5 — Multi-Agent (Gradio · :7860)
+A LangGraph orchestrator: **safety gate → router → conditional dispatch (simple/medium/complex) → subagents + tools → synthesis**. Tools include statute lookup, glossary, RAG search, keyword extraction, and web search.
+- Entry: [src/legal_explainer/agents/gradio_app.py](src/legal_explainer/agents/gradio_app.py) · see [src/legal_explainer/agents/README.md](src/legal_explainer/agents/README.md)
+
+### Project 6 — Legal Graph-RAG + Finetuned (Gradio :7863 / FastAPI :8200)
+A fusion pipeline that loads retrieval **and** the finetuned model in one process: legal prompt + safety (P1) → Neo4j graph retrieval (P3) → the answer is written by the **finetuned Qwen2.5-3B knowledge adapter** (P2) instead of the default Ollama model.
+- Entry: [apps/legal_graphrag_finetuned/app.py](apps/legal_graphrag_finetuned/app.py) · [apps/legal_graphrag_finetuned/README.md](apps/legal_graphrag_finetuned/README.md) · needs a free GPU (~4–5 GB)
+
+### Unified UI (Gradio · :7870)
+One chat. A dropdown selects the backend; RAG backends show a **retrieval** panel and the multi-agent backend shows a **trace** panel. Dropdown options: Baseline Qwen2.5-3B · Baseline Llama-3.2-3B · Finetuned Knowledge · Prompt Design (Llama/Qwen) · Neo4j Graph RAG · Bilingual RAG · Combined (P6) · Multi-Agent.
+- Entry: [apps/unified_ui/app.py](apps/unified_ui/app.py) · talks to RAG services over HTTP (`LP_NEO4J_RAG_URL`, `LP_BILINGUAL_RAG_URL`)
+
+---
+
+## Architecture at a glance
+
+```
+                         ┌──────────────────────────────────────┐
+                         │        Unified UI  (Gradio :7870)     │
+                         │   dropdown → pick any backend below   │
+                         └───┬───────┬───────┬───────┬───────┬───┘
+            in-process / HTTP│       │       │       │       │
+        ┌───────────────┬────┘       │       │       │       └────┬──────────────┐
+        ▼               ▼            ▼       ▼       ▼            ▼              ▼
+  ┌───────────┐  ┌────────────┐ ┌─────────┐ ┌──────────┐ ┌─────────────┐ ┌────────────┐
+  │ Prompt    │  │ Finetuned  │ │ Neo4j   │ │ Bilingual│ │ Multi-Agent │ │ Combined   │
+  │ Design P1 │  │ 3B  P2     │ │ RAG  P3 │ │ RAG  P4  │ │ P5 LangGraph│ │ P6 fusion  │
+  │ Ollama    │  │ QLoRA/GPU  │ │ :8000   │ │ :8100    │ │ gateway+KG  │ │ :8200      │
+  └───────────┘  └────────────┘ └────┬────┘ └────┬─────┘ └─────────────┘ └─────┬──────┘
+                                      ▼           ▼                              ▼
+                                ┌──────────┐ ┌──────────┐                  P1+P3+P2 in
+                                │ Neo4j    │ │ Chroma   │                  one process
+                                │ Aura KG  │ │ (BGE-M3) │
+                                └──────────┘ └──────────┘
+
+  Shared corpus: data/orig_data.json (1,093 bilingual articles)
+  Cross-cutting: deterministic safety/refusal layer · Langfuse tracing (:3000)
+```
+
+---
+
+## Quick start
 
 ```bash
-# 1) clone and enter the repo
-git clone <your-repo-url> LegalPolicy_LLM
-cd LegalPolicy_LLM
+# 1) Clone and create the conda env (Python 3.11)
+git clone <your-repo-url> LegalPolicy_LLM && cd LegalPolicy_LLM
+conda create -n legalpolicy python=3.11 -y && conda activate legalpolicy
 
-# 2) create and activate the conda env (Python 3.11 is the supported version)
-conda create -n legalpolicy python=3.11 -y
-conda activate legalpolicy
+# 2) Install PyTorch with the correct CUDA build FIRST (separate index)
+pip install --index-url https://download.pytorch.org/whl/cu121 "torch>=2.4"
 
-# 3) install PyTorch with the right CUDA build first (separate channel — pip will not pick the right wheel by itself)
-pip install --index-url https://download.pytorch.org/whl/cu121 \
-    "torch>=2.4"
-
-# 4) install the rest of the project's local requirements (includes the fine-tuning stack)
+# 3) Install the rest (RAG + apps + fine-tuning stack)
 pip install -r requirements-local.txt
 
-# 5) sanity check
-python -c "import torch; print('cuda?', torch.cuda.is_available(), 'device:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else None)"
+# 4) Pull the Ollama models used across projects
+ollama serve &                       # if not already running
+ollama pull llama3.2:3b              # prompt design + llama baseline
+ollama pull qwen2.5:3b-instruct     # bilingual RAG + qwen baseline
+ollama pull qwen3:4b                # Neo4j RAG answer/extraction
+ollama pull qwen3-embedding:0.6b    # multi-agent LightRAG retrieval
+
+# 5) One-time prep
+cp .env.example .env                 # then fill in secrets (see below)
+python scripts/ensure_bge_m3_safetensors.py   # BGE-M3 needs safetensors on transformers 5.x
+./scripts/run_bilingual_rag.sh build           # build the Chroma index (~few min, CPU)
+
+# 6) Sanity check the GPU
+python -c "import torch; print('cuda?', torch.cuda.is_available())"
 ```
 
-If step 5 prints `cuda? True` and your GPU name, the environment is ready.
+`requirements.txt` is the lighter core (RAG/app/eval, no torch); `requirements-local.txt` adds the local-runtime + fine-tuning stack (torch, transformers, peft, bitsandbytes, trl, accelerate, chromadb, sentence-transformers). The RAFT fine-tuning experiments use a separate pinned env — see `req_raft.txt`.
+
+> **GPU note (developed on an RTX 3050, 6 GB).** The local Qwen models need ~2.5 GB; don't run them while a QLoRA training job owns the card. RAG services load BGE-M3 on **CPU** by default so they can coexist with a local model.
 
 ---
 
-## Configure secrets
+## Environment & secrets
 
-```bash
-# in the repo root, write a .env file (gitignored) — or just export inline
-echo 'ANTHROPIC_API_KEY=sk-ant-...' >> .env
-export ANTHROPIC_API_KEY=sk-ant-...
-```
+Copy `.env.example` → `.env` and fill in what each project needs (`.env` is gitignored):
 
-The fine-tuning code reads `ANTHROPIC_API_KEY` from the environment.
+| Variable | Used by | Notes |
+|----------|---------|-------|
+| `NEO4J_URI` / `NEO4J_USERNAME` / `NEO4J_PASSWORD` / `NEO4J_DATABASE` | Projects 3, 6 | Neo4j Aura graph + vector index |
+| `OLLAMA_HOST` / `OLLAMA_MODEL` | Projects 1, 3, 4, baselines | default `http://localhost:11434` |
+| `EMBED_MODEL` | Projects 3, 4, 6 | default `BAAI/bge-m3` |
+| `ANTHROPIC_API_KEY` | Fine-tuning (dataset polish), agents | optional; without it the dataset builder falls back to raw article text |
+| `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` | Project 5 | LLM gateway for the multi-agent path |
+| `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` / `LANGFUSE_HOST` | Observability | optional tracing |
+| `HF_TOKEN` | Fine-tuning | HuggingFace pulls |
+| `OPENAI_API_KEY` | optional | alternate provider |
+
+The `scripts/*.sh` helpers default to the conda interpreter at `/home/aya/miniconda3/envs/legalpolicy/bin/python` — override with `LP_PY=/path/to/python`.
 
 ---
 
-## Run the fine-tuning pipeline (local track)
+## Running each project
 
-The local pipeline has three commands, run in order. Each is idempotent and can be re-run without losing prior work.
-
-### 1. Build the training dataset (~700–800 pairs)
-
-Generates instruction-response pairs from `data/orig_data.json` (Egyptian Civil Code, 1,093 bilingual articles), polishes them via Claude, injects refusal seeds, and writes the train/val splits.
+All commands assume `conda activate legalpolicy` and the repo root.
 
 ```bash
-python scripts/build_dataset.py \
-    --config src/legal_explainer/finetune/configs/qlora_qwen1_5b_local.yaml
+# Project 1 — Prompt Design (CLI)
+./scripts/run_prompt_design.sh
+
+# Project 2 — Finetuned Knowledge 3B (Gradio :7860)
+./scripts/run_finetuned.sh                 # or: python -m app.finetuned_3b_knowledge_chat_app
+
+# Project 3 — Neo4j Graph RAG (FastAPI :8000/docs)
+./scripts/run_neo4j_rag.sh
+curl -X POST localhost:8000/api/v1/ask -H 'content-type: application/json' \
+     -d '{"question":"What is force majeure?","top_k":5}'
+
+# Project 4 — Bilingual RAG (Gradio :7861 / FastAPI :8100)
+./scripts/run_bilingual_rag.sh build       # one-time index
+./scripts/run_bilingual_rag.sh ui          # Gradio
+./scripts/run_bilingual_rag.sh api         # FastAPI
+
+# Project 5 — Multi-Agent (Gradio :7860)
+./scripts/run_agents.sh
+
+# Project 6 — Legal Graph-RAG + Finetuned (Gradio :7863 / FastAPI :8200)
+./scripts/run_legal_graphrag_finetuned.sh
+
+# Unified UI (Gradio :7870) — UI only
+./scripts/run_unified_ui.sh
+
+# Full stack — brings up the RAG services + the unified UI together
+./scripts/serve_stack.sh
 ```
 
-Useful flags:
-- `--no-polish` — skip the Claude polish step (free, lower style quality; good for smoke-testing).
-- `--articles-per-lang 100` — smaller dataset for a fast pipeline check.
-- `--polish-model claude-sonnet-4-6` — change the polish model.
+**Port map**
 
-Outputs:
-- `data/qa_pairs.jsonl` — training split
-- `data/qa_pairs_val.jsonl` — validation split
-- `data/_polish_cache.json` — per-pair Claude cache so re-runs are cheap
+| Service | Port | Type |
+|---------|------|------|
+| Finetuned Knowledge 3B · Multi-Agent | 7860 | Gradio |
+| Bilingual RAG UI | 7861 | Gradio |
+| Legal Graph-RAG + Finetuned UI | 7863 | Gradio |
+| Unified UI | 7870 | Gradio |
+| Neo4j Graph RAG API | 8000 | FastAPI |
+| Bilingual RAG API | 8100 | FastAPI |
+| Legal Graph-RAG + Finetuned API | 8200 | FastAPI |
+| Langfuse | 3000 | Web UI |
 
-### 2. Train the QLoRA adapter
+Most Gradio apps accept `LP_PORT=<N>` (or `LP_UI_PORT` for the unified UI) and `LP_SHARE=1` for a public link.
 
-Loads the base model in 4-bit, applies LoRA, runs SFT with TensorBoard logging.
+---
 
-```bash
-python scripts/train.py \
-    --config src/legal_explainer/finetune/configs/qlora_qwen1_5b_local.yaml
-```
+## Fine-tuning pipeline (QLoRA)
 
-Outputs:
-- `runs/qlora-qwen2.5-1.5b-v1/` — adapter checkpoints, tokenizer, training config snapshot
-- `runs/qlora-qwen2.5-1.5b-v1/runs/` — TensorBoard event files
+The fine-tuning epic adapts a small Qwen 2.5 instruct model to the Egyptian Civil Code with **QLoRA** (4-bit base + LoRA adapters) so it runs on a consumer GPU. Two tracks share one dataset/pipeline:
 
-Watch training in real time:
-```bash
-tensorboard --logdir runs/qlora-qwen2.5-1.5b-v1/runs
-```
+| Track | Base | Where | Config |
+|-------|------|-------|--------|
+| **Local (primary)** | Qwen2.5 **1.5B** | single 6 GB GPU (WSL2/Linux) | [qlora_qwen1_5b_local.yaml](src/legal_explainer/finetune/configs/qlora_qwen1_5b_local.yaml) |
+| **Cloud (stretch)** | Qwen2.5 **3B** | Colab T4 | [notebooks/qlora_qwen2_5_3b_colab.ipynb](notebooks/qlora_qwen2_5_3b_colab.ipynb) |
 
-### 3. (Optional) Merge + export to GGUF for Ollama
-
-After eval looks good. Requires a local llama.cpp checkout that has been built:
+Several dataset *strategies* were explored (see `data/`): house-style explanation pairs, **knowledge-injection** (the model memorizes the law), knowledge+scenario, article-numbers-as-words, RAFT (retrieval-augmented FT), and combined. This produced **9 trained adapters** under `runs/` (1.5B and 3B variants).
 
 ```bash
-git clone --depth=1 https://github.com/ggerganov/llama.cpp ~/llama.cpp
-cd ~/llama.cpp && cmake -B build && cmake --build build --target llama-quantize -j
-cd -
+# 1) Build the training dataset (templates → Claude polish → refusal seeds → split)
+python scripts/build_dataset.py --config src/legal_explainer/finetune/configs/qlora_qwen1_5b_local.yaml
+#   variants: build_dataset_knowledge.py · build_dataset_combined.py · build_dataset_raft.py
+#   useful flags: --no-polish  --articles-per-lang 100  --polish-model claude-sonnet-4-6
 
+# 2) Train the QLoRA adapter (checkpoints saved per epoch)
+python scripts/train.py --config src/legal_explainer/finetune/configs/qlora_qwen1_5b_local.yaml
+tensorboard --logdir runs/qlora-qwen2.5-1.5b-v1/runs   # watch live
+
+# 3) (Optional) Merge + export to GGUF q4_K_M for Ollama serving
 python scripts/export_to_gguf.py \
-    --adapter   runs/qlora-qwen2.5-1.5b-v1 \
-    --base      Qwen/Qwen2.5-1.5B-Instruct \
-    --llama-cpp ~/llama.cpp \
-    --out-name  legalpolicy-qwen1.5b
-
-# then register with Ollama
-cd artifacts
-ollama create legalpolicy-qwen1.5b -f legalpolicy-qwen1.5b.Modelfile
-ollama run legalpolicy-qwen1.5b
+    --adapter runs/qlora-qwen2.5-1.5b-v1 --base Qwen/Qwen2.5-1.5B-Instruct \
+    --llama-cpp ~/llama.cpp --out-name legalpolicy-qwen1.5b
+ollama create legalpolicy-qwen1.5b -f artifacts/legalpolicy-qwen1.5b.Modelfile
 ```
 
----
-
-## Run the fine-tuning pipeline (cloud track)
-
-Open [notebooks/qlora_qwen2_5_3b_colab.ipynb](notebooks/qlora_qwen2_5_3b_colab.ipynb) in Google Colab, set runtime to **T4 GPU**, add `ANTHROPIC_API_KEY` to Colab Secrets, and run cells top-to-bottom. Full instructions are in [notebooks/README.md](notebooks/README.md).
-
-The notebook is self-contained (uploads `orig_data.json`, builds the dataset inside the notebook, trains, optionally merges and exports to GGUF). Resulting artifacts can be downloaded and registered with Ollama on your laptop using the same Modelfile pattern as the local track.
+For the cloud track, open the Colab notebook, set runtime to **T4 GPU**, add `ANTHROPIC_API_KEY` to Colab Secrets, and run top-to-bottom (see [notebooks/README.md](notebooks/README.md)).
 
 ---
 
-## Project layout (fine-tuning slice)
+## Evaluation
+
+`scripts/eval_rag.py` scores the **Graph RAG**, **Bilingual RAG**, and the **fine-tuned** model on gold question sets, with no API billing required.
+
+- **LLM-judged (0–1):** faithfulness · answer relevance · context precision · context recall · answer correctness
+- **Deterministic:** citation accuracy · retrieval hit@k · MRR · context precision@k · token overlap vs gold
+
+Gold sets: `data/general_user_legal_questions.csv`, `data/lawyer_llm_solution_questions.csv`, `data/article_lookup_golden.csv` (the last adds forward/reverse `direction`, broken out in the report).
+
+```bash
+# Ollama judges locally, fully automated (RAG service must be running)
+python scripts/eval_rag.py --system bilingual-rag --judge ollama --phase all
+python scripts/eval_rag.py --system graph-rag     --judge ollama --phase all
+
+# Fine-tuned model (closed-book; graded against the gold article it should recall)
+python scripts/eval_rag.py --system finetuned \
+    --adapter runs/qlora-qwen2.5-3b-knowledge \
+    --dataset data/article_lookup_golden.csv --judge ollama --phase all
+```
+
+There's also a higher-quality **Claude-Code-as-judge** two-step path (`--judge claude-code --phase predict` → grade `judge_tasks.jsonl` → `--phase report`), plus closed-book recall evals (`scripts/closed_book_recall_eval.py`, `scripts/eval_csv_closedbook.py`). Reports land under `reports/eval/rag/<system>__<dataset>/` (`report.md`, `report.json`, `predictions.jsonl`, judge artifacts). The shared eval module is `src/legal_explainer/eval/`. Curated results live in `reports/` (`experiments_journey.md`, `bilingual_rag_report.md`, judge reports, per-case studies).
+
+---
+
+## Observability (Langfuse)
+
+A self-hosted Langfuse v3 stack (web, worker, postgres, clickhouse, redis, minio) logs traces and token cost from every project.
+
+```bash
+./scripts/run_langfuse.sh up     # docker compose up (UI at http://localhost:3000)
+```
+
+See [deploy/langfuse/README.md](deploy/langfuse/README.md). Tracing integrations live in `src/legal_explainer/observability/`.
+
+---
+
+## Data & corpus
+
+| File | What it is |
+|------|------------|
+| `data/orig_data.json` | **Source of truth** — Egyptian Civil Code as 1,093 bilingual (EN/AR) articles with section/jurisdiction metadata |
+| `EgyptianLaw.pdf` | Original source PDF the corpus was extracted from |
+| `data/qa_pairs*.jsonl` | Synthesized training pairs (house-style, knowledge, knowledge-words, scenario, combined, RAFT) + `*_val` holdouts |
+| `data/scenarios_*.jsonl` | Natural-language scenario records (user & lawyer framings, bilingual) |
+| `data/article_lookup_golden.csv` | Gold article-number lookup set (forward + reverse) |
+| `data/general_user_legal_questions.csv`, `data/lawyer_llm_solution_questions.csv` | Gold question sets for eval and suggested questions |
+| `data/glossary.yaml`, `data/statutes.yaml` | Legal term glossary + statute references (multi-agent tools) |
+
+---
+
+## Repository layout
 
 ```
 LegalPolicy_LLM/
-├── data/
-│   ├── orig_data.json                 # bilingual Egyptian Civil Code (1,093 articles)
-│   ├── qa_pairs.jsonl                 # generated by build_dataset.py
-│   └── qa_pairs_val.jsonl
-├── src/legal_explainer/finetune/
-│   ├── dataset_builder.py             # templates → Claude polish → refusal injection → split
-│   ├── train.py                       # QLoRA training (TRL SFTTrainer)
-│   ├── merge_export.py                # adapter → merged HF checkpoint
-│   └── configs/
-│       ├── qlora_qwen1_5b_local.yaml  # 6 GB-safe local recipe
-│       ├── qlora_r32.yaml             # original Epic 4 spec (cloud / 3B)
-│       ├── synthesis_prompts.yaml     # Claude polish prompts
-│       └── refusal_seeds.yaml         # 7 EN + 7 AR refusal pairs
-├── scripts/
-│   ├── build_dataset.py               # CLI wrapper
-│   ├── train.py                       # CLI wrapper
-│   └── export_to_gguf.py              # merge + llama.cpp convert + quantize + Modelfile
-├── notebooks/
-│   └── qlora_qwen2_5_3b_colab.ipynb   # cloud track
-├── runs/                              # training outputs (gitignored)
-├── artifacts/                         # merged HF checkpoint + GGUF + Modelfile (gitignored)
-├── requirements.txt                   # core deps (RAG, app, eval)
-├── requirements-local.txt             # everything in requirements.txt + local-runtime + fine-tuning stack
-└── docs/
-    ├── epics_tasks.md                 # full 8-epic plan
-    └── project_decisions_and_status.md
+├── app/                         # Project 2 — finetuned 3B knowledge chat (Gradio)
+├── apps/
+│   ├── api/                     # Project 3 — Neo4j Graph RAG (FastAPI :8000)
+│   ├── bilingual_rag/           # Project 4 — Bilingual RAG (Gradio :7861 / API :8100)
+│   ├── legal_graphrag_finetuned/# Project 6 — fusion pipeline (Gradio :7863 / API :8200)
+│   ├── unified_ui/              # Unified UI (Gradio :7870)
+│   ├── cli/  · web/             # scaffolds
+├── src/
+│   ├── Prompt Design/           # Project 1 — prompt-engineered assistant
+│   └── legal_explainer/         # core library
+│       ├── agents/              # Project 5 — LangGraph multi-agent orchestrator
+│       ├── eval/                # RAGAS-style eval harness + LLM-as-judge
+│       ├── finetune/            # QLoRA pipeline (dataset builders, train, export, configs, raft_rag/)
+│       ├── prompts/ safety/ tools/ observability/ prompt_design/ rag/ corpus/ llm/ config/
+├── scripts/                     # build_dataset*.py, train*.py, export_to_gguf.py, eval_rag.py, run_*.sh …
+├── notebooks/                   # Colab QLoRA notebook + original research notebooks
+├── config/                      # prompts/ safety/ tools/ YAML scaffolds
+├── data/                        # corpus, training pairs, scenarios, gold question sets
+├── runs/                        # 9 trained QLoRA adapters (gitignored bulk)
+├── artifacts/                   # merged checkpoints, GGUF, Chroma index, Modelfiles
+├── reports/                     # training plots + evaluation reports & case studies
+├── deploy/langfuse/             # self-hosted Langfuse v3 docker-compose
+├── docs/                        # epics_tasks.md, project_decisions_and_status.md, overview slides
+├── requirements.txt             # core deps (RAG, app, eval)
+├── requirements-local.txt       # core + local-runtime + fine-tuning stack
+├── req_raft.txt                 # pinned RAFT/Unsloth environment
+├── RUN.md                       # detailed run-each-project walkthrough
+└── README.md                    # you are here
 ```
+
+---
+
+## The 8 epics
+
+The project is planned as 8 epics — full plan in [docs/epics_tasks.md](docs/epics_tasks.md), decision log in [docs/project_decisions_and_status.md](docs/project_decisions_and_status.md).
+
+| Epic | Theme | Status |
+|------|-------|--------|
+| 1 | Product foundations — scope, safety, prompt design | ✅ Project 1 shipped (CLI) |
+| 2 | Corpus — bilingual Civil Code ingestion | ✅ 1,093 articles + 22K+ synthesized pairs |
+| 3 | RAG — retrieval over the corpus | ✅ Neo4j Graph RAG + Bilingual RAG live |
+| 4 | Fine-tuning — QLoRA domain adaptation | ✅ 2 tracks, 9 adapters, GGUF export |
+| 5 | Tools — glossary / statute / search | ✅ wired into the multi-agent project |
+| 6 | Multi-agent — LangGraph orchestration | ✅ orchestrator + subagents + traces |
+| 7 | Evaluation — judge + RAGAS metrics | ✅ harness + reports + case studies |
+| 8 | Deployment & observability | ✅ unified UI + self-hosted Langfuse |
 
 ---
 
 ## Troubleshooting
 
-- **`bitsandbytes` import error on Linux/WSL2** — usually a CUDA version mismatch. Confirm `python -m bitsandbytes` runs cleanly; if not, reinstall after fixing the torch CUDA build.
-- **OOM during training on the local track** — reduce `max_seq_length` to 768, set `per_device_train_batch_size: 1` (already the default), and bump `gradient_accumulation_steps`. If still OOM, switch to the cloud track.
-- **Claude polish takes too long / costs too much** — start with `--articles-per-lang 100` (≈ 200 pairs total) and `--no-polish` to validate the pipeline before paying for the full run. The cache makes a second polished run cheap.
-- **`ollama create` rejects the GGUF** — confirm the Modelfile's `FROM ./<gguf>` path is relative to the directory you run `ollama create` from.
+- **`bitsandbytes` import error (Linux/WSL2)** — usually a CUDA mismatch. Confirm `python -m bitsandbytes` runs cleanly; reinstall after fixing the torch CUDA build.
+- **OOM during training** — drop `max_seq_length` to 768, keep `per_device_train_batch_size: 1`, bump `gradient_accumulation_steps`; else use the cloud track.
+- **BGE-M3 fails to load** — run `python scripts/ensure_bge_m3_safetensors.py` once (transformers 5.x + torch<2.6 needs safetensors, but BGE-M3 ships only a `.bin`).
+- **A RAG backend in the unified UI says "start the service"** — that backend's FastAPI service isn't up. Start it (`run_neo4j_rag.sh` / `run_bilingual_rag.sh api`) or use `serve_stack.sh`.
+- **Two GPU jobs collide** — the local Qwen models and a QLoRA training job can't share a 6 GB card. Run one at a time; RAG services use CPU embeddings to coexist.
+- **`ollama create` rejects the GGUF** — the Modelfile's `FROM ./<gguf>` path is relative to the directory you run `ollama create` from.
+
+---
+
+*Bilingual legal explainer over the Egyptian Civil Code — built as a master's GenAI project. Educational use only; not legal advice.*

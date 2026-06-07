@@ -75,9 +75,9 @@ def _from_knowledge(path: Path, n: int) -> list[str]:
 def load_suggestions() -> dict[str, list[str]]:
     """Return grouped suggested questions."""
     return {
-        "General public (AR)": _from_csv(config.GENERAL_CSV, 8),
-        "Lawyer-framed (AR)": _from_csv(config.LAWYER_CSV, 8),
-        "Knowledge recall (EN/AR)": _from_knowledge(config.KNOWLEDGE_JSONL, 8),
+        "General public (AR)": _from_csv(config.GENERAL_CSV, 5),
+        "Lawyer-framed (AR)": _from_csv(config.LAWYER_CSV, 5),
+        "Knowledge recall (EN/AR)": _from_knowledge(config.KNOWLEDGE_JSONL, 5),
     }
 
 

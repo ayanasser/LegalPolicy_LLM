@@ -1,5 +1,9 @@
 evaluation:
 
+cd /home/aya/master/genai/LegalPolicy_LLM
+conda activate legalpolicy
+python -m apps.unified_ui.app
+
 
  python scripts/eval_rag.py --system bilingual-rag --judge ollama --phase all
 
