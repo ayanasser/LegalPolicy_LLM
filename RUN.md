@@ -143,3 +143,43 @@ that backend shows a friendly "start the service" message instead of erroring.
 
 Suggested questions are sampled from `data/general_user_legal_questions.csv`,
 `data/lawyer_llm_solution_questions.csv`, and `data/qa_pairs_knowledge.jsonl`.
+
+## 8. RAG / answer evaluation — RAGAS-style metrics
+
+`scripts/eval_rag.py` scores the **Graph RAG**, **Bilingual RAG** and the
+**fine-tuned** model on the gold question sets, computing:
+
+- **LLM-judged (0–1):** faithfulness · answer relevance · context precision ·
+  context recall · answer correctness.
+- **Deterministic:** citation accuracy (gold article cited) · retrieval hit@k ·
+  MRR · context precision@k · token overlap vs gold.
+
+Gold sets (all three are evaluated by default):
+`data/general_user_legal_questions.csv`, `data/lawyer_llm_solution_questions.csv`,
+`data/article_lookup_golden.csv` (the last adds `direction` forward/reverse, broken
+out in the report).
+
+Two judge backends — **no API billing**:
+
+```bash
+# A) Ollama judges locally, fully automated (RAG service must be running):
+python scripts/eval_rag.py --system bilingual-rag --judge ollama --phase all
+python scripts/eval_rag.py --system graph-rag     --judge ollama --phase all
+
+# B) Claude Code judges (two steps, higher quality):
+python scripts/eval_rag.py --system graph-rag --judge claude-code --phase predict
+#   → then ask Claude Code to grade reports/eval/rag/<dir>/judge_tasks.jsonl
+#     into judge_verdicts.jsonl, then:
+python scripts/eval_rag.py --system graph-rag --judge claude-code --phase report
+
+# Fine-tuned model (closed-book; graded against the gold article it should recall):
+python scripts/eval_rag.py --system finetuned \
+    --adapter runs/qlora-qwen2.5-3b-knowledge \
+    --dataset data/article_lookup_golden.csv --judge ollama --phase all
+```
+
+Outputs land under `reports/eval/rag/<system>__<dataset>/` as `report.md` +
+`report.json` (aggregates), `predictions.jsonl`, `judge_tasks.jsonl` and
+`judge_verdicts.jsonl`. Useful flags: `--k` (retrieval depth), `--limit` (subsample
+rows), `--judge-model`, `--base-url`. The shared module lives in
+`src/legal_explainer/eval/`.

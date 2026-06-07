@@ -1,0 +1,50 @@
+{
+  "bilingual-rag · general_user_legal_questions": {
+    "system": "bilingual-rag",
+    "dataset": "general_user_legal_questions",
+    "k": 5,
+    "judge": "ollama",
+    "n_rows": 8,
+    "n_judged": 8,
+    "n_errors": 0,
+    "faithfulness": 0.175,
+    "answer_relevance": 0.175,
+    "context_precision": 0.125,
+    "context_recall": 0.2625,
+    "answer_correctness": 0.0875,
+    "retrieval_hit@k": 0.625,
+    "citation_accuracy": 0.25
+  },
+  "bilingual-rag · lawyer_llm_solution_questions": {
+    "system": "bilingual-rag",
+    "dataset": "lawyer_llm_solution_questions",
+    "k": 5,
+    "judge": "ollama",
+    "n_rows": 8,
+    "n_judged": 8,
+    "n_errors": 0,
+    "faithfulness": 0.2,
+    "answer_relevance": 0.1625,
+    "context_precision": 0.175,
+    "context_recall": 0.1125,
+    "answer_correctness": 0.225,
+    "retrieval_hit@k": 0.75,
+    "citation_accuracy": 0.125
+  },
+  "bilingual-rag · article_lookup_golden": {
+    "system": "bilingual-rag",
+    "dataset": "article_lookup_golden",
+    "k": 5,
+    "judge": "ollama",
+    "n_rows": 8,
+    "n_judged": 8,
+    "n_errors": 0,
+    "faithfulness": 0.2,
+    "answer_relevance": 0.25,
+    "context_precision": 0.425,
+    "context_recall": 0.225,
+    "answer_correctness": 0.5,
+    "retrieval_hit@k": 0.75,
+    "citation_accuracy": 0.25
+  }
+}
