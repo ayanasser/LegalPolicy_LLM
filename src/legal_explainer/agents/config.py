@@ -12,7 +12,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # ── Paths ────────────────────────────────────────────────────────────────────
-PROJECT_ROOT = Path("/Volumes/Shared/NileUni/GenAI/LegalPolicy_LLM")
+# Resolve the repo root from this file's location so the package is portable
+# across machines (was previously a hardcoded macOS path). Override with
+# LEGALPOLICY_ROOT if you run from an unusual layout.
+PROJECT_ROOT = Path(
+    os.getenv("LEGALPOLICY_ROOT", Path(__file__).resolve().parents[3])
+)
 AGENTS_DIR = PROJECT_ROOT / "src" / "legal_explainer" / "agents"
 DATA_DIR = AGENTS_DIR / "data"
 PROMPTS_DIR = AGENTS_DIR / "prompts"

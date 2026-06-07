@@ -18,3 +18,18 @@ google-genai>=0.3
 sentencepiece
 einops
 tensorboard
+
+# ── Apps: RAG services + unified UI + multi-agent ────────────────────────────
+# Project 3 (Neo4j Graph RAG): apps/api/
+neo4j>=5.0
+FlagEmbedding>=1.2          # BGE-M3 embedder (see scripts/ensure_bge_m3_safetensors.py)
+# Project 4 (Bilingual RAG): apps/bilingual_rag/  — uses chromadb + sentence-transformers above
+fastapi>=0.111
+uvicorn[standard]>=0.29
+pydantic-settings>=2.0
+# Project 5 (Multi-agent): src/legal_explainer/agents/
+claude-agent-sdk>=0.2
+lightrag-hku>=1.4
+nltk
+httpx
+duckduckgo-search

@@ -141,8 +141,12 @@ def main() -> None:
           + (f"   [DRY RUN — max_steps={args.max_steps}]" if args.dry_run else ""))
 
     # --- experiment tracking (optional) -----------------------------------
+    # Log to W&B AND TensorBoard whenever each is available. The two are
+    # independent and additive (no conflict in HF Trainer), so the user gets
+    # both: live W&B dashboard + local TB events under <output_dir>/runs/ that
+    # `tensorboard --logdir <output_dir>/runs` can serve.
     run_name = cfg.get("adapter_name") or output_dir.name
-    report_to: list[str] = ["none"]
+    report_to: list[str] = []
     if _wandb_enabled(cfg):
         import wandb
         wb = cfg["wandb"] or {}
@@ -152,15 +156,18 @@ def main() -> None:
         run_name = wb.get("run_name") or run_name
         wandb.init(project=wb.get("project", "legalpolicy"), name=run_name,
                    job_type="train", config=cfg)
-        report_to = ["wandb"]
+        report_to.append("wandb")
         print(f"Tracking   : W&B project={wb.get('project', 'legalpolicy')} run={run_name}")
-    else:
-        try:
-            import tensorboard  # noqa: F401
-            report_to = ["tensorboard"]
-            print(f"Tracking   : TensorBoard -> {output_dir / 'runs'}")
-        except ImportError:
+    try:
+        import tensorboard  # noqa: F401
+        report_to.append("tensorboard")
+        print(f"Tracking   : TensorBoard -> {output_dir / 'runs'}"
+              f"   (serve: tensorboard --logdir {output_dir / 'runs'})")
+    except ImportError:
+        if not report_to:
             print("Tracking   : none (no wandb section / tensorboard not installed)")
+    if not report_to:
+        report_to = ["none"]
 
     # --- trainer ----------------------------------------------------------
     bf16_ok = bool(t["bf16"]) and torch.cuda.is_bf16_supported()

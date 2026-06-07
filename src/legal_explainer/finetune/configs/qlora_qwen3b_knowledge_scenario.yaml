@@ -1,0 +1,73 @@
+# Stage-A "knowledge injection" QLoRA recipe — Qwen 2.5 3B Instruct + Unsloth.
+#
+# Same recipe as qlora_qwen3b_knowledge.yaml but on the COMBINED dataset
+# (qa_pairs_knowledge_scenario.jsonl) that augments the original 22.6k / 10-family
+# knowledge corpus with 4,368 natural-scenario records (kn_user_scenario,
+# kn_lawyer_scenario — 2 EN + 2 AR per article). For most articles the model now
+# sees 12 EN + 12 AR + 1 bilingual = 25 records each, which preserves the article-
+# number↔text binding signal of the 10 knowledge families while also exposing the
+# adapter to layperson / lawyer voicing of the same article so the closed-book
+# behaviour is less brittle.
+#
+# Engine: Unsloth (see src/legal_explainer/finetune/train_unsloth.py).
+# Unsloth's ~50% VRAM cut is what makes Qwen 3B QLoRA fit on a 6 GB RTX 3050.
+#
+# Train:      /home/aya/miniconda3/envs/RAFT/bin/python scripts/train_unsloth.py \
+#               --config src/legal_explainer/finetune/configs/qlora_qwen3b_knowledge_scenario.yaml
+# Smoke:      ... --dry-run
+# TB:         tensorboard --logdir runs/qlora-qwen2.5-3b-knowledge-scenario/runs
+
+base_model: Qwen/Qwen2.5-3B-Instruct
+adapter_name: qlora-qwen2.5-3b-knowledge-scenario
+output_dir: runs/qlora-qwen2.5-3b-knowledge-scenario
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+training:
+  # 4 epochs to mirror qlora_qwen3b_knowledge.yaml. The combined dataset is ~19%
+  # larger (26,442 vs 22,294 train rows) so total steps grow proportionally:
+  # ~1,653 steps/epoch (eff. batch 16) -> ~6,612 steps over 4 epochs.
+  num_train_epochs: 4
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 1.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  optim: paged_adamw_8bit
+  max_seq_length: 1536
+  packing: false
+  logging_steps: 10
+  eval_strategy: epoch
+  eval_steps: 50
+  save_strategy: epoch
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  early_stopping_patience: 5
+  seed: 13
+
+# W&B left off so train_unsloth.py auto-uses TensorBoard only (logs to
+# <output_dir>/runs/ ; serve with `tensorboard --logdir <output_dir>/runs`).
+# wandb:
+#   project: legalpolicy-knowledge
+#   run_name: qlora-qwen2.5-3b-knowledge-scenario
+
+data:
+  train_jsonl: data/qa_pairs_knowledge_scenario.jsonl
+  val_jsonl: data/qa_pairs_knowledge_scenario_val.jsonl
