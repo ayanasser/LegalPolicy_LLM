@@ -1,0 +1,204 @@
+<mxfile host="app.diagrams.net" agent="Claude" version="24.0.0">
+  <diagram id="legalpolicy-arch" name="LegalPolicy_LLM Architecture">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===================== TITLE ===================== -->
+        <mxCell id="title" value="LegalPolicy_LLM — Bilingual (EN/AR) Egyptian Civil Code Explainer — High-Level System Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="20" width="1400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== USER ===================== -->
+        <mxCell id="user" value="User&#10;(Layperson / Lawyer)" style="shape=umlActor;verticalLabelPosition=bottom;labelPosition=center;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="180" width="40" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== UI LAYER ===================== -->
+        <mxCell id="ui-layer" value="USER INTERFACE LAYER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="160" y="100" width="1360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="unified-ui" value="Unified UI (Gradio :7870)&#10;apps/unified_ui/app.py&#10;backend dropdown · retrieval &amp; trace panels · suggested Qs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="190" y="140" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="standalone-ui" value="Standalone Gradio apps (per project)&#10;Finetuned :7860 · Bilingual RAG :7861&#10;Agents :7860 · Combined :7863" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="140" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="backends-reg" value="backends.py registry&#10;uniform generate(message, history) → Reply&#10;lazy-loaded adapters" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="870" y="140" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="langfuse-ui" value="Langfuse tracing&#10;trace_question() per call&#10;(latency · #articles · cost · backend)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="140" width="290" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== BACKEND LAYER ===================== -->
+        <mxCell id="be-layer" value="BACKEND / APPROACH LAYER  (6 comparable approaches over one corpus)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="160" y="330" width="1360" height="360" as="geometry" />
+        </mxCell>
+
+        <!-- P1 Prompt Design -->
+        <mxCell id="p1" value="P1 · Prompt Design (Baseline)&#10;src/.../prompt_design/assistant.py&#10;system prompt + deterministic safety gate&#10;→ Ollama Llama-3.2-3B" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="180" y="370" width="300" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- P2 Finetuned -->
+        <mxCell id="p2" value="P2 · Fine-tuned Knowledge Model (closed-book)&#10;Qwen2.5-3B (4-bit NF4) + QLoRA adapter&#10;runs/qlora-qwen2.5-3b-knowledge&#10;char-sim 0.88 vs 0.07 base" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="500" y="370" width="300" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- P3 Neo4j Graph RAG -->
+        <mxCell id="p3" value="P3 · Neo4j Graph RAG (FastAPI :8000)&#10;apps/api/main.py · pipeline.py&#10;BGE-M3 → Neo4j Aura hybrid retrieval+rerank&#10;→ Qwen2.5:3b (Ollama)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="820" y="370" width="320" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- P4 Bilingual RAG -->
+        <mxCell id="p4" value="P4 · Bilingual Vector RAG (FastAPI :8100)&#10;apps/bilingual_rag/*&#10;BGE-M3 → Chroma + cross-encoder rerank&#10;exact article# bypass → Qwen2.5:3b" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="370" width="340" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- P5 Multi-Agent -->
+        <mxCell id="p5" value="P5 · Multi-Agent Orchestrator (LangGraph)&#10;src/.../agents/orchestrator_langgraph.py&#10;safety gate → router → Researcher / Explainer / Comparator&#10;tools: glossary · statute · LightRAG · web · LLM: glm-5 (SDK)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="180" y="490" width="430" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- P6 Combined -->
+        <mxCell id="p6" value="P6 · Combined Pipeline (Gradio :7863)&#10;apps/legal_graphrag_finetuned/*&#10;system prompt + safety → Neo4j retrieval → Fine-tuned Qwen2.5-3B&#10;retrieval grounding fixes fine-tune number-binding" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="640" y="490" width="430" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Shared inference -->
+        <mxCell id="shared-qwen" value="Shared local Qwen (one 4-bit GPU load)&#10;base = baseline · base+adapter = finetuned&#10;PEFT toggle (RTX 3050, 6 GB)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="490" width="400" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Ollama runtime -->
+        <mxCell id="ollama" value="Ollama runtime (:11434) — Llama-3.2-3B · Qwen3:4b · Qwen2.5:3b-instruct" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="180" y="620" width="890" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== DATA / RETRIEVAL STORES ===================== -->
+        <mxCell id="data-layer" value="DATA &amp; RETRIEVAL STORES" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="160" y="720" width="1360" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="corpus" value="data/orig_data.json&#10;1,093 bilingual Civil Code articles&#10;(source of truth)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="190" y="770" width="220" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="neo4j" value="Neo4j Aura&#10;1,093 Article nodes&#10;+ keywords/relations&#10;+ vector index" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="450" y="770" width="200" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="chroma" value="Chroma vector store&#10;2,262 bilingual chunks&#10;(P4)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="690" y="770" width="200" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lightrag" value="LightRAG graph (P5)&#10;~2,164 articles · ~1,285 entities&#10;~1,474 relations" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="930" y="770" width="220" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bge" value="BAAI/bge-m3 embeddings&#10;multilingual AR/EN · 1024-dim&#10;CPU (shared by P3 &amp; P4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="770" width="300" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="eval" value="Evaluation &amp; golden sets&#10;general_user / lawyer_llm CSV · scenarios_full.jsonl · article_lookup_golden.csv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="840" width="300" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== TRAINING PIPELINE (offline) ===================== -->
+        <mxCell id="train-layer" value="OFFLINE TRAINING PIPELINE (produces P2 adapter)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;fontSize=13;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="990" width="1360" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="kb" value="knowledge_builder.py&#10;11 task families → 22K+ Q&amp;A pairs&#10;data/qa_pairs_knowledge*.jsonl" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1030" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="trainer" value="train_unsloth.py (Unsloth + TRL + PEFT)&#10;config qlora_qwen3b_knowledge.yaml&#10;r=16 α=32 · 4-bit NF4 · 4 epochs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="1030" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="adapter-out" value="runs/qlora-qwen2.5-3b-knowledge&#10;(optional merge → GGUF → ollama create)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="910" y="1030" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="langfuse-stack" value="Langfuse v3 self-hosted (Docker Compose :3000)&#10;web · worker · Postgres · ClickHouse · Redis · MinIO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="1030" width="230" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== EDGES ===================== -->
+        <mxCell id="e-user-ui" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="user" target="unified-ui">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ui-be" value="dispatch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="backends-reg" target="be-layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ui-lf" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="unified-ui" target="langfuse-ui">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- backends to runtimes/stores -->
+        <mxCell id="e-p1-ollama" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p1" target="ollama">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p2-shared" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p2" target="shared-qwen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p3-bge" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p3" target="neo4j">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p3-ollama" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p3" target="ollama">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p4-chroma" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p4" target="chroma">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p4-ollama" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p4" target="ollama">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p5-lightrag" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p5" target="lightrag">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p6-neo4j" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p6" target="neo4j">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p6-shared" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="p6" target="shared-qwen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- bge feeds retrieval -->
+        <mxCell id="e-bge-neo4j" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="bge" target="neo4j">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-bge-chroma" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="bge" target="chroma">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- corpus feeds stores -->
+        <mxCell id="e-corpus-neo4j" value="ingest" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="corpus" target="neo4j">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-corpus-chroma" value="chunk+index" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="corpus" target="chroma">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- training flow -->
+        <mxCell id="e-corpus-kb" value="build dataset" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="corpus" target="kb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kb-trainer" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="kb" target="trainer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-trainer-adapter" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;" edge="1" parent="1" source="trainer" target="adapter-out">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-adapter-shared" value="loads adapter" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="adapter-out" target="shared-qwen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- observability stack -->
+        <mxCell id="e-lfui-stack" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;" edge="1" parent="1" source="langfuse-ui" target="langfuse-stack">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
