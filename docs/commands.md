@@ -5,6 +5,11 @@ conda activate legalpolicy
 python -m apps.unified_ui.app
 
 
+PYTHONPATH=src python -m apps.unified_ui.app
+OR
+
+./scripts/run_unified_ui.sh
+
  python scripts/eval_rag.py --system bilingual-rag --judge ollama --phase all
 
 

@@ -9,18 +9,19 @@ A **bilingual (English + Arabic) legal explainer** over the **Egyptian Civil Cod
 ## Table of contents
 
 1. [What's in this repo](#whats-in-this-repo)
-2. [The six projects + unified UI](#the-six-projects--unified-ui)
-3. [Architecture at a glance](#architecture-at-a-glance)
-4. [Quick start](#quick-start)
-5. [Environment & secrets](#environment--secrets)
-6. [Running each project](#running-each-project)
-7. [Fine-tuning pipeline (QLoRA)](#fine-tuning-pipeline-qlora)
-8. [Evaluation](#evaluation)
-9. [Observability (Langfuse)](#observability-langfuse)
-10. [Data & corpus](#data--corpus)
-11. [Repository layout](#repository-layout)
-12. [The 8 epics](#the-8-epics)
-13. [Troubleshooting](#troubleshooting)
+2. [Stack — models, APIs, frameworks, tools](#stack--models-apis-frameworks-tools)
+3. [The six projects + unified UI](#the-six-projects--unified-ui)
+4. [Architecture at a glance](#architecture-at-a-glance)
+5. [Quick start](#quick-start)
+6. [Environment & secrets](#environment--secrets)
+7. [Running each project](#running-each-project)
+8. [Fine-tuning pipeline (QLoRA)](#fine-tuning-pipeline-qlora)
+9. [Evaluation](#evaluation)
+10. [Observability (Langfuse)](#observability-langfuse)
+11. [Data & corpus](#data--corpus)
+12. [Repository layout](#repository-layout)
+13. [The 8 epics](#the-8-epics)
+14. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -39,6 +40,31 @@ This is a research/thesis codebase that builds the same bilingual legal explaine
 | — | **Unified UI** | One Gradio chat; a dropdown picks any backend above | Fronts all projects over HTTP / in-process |
 
 Plus a full supporting layer: a QLoRA fine-tuning pipeline (dataset synthesis → training → GGUF export), a RAGAS-style evaluation harness with LLM-as-judge, and a self-hosted Langfuse stack for tracing and cost tracking.
+
+---
+
+## Stack — models, APIs, frameworks, tools
+
+Single-page summary of *every* model, API, framework, and tool the assistant uses, and where each one shows up.
+
+| Layer | Component | Where it's used |
+|-------|-----------|-----------------|
+| **Local LLMs (Ollama)** | `llama3.2:3b` · `qwen2.5:3b-instruct` · `qwen3:4b` · `qwen3-embedding:0.6b` | P1 prompt-design + Llama baseline · P4 generation + Qwen baseline · P3 generation/extraction · P5 LightRAG retrieval |
+| **Fine-tuned LLM (HuggingFace + QLoRA)** | `Qwen/Qwen2.5-3B-Instruct` + LoRA adapter (4-bit NF4 base) | P2 closed-book chat · P6 fusion answerer |
+| **Embedding model** | `BAAI/bge-m3` (1024-d, multilingual, CPU by default) | P3, P4, P6 retrieval |
+| **Reranker** | multilingual cross-encoder | P4 |
+| **Vector store** | Chroma (persistent on-disk) | P4 |
+| **Knowledge graph** | Neo4j Aura — graph + native vector index | P3, P6 |
+| **Multi-agent framework** | LangGraph — safety gate → router → conditional dispatch → subagents → synthesis | P5 |
+| **Agent tools** | statute lookup · glossary lookup · RAG search · keyword extraction · web search | P5 |
+| **Fine-tuning stack** | PEFT (QLoRA) · transformers · bitsandbytes (4-bit NF4 / double-quant) · trl · accelerate · **Unsloth** (~50% VRAM cut) · TensorBoard | Epic 4 |
+| **App layer** | Gradio (chat UIs, port 786x) · FastAPI + uvicorn (RAG services, port 8xxx) | All projects |
+| **External APIs** | Anthropic (dataset polish, Claude-as-judge, multi-agent gateway) · HuggingFace Hub · OpenAI (optional alt-judge) | Epic 4 dataset · Epic 7 eval · P5 |
+| **Eval harness** | RAGAS-style deterministic metrics + LLM-as-judge (Ollama / Claude Code) | Epic 7 (`scripts/eval_rag.py`, `scripts/eval_csv_closedbook.py`) |
+| **Observability** | Langfuse v3 (self-hosted: web + worker + postgres + clickhouse + redis + minio, docker-compose) | All projects via `src/legal_explainer/observability/` |
+| **Runtime** | Python 3.11 · PyTorch (CUDA 12.1) · conda env `legalpolicy` · WSL2 / Linux · single RTX 3050 6 GB GPU | — |
+
+> The Egyptian Civil Code corpus itself (`data/orig_data.json`, 1,093 bilingual articles) is the single source of truth all six projects retrieve, generate, or memorize from.
 
 ---
 

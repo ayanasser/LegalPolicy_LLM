@@ -17,7 +17,7 @@ from contextlib import asynccontextmanager
 import requests
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from .config import get_settings
@@ -75,6 +75,14 @@ class Hit(BaseModel):
     text: str
 
 
+class GenerationInfo(BaseModel):
+    """Answer model + sampling params + retrieval stack (for traces)."""
+    model: str
+    params: dict = {}
+    embed_model: str = ""
+    reranker: str = ""
+
+
 class AskResponse(BaseModel):
     answer: str
     keywords: list[str] | None = None
@@ -83,6 +91,7 @@ class AskResponse(BaseModel):
     detected_language: str | None = None
     hits: list[Hit]
     processing_time_ms: int = 0
+    generation: GenerationInfo | None = None
 
 
 def _to_hits(raw: list[dict]) -> list[Hit]:
@@ -128,7 +137,51 @@ async def ask(req: AskRequest):
         article_numbers=r.get("article_numbers") or [],
         search_query=r.get("search_query", ""), detected_language=r.get("detected_language"),
         hits=_to_hits(r["hits"]), processing_time_ms=r.get("processing_time_ms", 0),
+        generation=GenerationInfo(
+            model=cfg.llm_model,
+            params={
+                "runtime": "ollama",
+                "temperature": cfg.llm_temperature,
+                "num_predict": cfg.llm_num_predict,
+                "use_rerank": req.use_rerank,
+            },
+            embed_model=cfg.embed_model_name,
+            reranker=cfg.reranker_name,
+        ),
     )
+
+
+@app.post("/api/v1/ask/stream", tags=["RAG"])
+async def ask_stream(req: AskRequest):
+    """Same as /ask but streams the answer token-by-token as newline-delimited
+    JSON: a `meta` line (hits + keywords + generation), `delta` lines, `done`."""
+    import json
+    pipe = get_pipeline()
+    gen_info = {
+        "model": cfg.llm_model,
+        "params": {"runtime": "ollama", "temperature": cfg.llm_temperature,
+                   "num_predict": cfg.llm_num_predict, "use_rerank": req.use_rerank},
+        "embed_model": cfg.embed_model_name, "reranker": cfg.reranker_name,
+    }
+
+    def _events():
+        try:
+            for ev in pipe.answer_stream(req.question, k=req.top_k, use_rerank=req.use_rerank):
+                if ev.get("type") == "meta":
+                    ev["hits"] = [
+                        {"article_number": h["article_number"], "language": h["language"],
+                         "score": round(float(h.get("score", 0.0)), 4),
+                         "rerank_score": (round(float(h["rerank_score"]), 4)
+                                          if h.get("rerank_score") is not None else None),
+                         "section_path": h.get("section_path", ""), "text": h["text"]}
+                        for h in ev.get("hits", [])
+                    ]
+                    ev["generation"] = gen_info
+                yield json.dumps(ev, ensure_ascii=False) + "\n"
+        except Exception as e:
+            yield json.dumps({"type": "error", "detail": f"{type(e).__name__}: {e}"}) + "\n"
+
+    return StreamingResponse(_events(), media_type="application/x-ndjson")
 
 
 @app.post("/api/v1/search", response_model=list[Hit], tags=["Retrieval"])

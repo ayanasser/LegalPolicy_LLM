@@ -16,12 +16,13 @@ Endpoints:
 from __future__ import annotations
 
 import asyncio
+import json
 from contextlib import asynccontextmanager
 
 import requests
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from .config import get_settings
@@ -129,11 +130,19 @@ class MetadataOut(BaseModel):
     search_query:    str       = ""
 
 
+class GenerationInfo(BaseModel):
+    """The answer model + its sampling params (for observability traces)."""
+    model:        str
+    params:       dict = {}
+    embed_model:  str = ""
+
+
 class AskResponse(BaseModel):
     answer:             str
     articles:           list[ArticleOut]
     metadata:           MetadataOut
     processing_time_ms: int
+    generation:         GenerationInfo | None = None
 
 
 class HealthResponse(BaseModel):
@@ -232,12 +241,54 @@ async def ask(req: AskRequest):
         search_query=raw_meta.get("search_query", ""),
     )
 
+    settings = get_settings()
     return AskResponse(
         answer=result["answer"],
         articles=articles,
         metadata=metadata,
         processing_time_ms=result["processing_time_ms"],
+        generation=GenerationInfo(
+            model=settings.llm_model,
+            params={
+                "runtime": "ollama",
+                "temperature": settings.llm_temp_answer,
+                "temperature_extract": settings.llm_temp_extract,
+            },
+            embed_model=settings.embed_model_name,
+        ),
     )
+
+
+@app.post("/api/v1/ask/stream", summary="Ask (full RAG) — token-streamed (NDJSON)", tags=["RAG"])
+async def ask_stream(req: AskRequest):
+    """Same RAG pipeline as /ask, but streams the answer token-by-token as
+    newline-delimited JSON: a `meta` line (articles + metadata + generation),
+    then `delta` lines, then a `done` line."""
+    pipe = get_pipeline()
+    settings = get_settings()
+    gen_info = {
+        "model": settings.llm_model,
+        "params": {"runtime": "ollama", "temperature": settings.llm_temp_answer,
+                   "temperature_extract": settings.llm_temp_extract},
+        "embed_model": settings.embed_model_name,
+    }
+
+    def _events():
+        try:
+            for ev in pipe.ask_stream(req.question, top_k=req.top_k):
+                if ev.get("type") == "meta":
+                    ev["articles"] = [
+                        {"id": a.get("id"), "number": a.get("number"),
+                         "english": a.get("english") or "", "arabic": a.get("arabic") or "",
+                         "score": round(a.get("score", 0.0), 4)}
+                        for a in ev.get("articles", [])
+                    ]
+                    ev["generation"] = gen_info
+                yield json.dumps(ev, ensure_ascii=False) + "\n"
+        except Exception as e:  # surface as a terminal error event
+            yield json.dumps({"type": "error", "detail": f"{type(e).__name__}: {e}"}) + "\n"
+
+    return StreamingResponse(_events(), media_type="application/x-ndjson")
 
 
 @app.post(
