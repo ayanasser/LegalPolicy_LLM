@@ -65,11 +65,18 @@ class ArticleOut(BaseModel):
     score: float = 0.0
 
 
+class GenerationInfo(BaseModel):
+    """The finetuned answer model + its decoding params (for traces)."""
+    model: str
+    params: dict = {}
+
+
 class AskResponse(BaseModel):
     answer: str
     refused: bool = False
     articles: list[ArticleOut] = []
     processing_time_ms: int = 0
+    generation: GenerationInfo | None = None
 
 
 @app.get("/health", tags=["System"])
@@ -90,6 +97,18 @@ async def ask(req: AskRequest):
                              arabic=a.get("arabic") or "", score=round(a.get("score", 0.0), 4))
                   for a in r["articles"]],
         processing_time_ms=r.get("processing_time_ms", 0),
+        generation=GenerationInfo(
+            model=f"{cfg.base_model} + QLoRA knowledge adapter ({cfg.adapter_dir.split('/')[-1]})",
+            params={
+                "runtime": "transformers + PEFT",
+                "decoding": "greedy",
+                "do_sample": False,
+                "temperature": 0.0,
+                "max_new_tokens": cfg.max_new_tokens,
+                "repetition_penalty": 1.0,
+                "quantization": "4-bit nf4 (double-quant)",
+            },
+        ),
     )
 
 

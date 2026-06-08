@@ -49,29 +49,90 @@ class PromptDesignAssistant:
         self.model = model
 
     def answer(self, message: str, history: list[dict] | None = None) -> str:
+        return self.answer_meta(message, history)[0]
+
+    # ── Shared prep ─────────────────────────────────────────────────────────
+    def _prepare(self, message, history):
+        """Run the safety gate and build the chat messages. Returns either
+        ('refusal', text, meta) or ('chat', messages, meta_base)."""
         message = (message or "").strip()
         if not message:
-            return "Please ask a question about Egyptian civil law."
+            return "refusal", "Please ask a question about Egyptian civil law.", {"status": "empty_question"}
 
-        # 1. Safety gate — deterministic refusal before hitting the model.
         category = detect_refusal_needed(message)
         if category:
-            return REFUSAL_MESSAGES[category]
+            return "refusal", REFUSAL_MESSAGES[category], {
+                "refused": True, "refusal_category": category,
+                "safety_gate": "triggered", "model": self.model,
+                "note": "deterministic refusal — model not called",
+            }
 
-        # 2. Inject the appropriate disclaimer instruction.
         disclaimer = select_disclaimer(message)
         augmented = (
             f"{message}\n\n"
             f"[SYSTEM NOTE: End your response with this exact disclaimer on a new "
             f"line after '---':\n{disclaimer}]"
         )
-
-        # 3. Build messages = system + prior turns + augmented user turn.
         messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         for turn in (history or []):
             if turn.get("role") in ("user", "assistant") and turn.get("content"):
                 messages.append({"role": turn["role"], "content": turn["content"]})
         messages.append({"role": "user", "content": augmented})
+        meta_base = {
+            "refused": False, "safety_gate": "passed", "model": self.model,
+            "disclaimer": disclaimer, "n_history_turns": len(messages) - 2,
+            "system_prompt": SYSTEM_PROMPT, "prompt_messages": messages,
+        }
+        return "chat", messages, meta_base
 
-        resp = self._client.chat(model=self.model, messages=messages)
-        return resp["message"]["content"].strip()
+    @staticmethod
+    def _usage(resp) -> dict | None:
+        g = (lambda k: resp.get(k) if isinstance(resp, dict) else getattr(resp, k, None))
+        pin, pout = g("prompt_eval_count"), g("eval_count")
+        if pin is None and pout is None:
+            return None
+        return {
+            **({"input": int(pin)} if pin is not None else {}),
+            **({"output": int(pout)} if pout is not None else {}),
+            **({"total": int(pin) + int(pout)} if (pin is not None and pout is not None) else {}),
+        }
+
+    @staticmethod
+    def _content(resp) -> str:
+        if isinstance(resp, dict):
+            return resp["message"]["content"]
+        return resp.message.content
+
+    def answer_meta(self, message: str, history: list[dict] | None = None) -> tuple[str, dict]:
+        """Like :meth:`answer` but also returns a metadata dict describing the
+        safety verdict, the injected disclaimer, the model, and token usage —
+        used to enrich observability traces."""
+        kind, a, meta = self._prepare(message, history)
+        if kind == "refusal":
+            return a, meta
+        resp = self._client.chat(model=self.model, messages=a)
+        usage = self._usage(resp)
+        if usage:
+            meta["usage"] = usage
+        return self._content(resp).strip(), meta
+
+    def answer_stream(self, message: str, history: list[dict] | None = None,
+                      meta_out: dict | None = None):
+        """Token-streaming variant: yields the cumulative answer text. After the
+        generator is exhausted, `meta_out` holds the same metadata dict that
+        :meth:`answer_meta` returns. Deterministic refusals yield once."""
+        meta_out = meta_out if meta_out is not None else {}
+        kind, a, meta = self._prepare(message, history)
+        if kind == "refusal":
+            meta_out.update(meta)
+            yield a
+            return
+        text, last = "", None
+        for part in self._client.chat(model=self.model, messages=a, stream=True):
+            last = part
+            text += self._content(part) or ""
+            yield text
+        usage = self._usage(last)
+        if usage:
+            meta["usage"] = usage
+        meta_out.update(meta)

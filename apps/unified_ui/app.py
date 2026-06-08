@@ -19,19 +19,34 @@ see RUN.md). Everything loads lazily, so backends you don't pick cost nothing.
 from __future__ import annotations
 
 import os
+import sys
+from pathlib import Path
+
+# Make `legal_explainer` importable regardless of how the app is launched.
+# Without this, running `python -m apps.unified_ui.app` (instead of via
+# scripts/run_unified_ui.sh, which sets PYTHONPATH=src) makes the Langfuse
+# import below fail and silently disables tracing — the UI keeps working but
+# no traces reach Langfuse.
+_SRC = Path(__file__).resolve().parents[2] / "src"
+if _SRC.is_dir() and str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
 
 import gradio as gr
 import pandas as pd
 
 from . import config
-from .backends import REGISTRY, DEFAULT_LABEL
+from .backends import REGISTRY, DEFAULT_LABEL, Reply
 from .suggestions import load_suggestions
 
 try:
     # Langfuse tracing (MLOps observability). No-ops if Langfuse isn't configured.
     from legal_explainer.observability.langfuse_tracing import trace_question
-except Exception:  # pragma: no cover - keep the UI working even if src/ isn't on path
+except Exception as _e:  # pragma: no cover - keep the UI working even if src/ isn't on path
     import contextlib
+
+    # Loud warning: tracing is disabled. Better than silently dropping traces.
+    print(f"[langfuse] tracing DISABLED — could not import tracing helper: {_e}\n"
+          f"           (expected src/ at {_SRC}). Traces will NOT reach Langfuse.")
 
     @contextlib.contextmanager
     def trace_question(*a, **k):
@@ -131,28 +146,55 @@ def build_ui() -> gr.Blocks:
 
         # ── Handlers ──────────────────────────────────────────────────────────
         def on_submit(message, history, backend_label):
+            """Streaming handler — a generator that yields partial answers as the
+            model produces tokens, then a final update carrying retrieval/trace/
+            metadata. Backends that can't stream yield once (see Backend.stream)."""
             history = _clean_history(history)
             message = _to_text(message).strip()
             if not message:
-                return history, gr.update(), gr.update(), "", ""
+                yield history, gr.update(), gr.update(), "", ""
+                return
             backend = REGISTRY[backend_label]
+            # Display history = prior turns + this user turn + a placeholder
+            # assistant turn we fill in as tokens stream.
+            disp = history + [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": ""},
+            ]
+            final = None
             # Trace each question to Langfuse; trace_name == the project (backend) label.
             with trace_question(backend.label, message, backend_id=backend.id) as _tr:
-                reply = backend.generate(message, history)
-                _tr.set_output(
-                    reply.text,
+                for partial, reply in backend.stream(message, history):
+                    disp[-1]["content"] = partial or ""
+                    if reply is None:
+                        # mid-stream: only the chat bubble changes.
+                        yield disp, gr.update(), gr.update(), gr.update(), ""
+                    else:
+                        final = reply
+                if final is None:  # safety net — backend yielded no final reply
+                    final = Reply(text=disp[-1]["content"])
+                # Build the trace payload as a SINGLE dict (dict-merge so a stray
+                # "model" key in info can't collide with the explicit model=).
+                payload = dict(final.info or {})
+                retrieval_meta = payload.pop("retrieval", None)
+                payload.update(
+                    model=final.model,
+                    model_parameters=final.params,
+                    usage=final.usage,
+                    documents=final.documents,
+                    retrieval_meta=retrieval_meta,
+                    prompt=final.prompt,
                     kind=backend.kind,
-                    status=reply.meta,
-                    n_retrieved=(len(reply.retrieval) if reply.retrieval else 0),
+                    status=final.meta,
+                    n_retrieved=(len(final.retrieval) if final.retrieval else 0),
                 )
-            history = history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": reply.text},
-            ]
-            df_update = (gr.update(value=_rows_to_df(reply.retrieval))
-                         if reply.retrieval is not None else gr.update())
-            trace_update = gr.update(value=reply.trace) if reply.trace is not None else gr.update()
-            return history, df_update, trace_update, reply.meta, ""
+                _tr.set_output(final.text, **payload)
+            # Final update — fill retrieval panel / agent trace / status line.
+            disp[-1]["content"] = final.text or disp[-1]["content"]
+            df_update = (gr.update(value=_rows_to_df(final.retrieval))
+                         if final.retrieval is not None else gr.update())
+            trace_update = gr.update(value=final.trace) if final.trace is not None else gr.update()
+            yield disp, df_update, trace_update, final.meta, ""
 
         def on_backend_change(label):
             r_vis, t_vis, desc = _panels_for(label)
@@ -172,6 +214,23 @@ def build_ui() -> gr.Blocks:
 
 
 def main() -> None:
+    if config.PRELOAD_LOCAL_MODEL:
+        # Pay the ~175s 4-bit load + first-call warm-up now, at startup, so the
+        # first baseline/finetuned message is fast. Never block the UI on it.
+        from .backends import _QWEN
+        print("[unified-ui] LP_PRELOAD=1 — loading + warming the local Qwen "
+              "(baseline + finetuned). This takes a few minutes; the UI will "
+              "start serving once it's done …", flush=True)
+        try:
+            import time as _t
+            _t0 = _t.perf_counter()
+            _QWEN.warmup()
+            print(f"[unified-ui] local model ready in {_t.perf_counter() - _t0:.0f}s.",
+                  flush=True)
+        except Exception as e:  # don't let a preload failure block the UI
+            print(f"[unified-ui] preload failed (continuing without it): {e}",
+                  flush=True)
+
     demo = build_ui()
     demo.queue()  # serialise — only one model copy fits in 6 GB VRAM
     demo.launch(

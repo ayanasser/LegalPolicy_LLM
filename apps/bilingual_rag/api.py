@@ -75,6 +75,14 @@ class Hit(BaseModel):
     text: str
 
 
+class GenerationInfo(BaseModel):
+    """Answer model + sampling params + retrieval stack (for traces)."""
+    model: str
+    params: dict = {}
+    embed_model: str = ""
+    reranker: str = ""
+
+
 class AskResponse(BaseModel):
     answer: str
     keywords: list[str] | None = None
@@ -83,6 +91,7 @@ class AskResponse(BaseModel):
     detected_language: str | None = None
     hits: list[Hit]
     processing_time_ms: int = 0
+    generation: GenerationInfo | None = None
 
 
 def _to_hits(raw: list[dict]) -> list[Hit]:
@@ -128,6 +137,17 @@ async def ask(req: AskRequest):
         article_numbers=r.get("article_numbers") or [],
         search_query=r.get("search_query", ""), detected_language=r.get("detected_language"),
         hits=_to_hits(r["hits"]), processing_time_ms=r.get("processing_time_ms", 0),
+        generation=GenerationInfo(
+            model=cfg.llm_model,
+            params={
+                "runtime": "ollama",
+                "temperature": cfg.llm_temperature,
+                "num_predict": cfg.llm_num_predict,
+                "use_rerank": req.use_rerank,
+            },
+            embed_model=cfg.embed_model_name,
+            reranker=cfg.reranker_name,
+        ),
     )
 
 

@@ -129,11 +129,19 @@ class MetadataOut(BaseModel):
     search_query:    str       = ""
 
 
+class GenerationInfo(BaseModel):
+    """The answer model + its sampling params (for observability traces)."""
+    model:        str
+    params:       dict = {}
+    embed_model:  str = ""
+
+
 class AskResponse(BaseModel):
     answer:             str
     articles:           list[ArticleOut]
     metadata:           MetadataOut
     processing_time_ms: int
+    generation:         GenerationInfo | None = None
 
 
 class HealthResponse(BaseModel):
@@ -232,11 +240,21 @@ async def ask(req: AskRequest):
         search_query=raw_meta.get("search_query", ""),
     )
 
+    settings = get_settings()
     return AskResponse(
         answer=result["answer"],
         articles=articles,
         metadata=metadata,
         processing_time_ms=result["processing_time_ms"],
+        generation=GenerationInfo(
+            model=settings.llm_model,
+            params={
+                "runtime": "ollama",
+                "temperature": settings.llm_temp_answer,
+                "temperature_extract": settings.llm_temp_extract,
+            },
+            embed_model=settings.embed_model_name,
+        ),
     )
 
 

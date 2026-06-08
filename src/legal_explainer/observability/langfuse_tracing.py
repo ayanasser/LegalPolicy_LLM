@@ -71,17 +71,82 @@ def flush_traces() -> None:
 
 
 class _TraceHandle:
-    """Lightweight handle passed to the caller to attach the answer + metadata."""
+    """Lightweight handle passed to the caller to attach the answer + rich
+    structured detail. Everything beyond ``output`` is optional and degrades
+    gracefully — pass what each backend knows.
+
+    Fields that get promoted into a proper nested observation in the trace:
+      * ``documents`` + ``retrieval_meta`` → a child ``retriever`` observation
+        (the retrieved chunks, scores, keywords, timing …).
+      * ``model`` / ``model_parameters`` / ``usage`` → a child ``generation``
+        observation (the answer model, its sampling params, token usage).
+    Anything passed as plain kwargs lands in the span/trace metadata.
+    """
 
     def __init__(self, span):
         self._span = span
         self.output = None
         self.metadata: dict = {}
+        self.model = None
+        self.model_parameters: dict | None = None
+        self.usage: dict | None = None
+        self.documents = None
+        self.retrieval_meta: dict | None = None
+        self.prompt = None
 
-    def set_output(self, output, **metadata):
+    def set_output(self, output, *, model=None, model_parameters=None,
+                   usage=None, documents=None, retrieval_meta=None,
+                   prompt=None, **metadata):
         self.output = output
-        if metadata:
-            self.metadata.update(metadata)
+        if model is not None:
+            self.model = model
+        if model_parameters is not None:
+            self.model_parameters = model_parameters
+        if usage is not None:
+            self.usage = usage
+        if documents is not None:
+            self.documents = documents
+        if retrieval_meta is not None:
+            self.retrieval_meta = retrieval_meta
+        if prompt is not None:
+            self.prompt = prompt
+        # Drop None-valued kwargs so the trace metadata stays clean.
+        clean = {k: v for k, v in metadata.items() if v is not None}
+        if clean:
+            self.metadata.update(clean)
+
+
+def _emit_child_observations(span, question, handle):
+    """Create the nested retriever / generation observations (best-effort)."""
+    # 1) Retrieval — the chunks the RAG backend pulled in.
+    if handle.documents:
+        try:
+            with span.start_as_current_observation(
+                name="retrieval", as_type="retriever",
+                input={"question": question},
+                output=handle.documents,
+                metadata=handle.retrieval_meta or {},
+            ):
+                pass
+        except Exception:
+            pass
+    # 2) Generation — the answer model + its sampling params + token usage.
+    #    Input = the EXACT prompt/messages sent to the model when the backend
+    #    exposes it (local HF + prompt-design); otherwise fall back to the question.
+    if handle.model or handle.model_parameters or handle.usage:
+        try:
+            with span.start_as_current_observation(
+                name="generation", as_type="generation",
+                input=(handle.prompt if handle.prompt is not None
+                       else {"question": question}),
+                output=handle.output,
+                model=handle.model,
+                model_parameters=handle.model_parameters or {},
+                usage_details=handle.usage or None,
+            ):
+                pass
+        except Exception:
+            pass
 
 
 @contextlib.contextmanager
@@ -90,7 +155,8 @@ def trace_question(project_name: str, question: str, backend_id: str | None = No
     """Context manager that records one trace named after `project_name`.
 
     The wrapped block's latency is captured automatically. Call
-    `handle.set_output(answer, **metadata)` inside the block.
+    `handle.set_output(answer, ...)` inside the block to attach the answer and
+    any model / retrieval detail (see :class:`_TraceHandle`).
     """
     client = get_client()
     if client is None:
@@ -109,8 +175,18 @@ def trace_question(project_name: str, question: str, backend_id: str | None = No
                 yield handle
             finally:
                 try:
-                    span.update(output=handle.output,
-                                metadata={**meta, **handle.metadata})
+                    # Nested retriever + generation observations (rich detail).
+                    _emit_child_observations(span, question, handle)
+                    full_meta = {**meta, **handle.metadata}
+                    if handle.model:
+                        full_meta["answer_model"] = handle.model
+                    if handle.model_parameters:
+                        full_meta["model_parameters"] = handle.model_parameters
+                    if handle.usage:
+                        full_meta["token_usage"] = handle.usage
+                    if handle.retrieval_meta:
+                        full_meta["retrieval"] = handle.retrieval_meta
+                    span.update(output=handle.output, metadata=full_meta)
                     # Promote name/io to the trace level (trace name == project).
                     span.set_trace_io(input={"question": question},
                                       output=handle.output)

@@ -33,6 +33,12 @@ RAG_HTTP_TIMEOUT = float(os.getenv("LP_RAG_TIMEOUT", "180"))
 # ── Generation defaults for the local HF models ──────────────────────────────
 MAX_NEW_TOKENS = int(os.getenv("LP_MAX_NEW_TOKENS", "600"))
 
+# Preload the local HF model (baseline + finetuned share one 4-bit load) and run
+# a tiny warm-up generation at UI startup, so the ~175s load + first-call CUDA
+# warm-up are paid once at launch instead of on the user's first message. Off by
+# default so RAG-only sessions start instantly; enable with LP_PRELOAD=1.
+PRELOAD_LOCAL_MODEL = os.getenv("LP_PRELOAD", "0") == "1"
+
 # ── Server ───────────────────────────────────────────────────────────────────
 UI_PORT = int(os.getenv("LP_UI_PORT", "7870"))
 UI_SHARE = os.getenv("LP_SHARE", "0") == "1"
