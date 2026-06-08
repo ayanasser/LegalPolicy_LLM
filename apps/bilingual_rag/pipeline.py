@@ -30,6 +30,12 @@ from typing import Any
 
 from .config import BRagSettings, get_settings
 
+
+def _log(msg: str) -> None:
+    """Per-request stage log. flush=True so it shows live in `tail -f` even when
+    the service runs backgrounded (Python buffers stdout otherwise)."""
+    print(f"[brag] {msg}", flush=True)
+
 # ── Text cleaning / chunking (verbatim from the notebook) ─────────────────────
 
 _KEEP_RE = re.compile(r"[^؀-ۿA-Za-z0-9\s\.,;:?!\-\(\)\"'،؛؟]")
@@ -432,14 +438,18 @@ class BilingualRAGPipeline:
         use_keywords = self.cfg.use_keywords if use_keywords is None else use_keywords
 
         lang = detect_language(question) if restrict_language else None
+        t_r = time.perf_counter()
+        _log(f'── Q: "{question[:80]}" | lang={lang or "any"} | rerank={use_rerank} | use_keywords={use_keywords}')
 
         # Step 0: if the question names a specific article number, fetch it DIRECTLY
         # by metadata (exact match). Semantic search can't reliably match a number
         # like 446, so this guarantees the exact article is returned.
         article_numbers = extract_article_numbers(question)
         if article_numbers:
+            _log(f"exact article lookup: {article_numbers}")
             hits = self.fetch_articles_by_number(article_numbers, language=lang)
             if hits:
+                _log(f"  → {len(hits)} chunk(s) by number | retrieve {(time.perf_counter()-t_r)*1000:.0f}ms")
                 return {
                     "question": question,
                     "keywords": [f"المادة {n}" for n in article_numbers],
@@ -451,21 +461,37 @@ class BilingualRAGPipeline:
         keywords = None
         search_query = question
         if use_keywords:
+            t0 = time.perf_counter()
             keywords = self.extract_keywords(question)
+            _log(f"keywords ({(time.perf_counter()-t0)*1000:.0f}ms): {keywords}")
             if keywords:
                 search_query = " ".join(keywords)
+        else:
+            _log("keywords: skipped (use_keywords=0)")
 
         if use_rerank:
+            _log(f"embedding query + searching (embed_device={self.cfg.embed_device}) … [first call loads BGE-M3]")
+            t0 = time.perf_counter()
             candidates = self.vector_search(search_query, k=candidate_k, language=lang)
+            _log(f"vector_search k={candidate_k} ({(time.perf_counter()-t0)*1000:.0f}ms) → {len(candidates)} candidates")
             if candidates:
+                rdev = self.cfg.rerank_device or self.cfg.embed_device
+                _log(f"reranking {len(candidates)} pairs (device={rdev}) … [first call loads the cross-encoder]")
+                t0 = time.perf_counter()
                 pairs = [(question, c["text"]) for c in candidates]
                 for c, s in zip(candidates, self.reranker.predict(pairs)):
                     c["rerank_score"] = float(s)
                 candidates.sort(key=lambda c: c["rerank_score"], reverse=True)
+                _log(f"rerank ({(time.perf_counter()-t0)*1000:.0f}ms)")
             hits = candidates[:k]
         else:
+            t0 = time.perf_counter()
             hits = self.vector_search(search_query, k=k, language=lang)
+            _log(f"vector_search k={k} ({(time.perf_counter()-t0)*1000:.0f}ms) → {len(hits)} hits")
 
+        _log("top hits: " + ", ".join(
+            f"art#{h['article_number']}({h.get('rerank_score', h.get('score', 0)):.2f})" for h in hits))
+        _log(f"retrieve total: {(time.perf_counter()-t_r)*1000:.0f}ms")
         return {
             "question": question, "keywords": keywords, "article_numbers": [],
             "search_query": search_query, "detected_language": lang, "hits": hits,
@@ -488,7 +514,12 @@ class BilingualRAGPipeline:
                "article_numbers": r.get("article_numbers") or [],
                "search_query": r.get("search_query", ""),
                "detected_language": r.get("detected_language")}
+        _log(f"answer: generating (model={self.cfg.llm_model}, num_predict={self.cfg.llm_num_predict}) …")
+        ta = time.perf_counter()
         system_prompt, user_prompt = self.build_rag_prompt(question, r["hits"])
+        n = 0
         for delta in self._chat_stream(system_prompt, user_prompt):
+            n += 1
             yield {"type": "delta", "text": delta}
+        _log(f"answer: done — {n} chunks, gen {(time.perf_counter()-ta)*1000:.0f}ms | TOTAL {(time.perf_counter()-t0)*1000:.0f}ms")
         yield {"type": "done", "processing_time_ms": round((time.perf_counter() - t0) * 1000)}
