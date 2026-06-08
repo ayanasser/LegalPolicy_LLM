@@ -274,11 +274,13 @@ def build_ui() -> gr.Blocks:
             #   • picking anything else      → unload the in-process 4-bit Qwen
             # (baseline ⇄ finetuned both use the shared HF load, so neither evicts it.)
             try:
-                from .backends import LocalQwenBackend, _free_ollama_vram, _QWEN
-                if isinstance(REGISTRY[label], LocalQwenBackend):
-                    _free_ollama_vram()
-                elif _QWEN.is_loaded():
-                    _QWEN.unload()
+                from .backends import (LocalQwenBackend, _free_ollama_vram,
+                                       _QWEN, _should_evict_vram)
+                if _should_evict_vram():  # only on small GPUs; no-op on A100/Colab
+                    if isinstance(REGISTRY[label], LocalQwenBackend):
+                        _free_ollama_vram()
+                    elif _QWEN.is_loaded():
+                        _QWEN.unload()
             except Exception as e:  # never let VRAM housekeeping break the UI
                 print(f"[unified-ui] VRAM eviction on switch failed (ignored): {e}")
             r_vis, t_vis, desc = _panels_for(label)

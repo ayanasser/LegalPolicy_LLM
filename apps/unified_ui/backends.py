@@ -97,9 +97,10 @@ class _LocalQwenManager:
         with self._lock:
             if self._model is not None:
                 return
-            # Only one model fits in 6 GB VRAM — evict any Ollama model first so
-            # the 4-bit load below doesn't OOM against a resident Ollama model.
-            _free_ollama_vram()
+            # On a small GPU only one model fits — evict any Ollama model first so
+            # the 4-bit load below doesn't OOM. No-op on big GPUs (A100/Colab).
+            if _should_evict_vram():
+                _free_ollama_vram()
             import torch
             from peft import PeftModel
             from transformers import (AutoModelForCausalLM, AutoTokenizer,
@@ -254,6 +255,28 @@ class _nullcontext:
         return None
 
     def __exit__(self, *a):
+        return False
+
+
+def _should_evict_vram() -> bool:
+    """Whether to evict other models from VRAM before loading one.
+
+    Only worth it on a small GPU where models can't coexist (the 6 GB laptop).
+    On a big GPU (A100/Colab) eviction just forces needless reloads, so skip it.
+    Override with LP_VRAM_EVICT = auto (default) | always | never.
+    """
+    mode = os.getenv("LP_VRAM_EVICT", "auto").lower()
+    if mode == "always":
+        return True
+    if mode == "never":
+        return False
+    try:
+        import torch
+        if not torch.cuda.is_available():
+            return False
+        total = torch.cuda.get_device_properties(0).total_memory
+        return total < 16 * 1024 ** 3  # evict only when < 16 GB
+    except Exception:
         return False
 
 
