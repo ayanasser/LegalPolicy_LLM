@@ -148,7 +148,8 @@ def _stream_with_heartbeat(backend, message, history, hb_every: float = 1.5):
 def build_ui() -> gr.Blocks:
     groups = load_suggestions()
 
-    with gr.Blocks(title="Egyptian Civil Code — Unified Legal Assistant") as demo:
+    with gr.Blocks(title="Egyptian Civil Code — Unified Legal Assistant",
+                   theme=gr.themes.Soft(primary_hue="blue")) as demo:
         gr.HTML(
             "<div style='background:linear-gradient(90deg,#1e3a8a,#2563eb,#38bdf8);"
             "color:#fff;padding:18px 22px;border-radius:12px;margin-bottom:10px'>"
@@ -168,7 +169,7 @@ def build_ui() -> gr.Blocks:
                 desc_md = gr.Markdown(_panels_for(DEFAULT_LABEL)[2])
 
             with gr.Column(scale=4):
-                chatbot = gr.Chatbot(height=480)
+                chatbot = gr.Chatbot(height=480, type="messages")
                 msg = gr.Textbox(
                     placeholder="Ask about the Egyptian Civil Code (English or العربية)…",
                     submit_btn=True, autofocus=True,
@@ -318,7 +319,6 @@ def main() -> None:
     demo = build_ui()
     demo.queue()  # serialise — only one model copy fits in 6 GB VRAM
     demo.launch(
-        theme=gr.themes.Soft(primary_hue="blue"),
         server_name="0.0.0.0",
         server_port=int(os.environ.get("LP_UI_PORT", str(config.UI_PORT))),
         share=config.UI_SHARE,

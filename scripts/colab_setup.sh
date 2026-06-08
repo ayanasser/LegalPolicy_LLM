@@ -17,7 +17,7 @@ cd "$ROOT"
 echo "==> 1/4  Python deps (torch is preinstalled on Colab — not touched)"
 # Core stack: local HF Qwen + Bilingual RAG + Neo4j-Aura graph RAG.
 pip install -q \
-  gradio pandas python-dotenv pyyaml requests \
+  'gradio==6.14.0' pandas python-dotenv pyyaml requests \
   transformers peft bitsandbytes accelerate sentencepiece einops \
   chromadb sentence-transformers ollama \
   fastapi 'uvicorn[standard]' pydantic pydantic-settings \
