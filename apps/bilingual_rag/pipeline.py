@@ -177,8 +177,9 @@ class BilingualRAGPipeline:
     def reranker(self):
         if self._reranker is None:
             from sentence_transformers import CrossEncoder
-            print(f"[brag] loading reranker {self.cfg.reranker_name} on cpu …")
-            self._reranker = CrossEncoder(self.cfg.reranker_name, device="cpu")
+            device = self.cfg.rerank_device or self.cfg.embed_device
+            print(f"[brag] loading reranker {self.cfg.reranker_name} on {device} …")
+            self._reranker = CrossEncoder(self.cfg.reranker_name, device=device)
         return self._reranker
 
     @property

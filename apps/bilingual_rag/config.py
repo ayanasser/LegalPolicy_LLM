@@ -42,12 +42,16 @@ class BRagSettings(BaseSettings):
     # ── Reranker (multilingual cross-encoder) ────────────────────────────────
     use_reranker: bool = Field(True, alias="BRAG_USE_RERANKER")
     reranker_name: str = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
+    # Reranker device — falls back to embed_device when empty, so a single
+    # BRAG_EMBED_DEVICE=cuda runs BOTH the embedder and the reranker on the GPU
+    # (big speedup on Colab/A100 vs the CPU default).
+    rerank_device: str = Field("", alias="BRAG_RERANK_DEVICE")
 
     # ── Retrieval defaults ───────────────────────────────────────────────────
     top_k: int = 5
     candidate_k: int = 20
     restrict_language: bool = True
-    use_keywords: bool = True
+    use_keywords: bool = Field(True, alias="BRAG_USE_KEYWORDS")
 
     # ── LLM (Ollama Qwen 3B) ─────────────────────────────────────────────────
     ollama_host: str = Field("http://localhost:11434", alias="OLLAMA_HOST")
