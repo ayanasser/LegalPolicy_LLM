@@ -359,27 +359,51 @@ class BilingualRAGPipeline:
         )
         return resp["message"]["content"].strip()
 
+    def _chat_stream(self, system: str, user: str):
+        """Yield incremental answer text from the Ollama LLM (token streaming)."""
+        for part in self.ollama.chat(
+            model=self.cfg.llm_model,
+            messages=[{"role": "system", "content": system},
+                      {"role": "user", "content": user}],
+            options={"temperature": self.cfg.llm_temperature,
+                     "num_predict": self.cfg.llm_num_predict},
+            stream=True,
+        ):
+            chunk = part["message"]["content"]
+            if chunk:
+                yield chunk
+
     @staticmethod
     def build_rag_prompt(question: str, hits: list[dict]) -> tuple[str, str]:
         system_prompt = (
             "You are a precise, trustworthy legal assistant specialised in the Egyptian Civil Code "
             "(القانون المدني المصري). Follow these rules strictly:\n"
-            "1. Answer ONLY using the provided context excerpts. Do NOT use outside knowledge.\n"
-            "2. Always cite the relevant article numbers inline, e.g. (Article 12) / (المادة 12).\n"
-            "3. If the context does not contain the answer, say exactly:\n"
+            "1. Answer using the provided context excerpts as your source of law. Do NOT add facts "
+            "from outside knowledge, but DO reason over the excerpts to apply them to the question.\n"
+            "2. The user may ask in colloquial/Egyptian dialect (عامية) while the articles are in "
+            "formal Arabic. Map the everyday wording to the legal concept (e.g. 'استعملت حقي وضرّيت "
+            "حد' → التعسف في استعمال الحق) and answer from the matching article(s).\n"
+            "3. Always cite the relevant article numbers inline, e.g. (Article 12) / (المادة 12).\n"
+            "4. Only if NONE of the excerpts relate to the question at all, say exactly:\n"
             "   - EN: 'The provided articles do not contain enough information to answer this question.'\n"
             "   - AR: 'لا تحتوي المواد المقدمة على معلومات كافية للإجابة على هذا السؤال.'\n"
-            "4. Never invent articles, numbers, or facts.\n"
-            "5. Reply in the SAME language as the user's question.\n"
-            "6. Be clear, concise, and accurate.\n\n"
+            "   Do NOT use this refusal when a relevant article is present — give the answer instead.\n"
+            "5. Never invent articles, numbers, or facts.\n"
+            "6. Reply in the SAME language as the user's question.\n"
+            "7. Be clear, concise, and accurate.\n\n"
             "أنت مساعد قانوني دقيق وموثوق متخصص في القانون المدني المصري. التزم بالقواعد التالية بدقة:\n"
-            "1. أجب فقط باستخدام المقتطفات المرفقة من السياق، ولا تستخدم أي معرفة خارجية.\n"
-            "2. اذكر دائمًا أرقام المواد ذات الصلة داخل الإجابة، مثل (المادة 12).\n"
-            "3. إذا لم يحتوِ السياق على الإجابة، فاكتب بالضبط: "
-            "'لا تحتوي المواد المقدمة على معلومات كافية للإجابة على هذا السؤال.'\n"
-            "4. لا تختلق أي مواد أو أرقام أو معلومات.\n"
-            "5. أجب بنفس لغة سؤال المستخدم.\n"
-            "6. كن واضحًا ومختصرًا ودقيقًا."
+            "1. أجب اعتمادًا على المقتطفات المرفقة بوصفها مصدر القانون، ولا تُضِف وقائع من معرفة خارجية، "
+            "لكن استنتج من المقتطفات وطبّقها على السؤال.\n"
+            "2. قد يسأل المستخدم بالعامية المصرية بينما المواد مكتوبة بالعربية الفصحى. ترجم الصياغة "
+            "الدارجة إلى المفهوم القانوني (مثال: 'استعملت حقي وضرّيت حد' ← التعسف في استعمال الحق) "
+            "ثم أجب من المادة المناسبة.\n"
+            "3. اذكر دائمًا أرقام المواد ذات الصلة داخل الإجابة، مثل (المادة 12).\n"
+            "4. فقط إذا لم تكن أي من المقتطفات ذات صلة بالسؤال إطلاقًا، فاكتب بالضبط: "
+            "'لا تحتوي المواد المقدمة على معلومات كافية للإجابة على هذا السؤال.' "
+            "ولا تستخدم هذه الجملة إذا كانت هناك مادة ذات صلة، بل قدّم الإجابة.\n"
+            "5. لا تختلق أي مواد أو أرقام أو معلومات.\n"
+            "6. أجب بنفس لغة سؤال المستخدم.\n"
+            "7. كن واضحًا ومختصرًا ودقيقًا."
         )
         context_blocks = [
             f"[{i}] (Article {h['article_number']} | {h['language']})\n{h['text']}"
@@ -453,3 +477,17 @@ class BilingualRAGPipeline:
         r["answer"] = self._chat(system_prompt, user_prompt)
         r["processing_time_ms"] = round((time.perf_counter() - t0) * 1000)
         return r
+
+    def answer_stream(self, question: str, **kw):
+        """Token-streaming generator. Yields event dicts: a `meta` line (hits +
+        keywords + detected language), then `delta` lines, then a `done` line."""
+        t0 = time.perf_counter()
+        r = self.retrieve(question, **kw)
+        yield {"type": "meta", "hits": r["hits"], "keywords": r.get("keywords"),
+               "article_numbers": r.get("article_numbers") or [],
+               "search_query": r.get("search_query", ""),
+               "detected_language": r.get("detected_language")}
+        system_prompt, user_prompt = self.build_rag_prompt(question, r["hits"])
+        for delta in self._chat_stream(system_prompt, user_prompt):
+            yield {"type": "delta", "text": delta}
+        yield {"type": "done", "processing_time_ms": round((time.perf_counter() - t0) * 1000)}

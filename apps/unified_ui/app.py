@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import os
 import sys
+import time
 from pathlib import Path
 
 # Make `legal_explainer` importable regardless of how the app is launched.
@@ -96,6 +97,54 @@ def _panels_for(label: str):
     )
 
 
+def _stream_with_heartbeat(backend, message, history, hb_every: float = 1.5):
+    """Wrap `backend.stream` so the FIRST token's wait never freezes the browser.
+
+    The first message to a backend can block for minutes (a cold 4-bit Qwen load
+    ~175s, a RAG service warming BGE-M3, an Ollama model swap). With no output the
+    browser shows its 'page unresponsive — wait / exit' dialog. We run the real
+    stream in a thread and emit a ticking '⏳ loading…' heartbeat until the first
+    token arrives, which keeps the connection alive and tells the user what's up.
+
+    Yields the same `(partial_text, reply)` tuples as `backend.stream`.
+    """
+    import queue as _queue
+    import threading
+
+    q: "_queue.Queue" = _queue.Queue()
+    _DONE = object()
+
+    def _producer():
+        try:
+            for item in backend.stream(message, history):
+                q.put(("item", item))
+        except Exception as e:  # surface backend errors to the main generator
+            q.put(("error", e))
+        finally:
+            q.put(("done", _DONE))
+
+    threading.Thread(target=_producer, daemon=True).start()
+
+    t0 = time.perf_counter()
+    got_first = False
+    while True:
+        try:
+            kind, payload = q.get(timeout=hb_every)
+        except _queue.Empty:
+            if not got_first:  # still waiting on the first token — beat the clock
+                secs = int(time.perf_counter() - t0)
+                yield (f"⏳ Loading the model and preparing the answer… ({secs}s)\n\n"
+                       f"_First use of a project can take 2–3 minutes on a 6 GB GPU "
+                       f"(model load). Subsequent questions are fast._", None)
+            continue
+        if kind == "done":
+            return
+        if kind == "error":
+            raise payload
+        got_first = True
+        yield payload
+
+
 def build_ui() -> gr.Blocks:
     groups = load_suggestions()
 
@@ -161,42 +210,77 @@ def build_ui() -> gr.Blocks:
                 {"role": "user", "content": message},
                 {"role": "assistant", "content": ""},
             ]
+            # ── Stream tokens (NO Langfuse context open here) ──────────────────
+            # The trace span uses OpenTelemetry contextvars, which can't survive
+            # being suspended/resumed across `yield` (Gradio resumes the generator
+            # in a different context per token → "Token created in a different
+            # Context"). So we stream first and record the trace afterwards, in a
+            # single synchronous block with no yields inside it.
             final = None
-            # Trace each question to Langfuse; trace_name == the project (backend) label.
-            with trace_question(backend.label, message, backend_id=backend.id) as _tr:
-                for partial, reply in backend.stream(message, history):
-                    disp[-1]["content"] = partial or ""
-                    if reply is None:
-                        # mid-stream: only the chat bubble changes.
-                        yield disp, gr.update(), gr.update(), gr.update(), ""
-                    else:
-                        final = reply
-                if final is None:  # safety net — backend yielded no final reply
-                    final = Reply(text=disp[-1]["content"])
-                # Build the trace payload as a SINGLE dict (dict-merge so a stray
-                # "model" key in info can't collide with the explicit model=).
-                payload = dict(final.info or {})
-                retrieval_meta = payload.pop("retrieval", None)
-                payload.update(
-                    model=final.model,
-                    model_parameters=final.params,
-                    usage=final.usage,
-                    documents=final.documents,
-                    retrieval_meta=retrieval_meta,
-                    prompt=final.prompt,
-                    kind=backend.kind,
-                    status=final.meta,
-                    n_retrieved=(len(final.retrieval) if final.retrieval else 0),
-                )
-                _tr.set_output(final.text, **payload)
-            # Final update — fill retrieval panel / agent trace / status line.
+            df_update = gr.update()      # retrieval panel — updated the moment a
+            trace_update = gr.update()   # reply carries retrieval / agent trace,
+            status = gr.update()         # so it shows WHILE tokens still stream.
+            t0 = time.perf_counter()
+            for partial, reply in _stream_with_heartbeat(backend, message, history):
+                disp[-1]["content"] = partial or ""
+                if reply is not None:
+                    final = reply
+                    if reply.retrieval is not None:
+                        df_update = gr.update(value=_rows_to_df(reply.retrieval))
+                    if reply.trace is not None:
+                        trace_update = gr.update(value=reply.trace)
+                    if reply.meta:
+                        status = reply.meta
+                yield disp, df_update, trace_update, status, ""
+            if final is None:  # safety net — backend yielded no final reply
+                final = Reply(text=disp[-1]["content"])
+            elapsed_ms = round((time.perf_counter() - t0) * 1000)
+
+            # ── Record the trace (synchronous, no yields) ──────────────────────
+            try:
+                with trace_question(backend.label, message, backend_id=backend.id) as _tr:
+                    # SINGLE dict (dict-merge so a stray "model" key in info can't
+                    # collide with the explicit model=).
+                    payload = dict(final.info or {})
+                    retrieval_meta = payload.pop("retrieval", None)
+                    payload.setdefault("elapsed_ms", elapsed_ms)
+                    payload.update(
+                        model=final.model,
+                        model_parameters=final.params,
+                        usage=final.usage,
+                        documents=final.documents,
+                        retrieval_meta=retrieval_meta,
+                        prompt=final.prompt,
+                        kind=backend.kind,
+                        status=final.meta,
+                        n_retrieved=(len(final.retrieval) if final.retrieval else 0),
+                    )
+                    _tr.set_output(final.text, **payload)
+            except Exception as e:  # never let tracing break the chat
+                print(f"[unified-ui] tracing error (ignored): {e}")
+
+            # Final update — ensure the panels reflect the completed reply.
             disp[-1]["content"] = final.text or disp[-1]["content"]
-            df_update = (gr.update(value=_rows_to_df(final.retrieval))
-                         if final.retrieval is not None else gr.update())
-            trace_update = gr.update(value=final.trace) if final.trace is not None else gr.update()
-            yield disp, df_update, trace_update, final.meta, ""
+            if final.retrieval is not None:
+                df_update = gr.update(value=_rows_to_df(final.retrieval))
+            if final.trace is not None:
+                trace_update = gr.update(value=final.trace)
+            yield disp, df_update, trace_update, (final.meta or status), ""
 
         def on_backend_change(label):
+            # Keep only ONE model on the 6 GB GPU. When the user picks a project,
+            # free whatever the new one won't use so the next load can't OOM:
+            #   • picking a local-HF project → unload any resident Ollama model
+            #   • picking anything else      → unload the in-process 4-bit Qwen
+            # (baseline ⇄ finetuned both use the shared HF load, so neither evicts it.)
+            try:
+                from .backends import LocalQwenBackend, _free_ollama_vram, _QWEN
+                if isinstance(REGISTRY[label], LocalQwenBackend):
+                    _free_ollama_vram()
+                elif _QWEN.is_loaded():
+                    _QWEN.unload()
+            except Exception as e:  # never let VRAM housekeeping break the UI
+                print(f"[unified-ui] VRAM eviction on switch failed (ignored): {e}")
             r_vis, t_vis, desc = _panels_for(label)
             return r_vis, t_vis, desc
 

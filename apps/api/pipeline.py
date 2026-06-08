@@ -195,6 +195,28 @@ class RAGPipeline:
         # Strip <think>…</think> blocks from Qwen3 chain-of-thought
         return re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
 
+    def _chat_stream(self, system: str, user: str, temperature: float):
+        """Yield incremental, think-stripped answer text from the Ollama LLM.
+        Keeps a running buffer so <think>…</think> (Qwen3) is never streamed to
+        the client — works whether or not the model emits reasoning blocks."""
+        stream = self._ollama.chat(
+            model=self.cfg.llm_model,
+            messages=[{"role": "system", "content": system},
+                      {"role": "user", "content": user}],
+            options={"temperature": temperature},
+            stream=True,
+        )
+        raw, emitted = "", 0
+        for part in stream:
+            raw += part["message"]["content"]
+            clean = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL)
+            cut = clean.find("<think>")          # hide an unterminated think block
+            if cut != -1:
+                clean = clean[:cut]
+            if len(clean) > emitted:
+                yield clean[emitted:]
+                emitted = len(clean)
+
     # ── Stage 1 — Metadata extraction ─────────────────────────────────────
 
     def extract_metadata(self, question: str) -> dict:
@@ -391,6 +413,31 @@ class RAGPipeline:
             "metadata":           meta,
             "processing_time_ms": round((time.perf_counter() - t0) * 1000),
         }
+
+    def ask_stream(self, question: str, top_k: int | None = None):
+        """Synchronous generator for token streaming. Yields event dicts:
+        {"type":"meta", articles, metadata} → {"type":"delta", text} … →
+        {"type":"done", processing_time_ms}. Run via StreamingResponse (FastAPI
+        executes sync generators in a threadpool, so this won't block the loop)."""
+        top_k = top_k or self.cfg.answer_top_k
+        t0 = time.perf_counter()
+        meta = self.extract_metadata(question)
+        direct = self.fetch_by_number(meta.get("article_numbers", []))
+        keyword = self.fetch_by_keywords(
+            meta.get("keywords_en", []), meta.get("keywords_ar", []),
+            meta.get("legal_topics", []))
+        semantic = self.fetch_by_semantic(meta.get("search_query", question))
+        top_articles = self.rerank(direct, keyword, semantic, top_k)
+        yield {"type": "meta", "articles": top_articles, "metadata": meta}
+        if not top_articles:
+            yield {"type": "delta",
+                   "text": "No relevant articles were found in the database for this question."}
+        else:
+            context = self._format_context(top_articles)
+            user_msg = f"RETRIEVED LAW ARTICLES:\n\n{context}\n\n---\n\nQUESTION: {question}"
+            for delta in self._chat_stream(_ANSWER_SYSTEM, user_msg, self.cfg.llm_temp_answer):
+                yield {"type": "delta", "text": delta}
+        yield {"type": "done", "processing_time_ms": round((time.perf_counter() - t0) * 1000)}
 
     async def search(self, query: str, top_k: int | None = None) -> list[dict]:
         """Retrieval only — no answer generation."""

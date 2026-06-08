@@ -22,6 +22,7 @@ Backends 1 & 3 share a single 4-bit base-model load via a PEFT adapter toggle.
 """
 from __future__ import annotations
 
+import os
 import threading
 from dataclasses import dataclass, field
 
@@ -96,13 +97,26 @@ class _LocalQwenManager:
         with self._lock:
             if self._model is not None:
                 return
+            # Only one model fits in 6 GB VRAM — evict any Ollama model first so
+            # the 4-bit load below doesn't OOM against a resident Ollama model.
+            _free_ollama_vram()
             import torch
             from peft import PeftModel
             from transformers import (AutoModelForCausalLM, AutoTokenizer,
                                       BitsAndBytesConfig)
+            # bf16 needs Ampere+ (RTX 30xx/40xx). On Turing (Colab's T4) bf16 is
+            # unsupported → fall back to fp16. Override with LP_COMPUTE_DTYPE.
+            _dtype_env = os.getenv("LP_COMPUTE_DTYPE", "").lower()
+            if _dtype_env in ("bf16", "bfloat16"):
+                compute_dtype = torch.bfloat16
+            elif _dtype_env in ("fp16", "float16"):
+                compute_dtype = torch.float16
+            else:
+                compute_dtype = (torch.bfloat16 if torch.cuda.is_available()
+                                 and torch.cuda.is_bf16_supported() else torch.float16)
             bnb = BitsAndBytesConfig(
                 load_in_4bit=True, bnb_4bit_quant_type="nf4",
-                bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=compute_dtype,
             )
             # Tokenizer from the adapter dir (carries the trained chat template).
             tok = AutoTokenizer.from_pretrained(config.KNOWLEDGE_ADAPTER_DIR,
@@ -139,6 +153,29 @@ class _LocalQwenManager:
                     model.set_adapter("knowledge")
                 model.generate(**inputs, max_new_tokens=4, do_sample=False,
                                pad_token_id=tok.eos_token_id)
+
+    def is_loaded(self) -> bool:
+        return self._model is not None
+
+    def unload(self) -> None:
+        """Free the 4-bit model from VRAM. Called when the user switches to a
+        backend that doesn't use it, so the ~3 GB it holds is returned to the
+        6 GB GPU for the next model (Ollama / a RAG service's embedder)."""
+        with self._lock:
+            if self._model is None:
+                return
+            import gc
+
+            import torch
+            del self._model
+            self._model = None
+            self._tok = None
+            gc.collect()
+            try:
+                torch.cuda.empty_cache()
+            except Exception:
+                pass
+            print("[unified-ui] unloaded local Qwen from VRAM.")
 
     def generate(self, message: str, use_adapter: bool) -> tuple[str, dict, str]:
         """Closed-book, single-turn (matches how the knowledge model was trained
@@ -218,6 +255,25 @@ class _nullcontext:
 
     def __exit__(self, *a):
         return False
+
+
+def _free_ollama_vram() -> None:
+    """Ask Ollama to unload every resident model so the 6 GB GPU has room for the
+    in-process 4-bit Qwen. Best-effort — never raises (Ollama may be down, or the
+    client may lack `ps`)."""
+    try:
+        import ollama
+        client = ollama.Client(host=config.OLLAMA_HOST)
+        loaded = client.ps().get("models", [])
+        for m in loaded:
+            name = m.get("name") or m.get("model")
+            if name:
+                # keep_alive=0 → unload immediately after this (no-op) call.
+                client.generate(model=name, prompt="", keep_alive=0)
+        if loaded:
+            print(f"[unified-ui] freed Ollama VRAM ({len(loaded)} model(s) unloaded).")
+    except Exception as e:
+        print(f"[unified-ui] could not free Ollama VRAM (ignored): {e}")
 
 
 _QWEN = _LocalQwenManager()
@@ -393,19 +449,9 @@ class HttpRagBackend(Backend):
         self.id, self.label, self.url, self.shape, self.description = id, label, url, shape, description
         self.kind = "rag"
 
-    def generate(self, message, history):
+    def _error_reply(self, e) -> Reply:
         import requests
-        try:
-            r = requests.post(
-                f"{self.url}/api/v1/ask",
-                json={"question": message, "top_k": 5},
-                timeout=config.RAG_HTTP_TIMEOUT,
-            )
-            r.raise_for_status()
-            data = r.json()
-        except requests.exceptions.HTTPError as e:
-            # Service is up but the pipeline errored (e.g. CUDA OOM, Neo4j drop).
-            # Surface the server's {"detail": ...} body — raise_for_status() hides it.
+        if isinstance(e, requests.exceptions.HTTPError):
             detail = ""
             try:
                 detail = (e.response.json() or {}).get("detail", "")
@@ -420,13 +466,85 @@ class HttpRagBackend(Backend):
                       f"or free GPU memory (see RUN.md)."),
                 retrieval=[], meta=f"service error (HTTP {code})",
             )
-        except Exception as e:
-            return Reply(
-                text=(f"⚠️ Could not reach the **{self.label}** service at "
-                      f"`{self.url}`.\n\n```\n{type(e).__name__}: {e}\n```\n\n"
-                      f"Start it first (see RUN.md)."),
-                retrieval=[], meta="service unavailable",
+        return Reply(
+            text=(f"⚠️ Could not reach the **{self.label}** service at "
+                  f"`{self.url}`.\n\n```\n{type(e).__name__}: {e}\n```\n\n"
+                  f"Start it first (see RUN.md)."),
+            retrieval=[], meta="service unavailable",
+        )
+
+    def generate(self, message, history):
+        import requests
+        try:
+            r = requests.post(
+                f"{self.url}/api/v1/ask",
+                json={"question": message, "top_k": 5},
+                timeout=config.RAG_HTTP_TIMEOUT,
             )
+            r.raise_for_status()
+            data = r.json()
+        except Exception as e:
+            return self._error_reply(e)
+        return self._reply_from_data(data)
+
+    def stream(self, message, history):
+        """Token-stream the answer from the service's NDJSON /ask/stream endpoint.
+        The first line carries retrieval + generation metadata; subsequent lines
+        are answer deltas. Falls back to non-streaming generate() if the service
+        has no streaming endpoint (404) or anything goes wrong."""
+        import json
+        import requests
+        try:
+            r = requests.post(
+                f"{self.url}/api/v1/ask/stream",
+                json={"question": message, "top_k": 5},
+                stream=True, timeout=config.RAG_HTTP_TIMEOUT,
+            )
+            if r.status_code == 404:  # older service without streaming — fall back
+                reply = self.generate(message, history)
+                yield reply.text, reply
+                return
+            r.raise_for_status()
+        except Exception as e:
+            reply = self._error_reply(e)
+            yield reply.text, reply
+            return
+
+        meta_fields: dict = {}
+        done_fields: dict = {}
+        answer = ""
+        try:
+            for line in r.iter_lines(decode_unicode=True):
+                if not line:
+                    continue
+                ev = json.loads(line)
+                etype = ev.pop("type", None)
+                if etype == "meta":
+                    meta_fields = ev
+                    # Emit a retrieval "preview" right away so the retrieval
+                    # panel populates while the answer is still streaming.
+                    preview = self._reply_from_data({**meta_fields, "answer": ""})
+                    yield "", preview
+                elif etype == "delta":
+                    answer += ev.get("text", "")
+                    yield answer, None
+                elif etype == "done":
+                    done_fields = ev
+                elif etype == "error":
+                    reply = Reply(text=f"⚠️ {self.label}: {ev.get('detail','stream error')}",
+                                  retrieval=[], meta="service error")
+                    yield reply.text, reply
+                    return
+        except Exception as e:
+            reply = self._error_reply(e)
+            yield (answer or reply.text), reply
+            return
+
+        data = {**meta_fields, "answer": answer,
+                "processing_time_ms": done_fields.get("processing_time_ms", 0)}
+        yield answer, self._reply_from_data(data)
+
+    def _reply_from_data(self, data) -> Reply:
         ms = data.get("processing_time_ms", 0)
         # Generation block (model + sampling params) — services added it; older
         # services won't have it, so default to None and degrade gracefully.
