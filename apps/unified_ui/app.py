@@ -268,21 +268,25 @@ def build_ui() -> gr.Blocks:
             yield disp, df_update, trace_update, (final.meta or status), ""
 
         def on_backend_change(label):
-            # Keep only ONE model on the 6 GB GPU. When the user picks a project,
-            # free whatever the new one won't use so the next load can't OOM:
-            #   • picking a local-HF project → unload any resident Ollama model
-            #   • picking anything else      → unload the in-process 4-bit Qwen
-            # (baseline ⇄ finetuned both use the shared HF load, so neither evicts it.)
+            # Release resources the newly-picked project won't use:
+            #   • Switching AWAY from the local HF Qwen (baseline/finetuned) → unload
+            #     it. It's the only model the UI process holds itself, ~3 GB, and
+            #     nothing else frees it — so release it on ANY GPU (the user's
+            #     "release the finetuned model when I move to Bilingual" case).
+            #     baseline ⇄ finetuned share one load, so we don't unload between them.
+            #   • Switching TO the HF Qwen → force-evict resident Ollama models, but
+            #     ONLY on a small GPU; on a big GPU (A100) Ollama's keep-alive handles
+            #     it and force-evicting would just cause needless reload lag.
             try:
                 from .backends import (LocalQwenBackend, _free_ollama_vram,
                                        _QWEN, _should_evict_vram)
-                if _should_evict_vram():  # only on small GPUs; no-op on A100/Colab
-                    if isinstance(REGISTRY[label], LocalQwenBackend):
-                        _free_ollama_vram()
-                    elif _QWEN.is_loaded():
-                        _QWEN.unload()
+                new_is_hf = isinstance(REGISTRY[label], LocalQwenBackend)
+                if not new_is_hf and _QWEN.is_loaded():
+                    _QWEN.unload()                 # always free the HF Qwen on leave
+                elif new_is_hf and _should_evict_vram():
+                    _free_ollama_vram()            # only when VRAM is tight
             except Exception as e:  # never let VRAM housekeeping break the UI
-                print(f"[unified-ui] VRAM eviction on switch failed (ignored): {e}")
+                print(f"[unified-ui] VRAM housekeeping on switch failed (ignored): {e}")
             r_vis, t_vis, desc = _panels_for(label)
             return r_vis, t_vis, desc
 
